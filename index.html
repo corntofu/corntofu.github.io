@@ -1,0 +1,1496 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>스파이크에서 MIP*=RE까지 — NeuroAI · SNN · 양자복잡도 인터랙티브 DAG</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+KR:wght@300;400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#E7ECF0;
+  --grid:#D3DCE4;
+  --panel:#FBFCFD;
+  --ink:#141F2A;
+  --ink-2:#3D5265;
+  --muted:#6E8395;
+  --rule:#C4D0DA;
+
+  --A:#0E7C77;  --A-soft:#DCEDEC;   /* 계산신경과학 */
+  --B:#C41E6B;  --B-soft:#F8DDE9;   /* NeuroAI */
+  --C:#4338A8;  --C-soft:#DEDCF3;   /* SNN */
+  --D:#B4720B;  --D-soft:#F6E7CB;   /* SNN × 조합최적화 */
+  --Q:#2563A6;  --Q-soft:#DCE9F7;   /* 양자정보 · 양자복잡도 */
+  --F:#52606D;  --F-soft:#E3E8EC;   /* 수학기초 */
+  --T:#7B3F98;  --T-soft:#EDE1F3;   /* 계산이론 */
+  --G:#B44618;  --G-soft:#F5E2D9;   /* 비국소게임 · 상호작용증명 */
+  --O:#117864;  --O-soft:#DCEDE8;   /* 연산자대수 */
+  --R:#8B1E3F;  --R-soft:#F2DDE4;   /* MIP*=RE proof spine */
+
+  --display:"Space Grotesk","IBM Plex Sans KR",sans-serif;
+  --body:"IBM Plex Sans KR",system-ui,sans-serif;
+  --mono:"IBM Plex Mono","IBM Plex Sans KR",monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;
+  font-family:var(--body);
+  color:var(--ink);
+  background-color:var(--paper);
+  background-image:
+    linear-gradient(var(--grid) 1px,transparent 1px),
+    linear-gradient(90deg,var(--grid) 1px,transparent 1px);
+  background-size:26px 26px;
+  line-height:1.72;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:0 24px}
+a{color:inherit}
+:focus-visible{outline:2.5px solid var(--B);outline-offset:3px}
+
+.eyebrow{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+h1,h2,h3{font-family:var(--display);font-weight:700;letter-spacing:-.015em;line-height:1.2;margin:0}
+h2{font-size:clamp(24px,3.4vw,34px)}
+h3{font-size:18px;letter-spacing:-.01em}
+.lede{font-size:17px;color:var(--ink-2);max-width:64ch;font-weight:300}
+
+/* ---------- 히어로 ---------- */
+.hero{padding:76px 0 40px;position:relative;overflow:hidden}
+.hero h1{font-size:clamp(34px,6.4vw,66px);max-width:15ch}
+.hero h1 em{font-style:normal;color:var(--B)}
+.hero .lede{margin-top:22px;font-size:19px}
+.trace{display:block;width:100%;height:96px;margin:34px 0 0}
+.trace path{fill:none;stroke:var(--ink);stroke-width:1.6;vector-effect:non-scaling-stroke}
+.trace .base{stroke:var(--rule);stroke-width:1;stroke-dasharray:2 5}
+@media (prefers-reduced-motion:no-preference){
+  .trace .anim{stroke-dasharray:2400;stroke-dashoffset:2400;animation:draw 2.6s cubic-bezier(.2,.7,.3,1) .25s forwards}
+}
+@keyframes draw{to{stroke-dashoffset:0}}
+.meta-row{
+  display:flex;flex-wrap:wrap;gap:10px 26px;margin-top:8px;
+  font-family:var(--mono);font-size:12px;color:var(--muted);
+  border-top:1px solid var(--rule);padding-top:14px;
+}
+.meta-row b{color:var(--ink);font-weight:600}
+
+section{padding:56px 0;border-top:1px solid var(--rule)}
+
+/* ---------- 트랙 지도 ---------- */
+#trackmap{width:100%;height:auto;display:block;margin:34px 0 0}
+.split-note{margin-top:26px;background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--C);padding:18px 22px}
+.split-note p{margin:0;font-size:14.5px;color:var(--ink-2)}
+.split-note b{color:var(--ink)}
+
+/* ---------- 대응 3열 ---------- */
+.why{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:30px;background:var(--rule)}
+.why > div{background:var(--panel);padding:24px 22px}
+.why h3{margin-bottom:8px}
+.why .sym{font-family:var(--mono);font-size:13px;color:var(--muted);display:block;margin-bottom:14px}
+.why p{margin:0;font-size:14.5px;color:var(--ink-2)}
+
+/* ---------- 준비물 ---------- */
+.prereq{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:20px;margin-top:30px}
+.prereq ul{margin:10px 0 0;padding-left:0;list-style:none}
+.prereq li{font-size:14.5px;color:var(--ink-2);padding:5px 0 5px 20px;position:relative}
+.prereq li::before{content:"—";position:absolute;left:0;color:var(--rule)}
+.prereq h3{font-size:14px;font-family:var(--mono);font-weight:600;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+
+/* ---------- 컨트롤 ---------- */
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:30px 0 6px}
+.chip{
+  font-family:var(--mono);font-size:12px;letter-spacing:.03em;
+  border:1px solid var(--rule);background:transparent;color:var(--ink-2);
+  padding:7px 13px;border-radius:999px;cursor:pointer;transition:.15s;
+}
+.chip:hover{border-color:var(--ink-2)}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:#fff}
+.chip.tA[aria-pressed="true"]{background:var(--A);border-color:var(--A)}
+.chip.tB[aria-pressed="true"]{background:var(--B);border-color:var(--B)}
+.chip.tC[aria-pressed="true"]{background:var(--C);border-color:var(--C)}
+.chip.tD[aria-pressed="true"]{background:var(--D);border-color:var(--D)}
+.ctrl-sep{width:1px;height:22px;background:var(--rule);margin:0 6px}
+.progress-bar{display:flex;align-items:center;gap:14px;margin:18px 0 26px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.track-rail{flex:1;height:6px;background:var(--rule);position:relative;overflow:hidden}
+.track-fill{position:absolute;inset:0 auto 0 0;width:0;background:var(--ink);transition:width .35s ease}
+
+/* ---------- 모듈 ---------- */
+.modules{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:2px;background:var(--rule);border:1px solid var(--rule)}
+.mod{background:var(--panel);display:flex;flex-direction:column}
+.mod.hidden{display:none}
+.mod-head{padding:18px 20px 14px;text-align:left;background:none;border:0;font:inherit;color:inherit;cursor:pointer;width:100%;display:block}
+.mod-code{font-family:var(--mono);font-size:11px;font-weight:600;letter-spacing:.1em;padding:2px 7px;border-radius:3px}
+.mod[data-track="A"] .mod-code{background:var(--A-soft);color:var(--A)}
+.mod[data-track="B"] .mod-code{background:var(--B-soft);color:var(--B)}
+.mod[data-track="C"] .mod-code{background:var(--C-soft);color:var(--C)}
+.mod[data-track="D"] .mod-code{background:var(--D-soft);color:var(--D)}
+.mod-top{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin-bottom:10px}
+.mod-lv{font-family:var(--mono);font-size:11px;color:var(--muted)}
+.mod-head h3{margin:0 0 6px;font-size:17.5px}
+.mod-goal{margin:0;font-size:14px;color:var(--ink-2)}
+.mod-toggle{font-family:var(--mono);font-size:11px;color:var(--muted);margin-top:12px;display:inline-block}
+.mod-body{display:none;padding:0 20px 20px;border-top:1px dashed var(--rule);margin-top:2px}
+.mod.open .mod-body{display:block}
+.mod-body h4{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px;font-weight:600}
+.mod-body ul{margin:0;padding-left:17px}
+.mod-body li{font-size:14px;color:var(--ink-2);padding:2px 0}
+.res{list-style:none;padding:0;margin:0}
+.res li{padding:4px 0}
+.res a{font-size:13.5px;color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule);transition:.15s}
+.res a:hover{border-bottom-color:currentColor}
+.res span{font-family:var(--mono);font-size:11px;color:var(--muted);margin-left:6px}
+.task{margin-top:16px;padding:12px 14px;background:var(--paper);font-size:13.5px;color:var(--ink-2);border-left:2px solid var(--rule)}
+.task b{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:block;margin-bottom:4px;font-weight:600}
+.mod-foot{margin-top:auto;padding:12px 20px;border-top:1px solid var(--rule);display:flex;align-items:center;gap:9px}
+.mod-foot label{font-family:var(--mono);font-size:11.5px;color:var(--muted);cursor:pointer;user-select:none}
+.mod-foot input{accent-color:var(--ink);width:15px;height:15px;cursor:pointer}
+
+/* ---------- 데모 ---------- */
+.demo{background:var(--ink);color:#E7ECF0;border-top:1px solid var(--ink)}
+.demo h2{color:#fff}
+.demo .lede{color:#9DB1C2}
+.demo .eyebrow{color:#6E8AA3}
+.demo-grid{display:grid;grid-template-columns:minmax(260px,1fr) minmax(300px,1.15fr);gap:28px;margin-top:32px;align-items:start}
+.stage{background:#0D1720;border:1px solid #24384A;padding:16px}
+.stage-label{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#6E8AA3;margin:0 0 12px}
+#graph{width:100%;height:auto;display:block}
+#graph .edge{stroke:#2C4356;stroke-width:1.4}
+#graph .edge.cut{stroke:var(--D);stroke-width:2.4}
+#graph .node{stroke:#0D1720;stroke-width:2}
+#raster,#energy{width:100%;display:block;background:#0D1720}
+.readout{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#24384A;border:1px solid #24384A;margin-top:16px}
+.readout div{background:#0D1720;padding:11px 12px}
+.readout dt{font-family:var(--mono);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#6E8AA3;margin:0}
+.readout dd{font-family:var(--display);font-size:22px;font-weight:700;margin:2px 0 0;color:#fff}
+.readout dd.hot{color:var(--D)}
+.demo-ctrl{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:18px}
+.btn{font-family:var(--mono);font-size:12.5px;letter-spacing:.05em;background:var(--D);color:#141F2A;border:0;padding:10px 20px;cursor:pointer;font-weight:600;transition:.15s}
+.btn:hover{filter:brightness(1.12)}
+.btn.ghost{background:transparent;color:#9DB1C2;border:1px solid #34506A}
+.btn.ghost:hover{color:#fff;border-color:#9DB1C2}
+.slider-wrap{display:flex;align-items:center;gap:10px;font-family:var(--mono);font-size:11.5px;color:#9DB1C2;margin-left:auto}
+input[type=range]{accent-color:var(--D);width:130px}
+.demo-note{margin-top:22px;font-size:14px;color:#9DB1C2;max-width:72ch;border-left:2px solid #34506A;padding-left:16px}
+.demo-note code{font-family:var(--mono);font-size:13px;color:var(--D)}
+
+/* ---------- R-STDP ---------- */
+.two-col{display:grid;grid-template-columns:1fr 1.05fr;gap:34px;margin-top:34px;align-items:start}
+.two-col h3{margin-bottom:10px}
+.two-col p{font-size:14.5px;color:var(--ink-2);margin:0 0 14px}
+.two-col p:last-child{margin-bottom:0}
+.formula{font-family:var(--mono);font-size:15px;background:var(--panel);border:1px solid var(--rule);padding:15px 16px;margin:0 0 16px;text-align:center}
+.f-pre{color:var(--A)}
+.f-mod{color:var(--D);font-weight:600}
+.elig-card{background:var(--panel);border:1px solid var(--rule);padding:18px 18px 20px}
+.elig-card .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+#elig{width:100%;height:auto;display:block}
+.elig-ctrl{display:grid;grid-template-columns:auto 1fr auto;gap:11px 12px;align-items:center;margin-top:16px;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.elig-ctrl output{color:var(--ink);font-weight:600;text-align:right;min-width:56px}
+.elig-ctrl input[type=range]{width:100%;accent-color:var(--D)}
+.elig-out{margin-top:16px;padding:13px 15px;background:var(--paper);border-left:2px solid var(--D);font-size:13.5px;color:var(--ink-2)}
+.elig-out b{font-family:var(--display);font-size:21px;color:var(--ink);display:block;margin-bottom:2px}
+.compare{margin-top:40px}
+.compare h3{margin-bottom:6px}
+
+
+/* ---------- SNN 계산복잡도 ---------- */
+.complexity-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:30px}
+.complexity-grid>div{background:var(--panel);padding:22px}
+.complexity-grid h3{font-size:16px;margin-bottom:9px}
+.complexity-grid p{margin:0;font-size:14px;color:var(--ink-2)}
+.resource-row{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:26px}
+.resource-row>div{background:var(--panel);padding:16px 14px;text-align:center}
+.resource-row b{font-family:var(--mono);font-size:16px;display:block;color:var(--C)}
+.resource-row span{font-size:12px;color:var(--muted)}
+.complexity-table{width:100%;border-collapse:collapse;margin-top:28px;font-size:14px}
+.complexity-table th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:0 12px 9px 0;border-bottom:1px solid var(--ink)}
+.complexity-table td{padding:12px 12px 12px 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2)}
+.complexity-table td:first-child{color:var(--ink);font-weight:600}
+.audit-list{counter-reset:audit;margin:24px 0 0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:10px 24px}
+.audit-list li{counter-increment:audit;position:relative;padding:10px 12px 10px 42px;background:var(--panel);border:1px solid var(--rule);font-size:13.5px;color:var(--ink-2)}
+.audit-list li::before{content:counter(audit);position:absolute;left:13px;top:10px;font-family:var(--mono);font-weight:600;color:var(--C)}
+@media(max-width:840px){
+  .dag-quick-select{width:100%;max-width:none}
+  .dag-search{min-width:100%}.resource-row{grid-template-columns:repeat(2,1fr)}.audit-list{grid-template-columns:1fr}}
+
+/* ---------- 양자복잡도 · 양자 × SNN ---------- */
+.quantum-section{position:relative}
+.quantum-section::before{content:"";position:absolute;inset:0;background:linear-gradient(135deg,var(--Q-soft),transparent 38%);opacity:.35;pointer-events:none}
+.quantum-section>.wrap{position:relative}
+.resource-row.q-res b{color:var(--Q)}
+.q-formula{font-family:var(--mono);font-size:15px;background:var(--panel);border:1px solid var(--rule);border-left:3px solid var(--Q);padding:15px 18px;margin:26px 0 8px;text-align:center;overflow-x:auto}
+.q-caption{font-size:13px;color:var(--muted);margin:0 0 24px;text-align:center}
+.quantum-section .split-note{border-left-color:var(--Q)}
+.quantum-section .audit-list li::before{color:var(--Q)}
+.quantum-section .alert{background:var(--Q-soft);border-left-color:var(--Q)}
+.quantum-section .alert p{color:#193D63}
+.quantum-section .alert b{color:var(--Q)}
+.q-badge{font-family:var(--mono);font-size:10.5px;letter-spacing:.07em;padding:3px 8px;border-radius:3px;background:var(--Q-soft);color:var(--Q);white-space:nowrap}
+
+
+
+/* ---------- 인터랙티브 선수과목 DAG ---------- */
+.dag-section{padding-bottom:72px}
+.dag-toolbar{margin-top:26px;background:var(--panel);border:1px solid var(--rule);padding:14px;display:grid;gap:12px}
+.dag-route-row,.dag-filter-row,.dag-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.dag-route-row .chip{border-radius:3px}
+.dag-filter-row{padding-top:10px;border-top:1px dashed var(--rule)}
+.dag-track-chip{font-family:var(--mono);font-size:11px;border:1px solid var(--rule);background:transparent;padding:6px 10px;cursor:pointer;border-radius:999px;color:var(--ink-2)}
+.dag-track-chip.active{background:var(--track);border-color:var(--track);color:white}
+.dag-track-chip.context{box-shadow:inset 0 0 0 1px var(--track)}
+.dag-search{flex:1;min-width:190px;border:1px solid var(--rule);background:#fff;color:var(--ink);font:13px var(--body);padding:10px 12px}
+.dag-select{border:1px solid var(--rule);background:#fff;color:var(--ink);font:12px var(--mono);padding:10px 11px;min-height:40px}
+.dag-quick-select{min-width:220px;max-width:340px}
+.dag-shell{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:20px;min-height:700px}
+.dag-main,.dag-detail{background:var(--panel)}
+.dag-main{min-width:0;position:relative}
+.dag-legend{display:flex;gap:14px;align-items:center;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--rule);font:11px var(--mono);color:var(--muted)}
+.dag-legend i{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:5px}
+.dag-legend .ready{background:#1F8A55}.dag-legend .done{background:var(--ink)}.dag-legend .locked{background:#A8B4BE}
+.dag-viewport{height:650px;position:relative;overflow:hidden;background-color:#F6F8FA;background-image:linear-gradient(#E5EBF0 1px,transparent 1px),linear-gradient(90deg,#E5EBF0 1px,transparent 1px);background-size:24px 24px;touch-action:none}
+#dagSvg{width:100%;height:100%;display:block;cursor:grab;user-select:none}
+#dagSvg.dragging{cursor:grabbing}
+.dag-edge{fill:none;stroke:#AEBAC4;stroke-width:1.4;vector-effect:non-scaling-stroke}
+.dag-edge.active{stroke:var(--ink);stroke-width:2.2}
+.dag-edge.incoming{stroke:var(--C)}
+.dag-edge.outgoing{stroke:var(--D)}
+.dag-node{cursor:pointer;transition:opacity .15s;pointer-events:all;outline:none}
+.dag-node .node-hit{fill:transparent;stroke:transparent;pointer-events:all}
+.dag-node:focus .node-card,.dag-node:focus-visible .node-card{stroke:var(--node);stroke-width:3.2}
+.dag-node .node-card{fill:#fff;stroke:#AEBAC4;stroke-width:1.3;rx:8;vector-effect:non-scaling-stroke}
+.dag-node .node-strip{stroke:none}
+.dag-node:hover .node-card,.dag-node.selected .node-card{stroke:var(--node);stroke-width:2.8}
+.dag-node.dim{opacity:.16}
+.dag-node.context{opacity:.58}
+.dag-node .node-id{font:600 11px var(--mono);fill:var(--node)}
+.dag-node .node-title{font:600 13px var(--body);fill:var(--ink);pointer-events:none}
+.dag-node .node-meta{font:10px var(--mono);fill:var(--muted);pointer-events:none}
+.dag-node .status-dot{stroke:#fff;stroke-width:2;vector-effect:non-scaling-stroke}
+.dag-node.ready .status-dot{fill:#1F8A55}.dag-node.done .status-dot{fill:var(--ink)}.dag-node.locked .status-dot{fill:#A8B4BE}
+.dag-detail{padding:22px;max-height:700px;overflow:auto}
+.dag-detail-empty{color:var(--muted);font-size:14px;margin-top:30px}
+.dag-detail .detail-code{font:600 11px var(--mono);letter-spacing:.1em;color:var(--detail-color);display:block;margin-bottom:8px}
+.dag-detail h3{font-size:23px;margin-bottom:8px}
+.dag-detail .detail-meta{font:11px var(--mono);color:var(--muted);margin-bottom:14px}
+.dag-detail .detail-goal{font-size:14.5px;color:var(--ink-2);padding-bottom:15px;border-bottom:1px solid var(--rule)}
+.dag-detail h4{font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:18px 0 8px}
+.dag-detail ul{padding-left:18px;margin:0}.dag-detail li{font-size:13.5px;color:var(--ink-2);margin:4px 0}
+.dag-detail a{color:var(--ink);text-decoration:none;border-bottom:1px solid var(--rule)}
+.dag-detail a:hover{border-color:var(--ink)}
+.dag-prereq-buttons{display:flex;gap:6px;flex-wrap:wrap}
+.dag-prereq-buttons button{border:1px solid var(--rule);background:var(--paper);font:11px var(--mono);padding:5px 7px;cursor:pointer}
+.dag-complete{display:flex;align-items:center;gap:10px;margin-top:18px;padding:12px;background:var(--paper);border-left:3px solid var(--detail-color);font:12px var(--mono)}
+.dag-complete input{width:17px;height:17px;accent-color:var(--detail-color)}
+.dag-zoom{position:absolute;right:12px;bottom:12px;display:flex;gap:5px;z-index:3}
+.dag-zoom button{width:42px;height:42px;border:1px solid #9DABB7;background:rgba(255,255,255,.94);font:600 15px var(--mono);cursor:pointer}
+.dag-tip{position:absolute;left:12px;bottom:12px;background:rgba(20,31,42,.86);color:#fff;font:10.5px var(--mono);padding:7px 9px;pointer-events:none}
+.dag-progress-note{font:11px var(--mono);color:var(--muted)}
+.track-fill.dag-fill{background:linear-gradient(90deg,var(--C),var(--Q),var(--R))}
+
+/* ---------- MIP*=RE 집중 트랙 ---------- */
+.mip-section{position:relative;background:linear-gradient(180deg,rgba(139,30,63,.06),transparent 55%)}
+.mip-theorem{margin-top:26px;background:#101822;color:#ECF3F8;border-left:4px solid var(--R);padding:22px 24px}
+.mip-theorem code{font:600 22px var(--mono);color:#F4B7C9;display:block;margin-bottom:9px}
+.mip-theorem p{margin:0;color:#B9C9D6;font-size:14px}
+.mip-spine{display:grid;grid-template-columns:repeat(5,1fr);gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:28px}
+.mip-spine>div{background:var(--panel);padding:17px}
+.mip-spine b{font:600 12px var(--mono);color:var(--R);display:block;margin-bottom:6px}.mip-spine span{font-size:13px;color:var(--ink-2)}
+.mip-route{margin-top:28px;padding:19px 22px;background:var(--panel);border:1px solid var(--rule)}
+.mip-route h3{margin-bottom:10px}.mip-route p{font-size:14px;color:var(--ink-2);margin:0}
+.mip-warning{margin-top:18px;padding:13px 16px;background:var(--R-soft);border-left:3px solid var(--R);font-size:13.5px;color:#65162E}
+.tag.F{background:var(--F-soft);color:var(--F)}.tag.T{background:var(--T-soft);color:var(--T)}.tag.Q{background:var(--Q-soft);color:var(--Q)}.tag.G{background:var(--G-soft);color:var(--G)}.tag.O{background:var(--O-soft);color:var(--O)}.tag.R{background:var(--R-soft);color:var(--R)}
+@media(max-width:1000px){.dag-shell{grid-template-columns:1fr}.dag-detail{max-height:none}.mip-spine{grid-template-columns:1fr 1fr}}
+@media(max-width:620px){.dag-viewport{height:560px}.mip-spine{grid-template-columns:1fr}.dag-toolbar{padding:10px}.dag-detail{padding:18px}}
+
+/* ---------- 논문 ---------- */
+.papers{margin-top:30px;border-top:1px solid var(--rule)}
+.paper{display:grid;grid-template-columns:88px 1fr auto;gap:18px;align-items:baseline;padding:15px 0;border-bottom:1px solid var(--rule)}
+.paper .yr{font-family:var(--mono);font-size:12px;color:var(--muted)}
+.paper .ttl{font-size:15px;font-weight:500;color:var(--ink);text-decoration:none}
+.paper a.ttl:hover{color:var(--B)}
+.paper .why-read{display:block;font-size:13.5px;color:var(--ink-2);font-weight:300;margin-top:3px}
+.tag{font-family:var(--mono);font-size:10.5px;letter-spacing:.08em;padding:3px 8px;border-radius:3px;white-space:nowrap}
+.tag.A{background:var(--A-soft);color:var(--A)}
+.tag.B{background:var(--B-soft);color:var(--B)}
+.tag.C{background:var(--C-soft);color:var(--C)}
+.tag.D{background:var(--D-soft);color:var(--D)}
+
+/* ---------- 도구 ---------- */
+.tools{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:30px}
+.tools > div{background:var(--panel);padding:20px}
+.tools h3{font-size:15.5px;margin-bottom:6px}
+.tools p{margin:0;font-size:14px;color:var(--ink-2)}
+.tools a{font-family:var(--mono);font-size:12px;color:var(--muted);text-decoration:none;display:inline-block;margin-top:9px;border-bottom:1px solid var(--rule)}
+.tools a:hover{color:var(--ink)}
+.alert{margin-top:26px;background:var(--D-soft);border-left:3px solid var(--D);padding:16px 20px}
+.alert p{margin:0;font-size:14.5px;color:#5B3A05}
+.alert b{font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;display:block;margin-bottom:6px;color:var(--D)}
+
+/* ---------- 스프린트 ---------- */
+.sprint{width:100%;border-collapse:collapse;margin-top:28px;font-size:14px}
+.sprint th{text-align:left;font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);font-weight:600;padding:0 14px 10px 0;border-bottom:1px solid var(--ink)}
+.sprint td{padding:13px 14px 13px 0;border-bottom:1px solid var(--rule);vertical-align:top;color:var(--ink-2)}
+.sprint td:first-child{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+.sprint td b{color:var(--ink);font-weight:600}
+.pill{font-family:var(--mono);font-size:10.5px;padding:2px 6px;border-radius:3px;margin-right:4px}
+.pill.A{background:var(--A-soft);color:var(--A)}
+.pill.B{background:var(--B-soft);color:var(--B)}
+.pill.C{background:var(--C-soft);color:var(--C)}
+.pill.D{background:var(--D-soft);color:var(--D)}
+
+.projects{display:grid;grid-template-columns:repeat(auto-fit,minmax(270px,1fr));gap:2px;background:var(--rule);border:1px solid var(--rule);margin-top:34px}
+.projects > div{background:var(--panel);padding:22px}
+.projects h3{font-size:16px;margin-bottom:8px}
+.projects p{margin:0;font-size:14px;color:var(--ink-2)}
+.projects .scope{font-family:var(--mono);font-size:11px;color:var(--muted);display:block;margin-top:10px}
+
+footer{padding:44px 0 60px;border-top:1px solid var(--rule);font-size:13px;color:var(--muted)}
+footer p{margin:0 0 6px;max-width:70ch}
+
+@media(max-width:840px){
+  .dag-quick-select{width:100%;max-width:none}
+  .dag-search{min-width:100%}
+  .why{grid-template-columns:1fr}
+  .demo-grid,.two-col{grid-template-columns:1fr}
+  .paper{grid-template-columns:1fr;gap:4px}
+  .paper .tag{justify-self:start}
+  .readout{grid-template-columns:repeat(2,1fr)}
+  .slider-wrap{margin-left:0;width:100%}
+}
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <p class="eyebrow">Curriculum · 2026 edition · rev.7 · easier interaction · verified resources</p>
+    <h1>스파이크에서 <em>MIP*=RE</em>까지</h1>
+    <p class="lede">계산신경과학·NeuroAI·SNN·조합최적화에서 출발해 양자복잡도와 MIP*=RE까지 이어지는 선수과목 지도를 한 화면에 엮었습니다. 노드를 누르면 핵심 개념·자료·과제가 열리고, 선행·후속 경로와 학습 진행률이 DAG 위에서 갱신됩니다.</p>
+    <svg class="trace" viewBox="0 0 1200 96" preserveAspectRatio="none" aria-hidden="true">
+      <path class="base" d="M0 72 H1200"></path>
+      <path class="anim" d="M0 72 C40 72 60 60 90 58 C110 57 118 20 122 8 C126 20 132 58 150 62 C180 68 200 66 240 64 C270 62 282 22 288 10 C294 24 300 60 320 64 C360 70 400 66 440 62 C468 59 480 18 486 7 C492 20 498 60 518 64 C560 70 600 68 650 66 C690 64 700 24 706 12 C712 26 718 62 740 66 C790 71 840 70 890 68 C925 66 934 20 940 9 C946 22 952 64 975 68 C1030 73 1090 72 1200 72"></path>
+    </svg>
+    <div class="meta-row">
+      <span><b>10</b> 지식 영역</span>
+      <span><b>44</b> 학습 노드</span>
+      <span><b>DAG</b> 선수과목 지도</span>
+      <span>전체 완주 <b>12~24개월</b></span>
+      <span>자료 <b>공개 접근 중심</b></span>
+    </div>
+  </div>
+</header>
+
+<section id="structure">
+  <div class="wrap">
+    <p class="eyebrow">구조</p>
+    <h2>왜 SNN을 따로 떼어냈는가</h2>
+    <p class="lede">이전 판에서는 SNN과 조합최적화가 한 트랙이었습니다. 문제는 두 영역의 평가 기준이 전혀 다르다는 점입니다. SNN은 과제 성능뿐 아니라 지연시간, 스파이크·시냅스 연산(SynOps), 뉴런 업데이트, 메모리와 실제 에너지로 평가해야 합니다. 최적화는 해 품질, 성공확률, 시간·에너지 대비 해 품질(TTS/ETS)을 봅니다. 섞어두면 알고리즘·매핑·하드웨어 중 어느 층의 실패인지 진단하기 어렵습니다.</p>
+
+    <svg id="trackmap" viewBox="0 0 900 250" role="img" aria-label="네 트랙의 의존 구조: 계산신경과학에서 SNN으로, SNN에서 조합최적화로 이어지며 NeuroAI가 전 구간을 가로지른다">
+      <rect x="20" y="10" width="860" height="42" fill="#F8DDE9" stroke="#C41E6B" stroke-width="1.4" stroke-dasharray="5 4"></rect>
+      <text x="450" y="30" text-anchor="middle" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#C41E6B">B · NeuroAI</text>
+      <text x="450" y="45" text-anchor="middle" font-family="IBM Plex Sans KR" font-size="11.5" fill="#8E2455">세 트랙을 가로지르는 해석·평가 틀 — 무엇을 성공이라 부를지 정한다</text>
+      <line x1="140" y1="52" x2="140" y2="86" stroke="#C41E6B" stroke-width="1" stroke-dasharray="3 3"></line>
+      <line x1="450" y1="52" x2="450" y2="86" stroke="#C41E6B" stroke-width="1" stroke-dasharray="3 3"></line>
+      <line x1="760" y1="52" x2="760" y2="86" stroke="#C41E6B" stroke-width="1" stroke-dasharray="3 3"></line>
+
+      <rect x="30" y="86" width="220" height="70" fill="#DCEDEC" stroke="#0E7C77" stroke-width="1.6"></rect>
+      <text x="140" y="112" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#0E7C77">A · 계산신경과학</text>
+      <text x="140" y="132" text-anchor="middle" font-family="IBM Plex Sans KR" font-size="11.5" fill="#0B5E5A">동역학 · 부호화 · 가소성</text>
+      <text x="140" y="148" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#6E8395">원리를 준다</text>
+
+      <rect x="340" y="86" width="220" height="70" fill="#DEDCF3" stroke="#4338A8" stroke-width="1.6"></rect>
+      <text x="450" y="112" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#4338A8">C · SNN</text>
+      <text x="450" y="132" text-anchor="middle" font-family="IBM Plex Sans KR" font-size="11.5" fill="#332B80">구현 · 학습 · 하드웨어</text>
+      <text x="450" y="148" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#6E8395">도구를 만든다</text>
+
+      <rect x="650" y="86" width="220" height="70" fill="#F6E7CB" stroke="#B4720B" stroke-width="1.6"></rect>
+      <text x="760" y="112" text-anchor="middle" font-family="Space Grotesk" font-size="15" font-weight="700" fill="#B4720B">D · 조합최적화</text>
+      <text x="760" y="132" text-anchor="middle" font-family="IBM Plex Sans KR" font-size="11.5" fill="#7E5008">정식화 · 솔버 · 검증</text>
+      <text x="760" y="148" text-anchor="middle" font-family="IBM Plex Mono" font-size="10.5" fill="#6E8395">도구를 시험한다</text>
+
+      <line x1="250" y1="121" x2="330" y2="121" stroke="#3D5265" stroke-width="1.6"></line>
+      <path d="M330 121 l-9 -4.5 v9 z" fill="#3D5265"></path>
+      <line x1="560" y1="121" x2="640" y2="121" stroke="#3D5265" stroke-width="1.6"></line>
+      <path d="M640 121 l-9 -4.5 v9 z" fill="#3D5265"></path>
+
+      <path d="M140 156 V205 H760 V163" fill="none" stroke="#0E7C77" stroke-width="1.4" stroke-dasharray="5 4"></path>
+      <path d="M760 156 l-4.5 9 h9 z" fill="#0E7C77"></path>
+      <text x="450" y="226" text-anchor="middle" font-family="IBM Plex Sans KR" font-size="11.5" fill="#0B5E5A">직통로 — 대칭 결합·이진 상태라는 조건에서 어트랙터 에너지(A3)를 QUBO/Ising 목적함수(D1)로 번역</text>
+      <text x="450" y="243" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#6E8395">이 대응은 SNN 전체의 보편 원리가 아니라 에너지 기반 모델에 한정되며, A와 D를 병렬로 공부할 수 있게 한다</text>
+    </svg>
+
+    <div class="split-note">
+      <p><b>분리가 실제로 바꾸는 것.</b> 트랙 C는 이제 "스파이킹 신경망을 만들고 학습시키고 칩에 올리는 법" 전체를 담습니다 — 부호화, 대리경사, R-STDP, 이식성까지. 트랙 D는 "그 도구로 NP-hard 문제를 푸는 법"에만 집중합니다. 덕분에 <b>SNN을 쓰지 않는 최적화 접근(결합 발진기 Ising machine, 양자 어닐러)도 D 안에서 정직한 비교 대상</b>으로 다룰 수 있고, 반대로 SNN을 최적화 외의 용도로 쓰려는 사람은 C만 밟고 나갈 수 있습니다.</p>
+    </div>
+  </div>
+</section>
+
+<section id="why">
+  <div class="wrap">
+    <p class="eyebrow">공통 언어</p>
+    <h2>세 트랙을 잇는 강한 다리 — 단, 보편 법칙은 아니다</h2>
+    <p class="lede">"에너지 또는 비용이 낮아지는 방향으로 상태를 갱신한다"는 관점은 어트랙터·Ising/QUBO·일부 확률적 SNN을 연결합니다. 그러나 모든 SNN, NeuroAI 모델, 학습형 구성 정책이 에너지 함수로 환원되는 것은 아닙니다. 이 커리큘럼에서는 <b>적용 조건과 한계까지 유도하는 것</b>을 목표로 삼습니다.</p>
+    <div class="why">
+      <div>
+        <span class="sym">E(s) = −½ Σ w<sub>ij</sub>s<sub>i</sub>s<sub>j</sub> + Σ θ<sub>i</sub>s<sub>i</sub></span>
+        <h3>목적함수 ↔ 에너지 함수</h3>
+        <p>대칭 가중치와 비동기 갱신 같은 조건에서는 Hopfield 에너지가 리아푸노프 함수가 됩니다. QUBO/Ising과는 변수 변환과 부호·상수항을 맞춰 대응시킬 수 있습니다. 특히 Max-Cut은 양의 간선 가중치에 대해 반강자성 부호를 써야 하며, 단순히 모든 가중치를 흥분성으로 놓으면 반대 문제를 풀게 됩니다.</p>
+      </div>
+      <div>
+        <span class="sym">dv/dt = −v/τ + I(t)</span>
+        <h3>일부 탐색 알고리즘 ↔ 신경 동역학</h3>
+        <p>잡음이 있는 국소 갱신, 승자독식, 리듬적 억제는 탐색·샘플링 규칙으로 설계할 수 있습니다. 다만 온도·잡음·억제의 대응은 모델과 보정(calibration)에 의존하며, 생물학적 회로가 자동으로 특정 최적화 알고리즘을 구현한다는 뜻은 아닙니다.</p>
+      </div>
+      <div>
+        <span class="sym">energy ≠ spike count alone</span>
+        <h3>스파이크 수는 비용의 한 대리 지표</h3>
+        <p>스파이크 수가 줄면 통신·시냅스 연산이 줄 가능성이 있지만, 실제 에너지는 SynOps, 뉴런 상태 업데이트, 메모리 접근, 정적 전력, 입출력과 호스트 비용에도 좌우됩니다. 따라서 정확도·지연·에너지를 실제 시스템에서 함께 측정해야 합니다.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="prereq">
+  <div class="wrap">
+    <p class="eyebrow">시작 전 점검</p>
+    <h2>준비물</h2>
+    <p class="lede">아래 항목 중 절반 이상이 낯설다면, 트랙 A의 1~2모듈을 먼저 천천히 밟는 편이 전체 속도를 빠르게 만듭니다.</p>
+    <div class="prereq">
+      <div>
+        <h3>수학</h3>
+        <ul>
+          <li>고유값·고유벡터, 행렬 분해</li>
+          <li>1·2차 상미분방정식, 위상평면 분석</li>
+          <li>확률변수, 포아송 과정, 마르코프 연쇄</li>
+          <li>볼록/비볼록 최적화의 차이, 경사하강</li>
+        </ul>
+      </div>
+      <div>
+        <h3>코딩</h3>
+        <ul>
+          <li>NumPy 벡터화, SciPy ODE 적분기</li>
+          <li>PyTorch autograd와 커스텀 backward</li>
+          <li>NetworkX로 그래프 다루기</li>
+          <li>실험 로깅·시드 고정·재현 가능한 노트북</li>
+        </ul>
+      </div>
+      <div>
+        <h3>개념</h3>
+        <ul>
+          <li>지도학습 파이프라인 한 번 완주 경험</li>
+          <li>NP-hard가 무슨 뜻인지 설명 가능</li>
+          <li>근사비(approximation ratio)와 휴리스틱의 구분</li>
+          <li>논문 한 편을 그림부터 읽는 습관</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="curriculum" class="dag-section">
+  <div class="wrap" style="max-width:1440px">
+    <p class="eyebrow">본과정 · 선수과목 DAG</p>
+    <h2>44개 노드를 경로로 읽기</h2>
+    <p class="lede">카드 목록 대신 선수과목 의존성을 직접 탐색합니다. 노드 전체가 큰 클릭 영역으로 동작하고, 빈 배경에서만 드래그 이동이 시작됩니다. 노드를 누르면 선행 노드는 보라색, 후속 노드는 주황색으로 강조됩니다. 작은 화면이나 축소 상태에서는 빠른 노드 선택 메뉴를 사용할 수 있습니다.</p>
+
+    <div class="dag-toolbar">
+      <div class="dag-route-row" aria-label="추천 경로">
+        <button class="chip" id="routeAll">전체 지도</button>
+        <button class="chip" id="routeNeuro">NeuroAI · SNN · 최적화</button>
+        <button class="chip" id="routeMIP">MIP*=RE 완주 경로</button>
+        <span class="ctrl-sep" aria-hidden="true"></span>
+        <input class="dag-search" id="dagSearch" type="search" placeholder="노드·개념 검색: 예) 비국소게임, von Neumann, R-STDP" aria-label="DAG 검색">
+        <select class="dag-select" id="dagLevel" aria-label="난이도 필터">
+          <option value="all">모든 난이도</option><option value="기초">기초</option><option value="중급">중급</option><option value="심화">심화</option><option value="연구">연구</option>
+        </select>
+        <select class="dag-select dag-quick-select" id="dagQuickSelect" aria-label="노드 빠른 선택">
+          <option value="">노드 빠른 선택…</option>
+        </select>
+      </div>
+      <div class="dag-filter-row" id="dagTrackFilters" aria-label="영역 필터"></div>
+    </div>
+
+    <div class="progress-bar">
+      <span id="progressLabel">0 / 44 노드 완료</span>
+      <span class="track-rail"><span class="track-fill dag-fill" id="progressFill"></span></span>
+      <span class="dag-progress-note" id="readyLabel">시작 가능 0</span>
+      <button class="chip" id="resetProgress">기록 지우기</button>
+    </div>
+
+    <div class="dag-shell">
+      <div class="dag-main">
+        <div class="dag-legend"><span><i class="ready"></i>선수조건 충족</span><span><i class="done"></i>완료</span><span><i class="locked"></i>선수조건 남음</span><span>노드 전체 클릭 가능 · 더블클릭: 확대</span></div>
+        <div class="dag-viewport" id="dagViewport">
+          <svg id="dagSvg" role="img" aria-label="전체 커리큘럼 선수과목 방향 비순환 그래프"></svg>
+          <div class="dag-zoom"><button id="dagZoomIn" aria-label="확대">+</button><button id="dagZoomOut" aria-label="축소">−</button><button id="dagFit" aria-label="전체 맞춤">□</button></div>
+          <div class="dag-tip">빈 배경 드래그: 이동 · 노드 클릭: 선택 · 더블클릭: 확대 · Ctrl/⌘+휠: 확대</div>
+        </div>
+      </div>
+      <aside class="dag-detail" id="dagDetail" aria-live="polite"><p class="dag-detail-empty">노드를 선택하면 목표, 핵심 개념, 자료, 과제와 연결 경로가 표시됩니다.</p></aside>
+    </div>
+  </div>
+</section>
+
+<section id="complexity">
+  <div class="wrap">
+    <p class="eyebrow">C × D 이론 다리</p>
+    <h2>SNN 계산복잡도 — “몇 timestep”만 세면 안 된다</h2>
+    <p class="lede">SNN은 하나의 복잡도 클래스가 아니라 계산 모델입니다. 결론은 뉴런 모델, 입력 인코딩, 네트워크 생성 방식, 수치 정밀도와 허용 오차에 따라 달라집니다. 현실적인 유한 정밀도·균일(uniform)·다항 크기 SNN은 고전 컴퓨터에서 다항시간에 시뮬레이션할 수 있으며, 강점은 보통 P를 넘어서는 계산력이 아니라 병렬 깊이와 희소 이벤트 비용에 있습니다.</p>
+
+    <div class="resource-row" aria-label="SNN 계산에서 함께 세어야 하는 다섯 자원">
+      <div><b>T(n)</b><span>timestep·지연시간</span></div>
+      <div><b>N(n)</b><span>뉴런 수</span></div>
+      <div><b>M(n)</b><span>시냅스 수</span></div>
+      <div><b>E(n)</b><span>스파이크·SynOps</span></div>
+      <div><b>B(n)</b><span>가중치·상태 정밀도</span></div>
+    </div>
+
+    <div class="complexity-grid">
+      <div>
+        <h3>계산 가능성 ≠ 효율성</h3>
+        <p>일부 형식적 SNN은 튜링 완전하지만, 이는 계산 가능한 함수를 표현한다는 뜻입니다. 실제 효율성을 말하려면 네트워크 크기, 실행 시간, 스파이크 수와 파라미터 비트 수를 함께 제한해야 합니다.</p>
+      </div>
+      <div>
+        <h3>Uniformity가 숨은 계산을 막는다</h3>
+        <p>입력 길이 n의 네트워크 S<sub>n</sub>을 다항시간에 생성할 수 있어야 합니다. 이 조건이 없으면 문제의 답이나 어려운 전처리를 연결 구조·가중치에 미리 넣은 비균일 advice가 될 수 있으며, 회로 복잡도의 P/poly 관점과 가까워집니다.</p>
+      </div>
+      <div>
+        <h3>병렬 시간은 NC와 비교</h3>
+        <p>다항 개 뉴런이 polylog timestep에 문제를 풀면 순차 P보다 NC 계열의 회로 깊이와 비교하는 편이 맞습니다. 그래프 파동 전파가 O(diameter) timestep인 것과 총 O(|E|) synaptic event를 쓰는 것은 서로 다른 자원 주장입니다.</p>
+      </div>
+      <div>
+        <h3>확률적 SNN은 mixing까지 센다</h3>
+        <p>다항 자원과 bounded error를 가진 확률적 SNN은 BPP류와 비교할 수 있습니다. 뉴런 갱신 한 번이 싸더라도 목표 분포까지의 mixing time이 지수적이면 효율적인 샘플러가 아닙니다.</p>
+      </div>
+    </div>
+
+    <table class="complexity-table">
+      <thead><tr><th>모델·제약</th><th>합리적인 대응</th><th>해석할 때 주의할 점</th></tr></thead>
+      <tbody>
+        <tr><td>유한 정밀도, uniform, 다항 N·M·T</td><td>일반적으로 P 안에서 고전 시뮬레이션 가능</td><td>정확한 등식은 뉴런·입력 모델에 의존하지만 “SNN이라 NP를 깬다”는 결론은 나오지 않습니다.</td></tr>
+        <tr><td>다항 크기, polylog timestep</td><td>NC 계열과 비교</td><td>벽시계 timestep과 총 work·통신량을 분리합니다.</td></tr>
+        <tr><td>확률적 발화, 다항 자원, bounded error</td><td>BPP류와 비교</td><td>성공확률 증폭과 mixing time을 포함해야 합니다.</td></tr>
+        <tr><td>입력 길이별 비균일 네트워크</td><td>P/poly류의 advice 모델과 유사</td><td>네트워크 생성 비용과 사전 계산이 숨을 수 있습니다.</td></tr>
+        <tr><td>임의 정밀도 실수 가중치</td><td>비현실적인 초튜링 효과 가능</td><td>가중치 하나에 무한한 정보를 저장한 결과일 수 있으므로 B(n)을 명시합니다.</td></tr>
+        <tr><td>분열·증식 가능한 SN P system</td><td>변형에 따라 NP·PSPACE 특성화</td><td>LIF 기반 SNN과 다른 membrane-computing 모델이며 지수 공간·precomputation을 확인해야 합니다.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="split-note">
+      <p><b>최적화 논문을 읽는 규칙.</b> Max-Cut·SAT 같은 NP-hard 문제를 SNN이 “다항시간”에 푼다고 할 때, timestep만 보지 말고 총 뉴런·시냅스·스파이크·정밀도·성공확률과 네트워크 생성 비용을 모두 확인해야 합니다. 근사해·휴리스틱, 지수적 병렬 자원, 비균일 advice, 무한 정밀도, SN P system을 구분하면 P 대 NP와 충돌하는 듯한 주장의 대부분이 해소됩니다.</p>
+    </div>
+
+    <h3 style="margin-top:32px">논문 주장 감사 체크리스트</h3>
+    <ol class="audit-list">
+      <li>문제 크기 n에 대해 네트워크를 다항시간에 생성할 수 있는가?</li>
+      <li>뉴런·시냅스 수가 다항인가, 계산 중 분열해 지수적으로 늘지 않는가?</li>
+      <li>가중치·지연·막전위에 필요한 비트 수 B(n)를 보고했는가?</li>
+      <li>정확해인지, 근사·확률적 휴리스틱인지와 성공확률을 구분했는가?</li>
+      <li>timestep뿐 아니라 총 spike·SynOps와 호스트 통신 비용을 포함했는가?</li>
+      <li>실제 LIF SNN인지, 규칙 기반 SN P system인지 모델을 명시했는가?</li>
+    </ol>
+
+    <div class="alert">
+      <p><b>실습 과제</b> 앞의 maximum-flow SNN을 자원 벡터 <code>(T,N,M,E,B)</code>로 분석하세요. 증강 경로 탐색 한 번과 전체 Ford–Fulkerson 반복을 구분하고, O(diameter) 병렬 지연이 전체 max-flow 복잡도를 낮추는지 또는 탐색 primitive만 가속하는지 설명합니다.</p>
+    </div>
+  </div>
+</section>
+
+<section id="quantum-complexity" class="quantum-section">
+  <div class="wrap">
+    <p class="eyebrow">C × D × Quantum 이론 다리</p>
+    <h2>양자복잡도와 SNN — 같은 QUBO를 풀어도 같은 계산은 아니다</h2>
+    <p class="lede">양자컴퓨터와 SNN은 모두 병렬 동역학·확률·에너지 지형이라는 언어를 사용하지만, 계산 상태와 허용 연산은 근본적으로 다릅니다. 고전 SNN의 막전위와 스파이크는 유한 정밀도의 고전 상태이고, 양자계산은 복소 진폭·중첩·얽힘·측정을 사용합니다. 따라서 QUBO/Ising 목적함수를 공유한다는 사실만으로 SNN이 양자계산을 모사하거나 양자 속도향상을 얻는 것은 아닙니다.</p>
+
+    <div class="resource-row q-res" aria-label="양자복잡도의 핵심 다섯 개념">
+      <div><b>BQP</b><span>bounded-error 양자 다항시간</span></div>
+      <div><b>QMA</b><span>양자 증거를 검증하는 클래스</span></div>
+      <div><b>AQC</b><span>보편 단열 양자계산</span></div>
+      <div><b>QA</b><span>제한적 양자 어닐링·휴리스틱</span></div>
+      <div><b>QSNN</b><span>초기 단계의 양자–스파이킹 모델</span></div>
+    </div>
+
+    <div class="q-formula">P ⊆ BPP ⊆ BQP ⊆ PP ⊆ PSPACE</div>
+    <p class="q-caption">알려진 포함관계의 일부입니다. NP와 BQP 중 어느 쪽이 더 큰지는 알려져 있지 않으며, NP-complete 문제가 BQP에 속하는지도 미해결입니다.</p>
+
+    <div class="complexity-grid">
+      <div>
+        <h3>BQP — 빠른 양자 알고리즘의 집</h3>
+        <p>다항 크기의 균일한 양자회로가 오류확률을 1/3 이하로 제한해 결정하는 promise problem의 클래스입니다. Shor 알고리즘처럼 일부 문제에서 큰 속도향상이 알려져 있지만, “양자컴퓨터는 모든 NP-hard 문제를 다항시간에 푼다”는 뜻은 아닙니다.</p>
+      </div>
+      <div>
+        <h3>QMA — NP의 단순 치환이 아니다</h3>
+        <p>다항 크기의 양자 증거를 양자 검증기가 확인하는 클래스입니다. Local Hamiltonian은 대표적인 QMA-complete 문제입니다. QMA를 “양자컴퓨터가 효율적으로 푸는 문제”로 읽으면 안 되며, 검증 가능한 증거의 복잡도를 나타냅니다.</p>
+      </div>
+      <div>
+        <h3>AQC와 QA를 구분</h3>
+        <p>보편적인 adiabatic quantum computation은 게이트 모델과 다항 동치입니다. 그러나 실제 양자 어닐러는 보통 제한된 transverse-field Ising Hamiltonian, 유한 온도, 잡음과 제한 연결성을 사용하므로 곧바로 BQP 전체와 동일시할 수 없습니다.</p>
+      </div>
+      <div>
+        <h3>양자 우위는 end-to-end로 검증</h3>
+        <p>물리적 anneal time만 보지 말고 임베딩, 프로그래밍, readout, 반복 shot, 오류 완화와 고전 전·후처리를 포함해야 합니다. SNN의 timestep만 세면 안 되는 것과 같은 원칙입니다.</p>
+      </div>
+    </div>
+
+    <table class="complexity-table">
+      <thead><tr><th>계산 모델</th><th>상태·동역학</th><th>복잡도 관점</th><th>SNN과의 관계</th></tr></thead>
+      <tbody>
+        <tr><td>결정론적 디지털 SNN</td><td>유한 정밀도 막전위·스파이크, 소산·리셋</td><td>uniform 다항 자원이면 대체로 P, 병렬 깊이는 NC와 비교</td><td>고전 계산 모델. 양자 중첩이나 얽힘을 사용하지 않습니다.</td></tr>
+        <tr><td>확률적·샘플링 SNN</td><td>열잡음·확률 발화·고전 Markov 과정</td><td>BPP류, mixing time과 성공확률 포함</td><td>Ising/QUBO 분포를 샘플링할 수 있지만 Born 확률이나 양자 터널링과 동일하지 않습니다.</td></tr>
+        <tr><td>게이트 양자계산·보편 AQC</td><td>복소 진폭, 간섭·얽힘, unitary와 측정</td><td>BQP; 증거 검증은 QMA</td><td>유한 SNN을 양자회로로 모사할 수는 있지만 일반적 속도향상이 자동으로 생기지 않습니다.</td></tr>
+        <tr><td>양자 어닐링</td><td>비가환 driver + 문제 Hamiltonian, 열린계 진화</td><td>실행시간은 최소 spectral gap·온도·잡음·임베딩에 의존</td><td>확률적 SNN과 같은 Ising 목적함수를 받을 수 있어 공정한 solver 비교 대상입니다.</td></tr>
+        <tr><td>Quantum SNN·quantum neuromorphic</td><td>qubit·양자 oscillator로 LIF·스파이크·기억을 구현</td><td>아직 통일된 complexity class나 일반적 quantum advantage 없음</td><td>양자회로에 SNN inductive bias를 넣는 초기 연구이며, 고전 학습·반복 측정 비용을 따로 셉니다.</td></tr>
+      </tbody>
+    </table>
+
+    <div class="split-note">
+      <p><b>공통점은 문제 인터페이스, 차이는 탐색 물리.</b> 고전 Hopfield/SNN, simulated annealing, oscillator Ising machine, 양자 어닐러는 모두 <code>QUBO ↔ Ising</code> 형식의 같은 비용함수를 받을 수 있습니다. 하지만 SNN은 임계값·누설·억제·잡음으로 고전 상태를 갱신하고, QA는 비가환 driver Hamiltonian과 열린 양자계 진화를 사용합니다. 따라서 결과를 비교할 때는 “같은 목적함수”와 “같은 알고리즘”을 혼동하지 않습니다.</p>
+    </div>
+
+    <h3 style="margin-top:32px">양자–SNN 논문 주장 감사 체크리스트</h3>
+    <ol class="audit-list">
+      <li>실제 qubit·양자소자를 썼는가, 아니면 양자 중첩에서 영감을 받은 고전 SNN인가?</li>
+      <li>입력 상태 준비와 data loading 비용을 복잡도에서 제외하지 않았는가?</li>
+      <li>gate depth·qubit 수·shot 수·측정 반복·오류 완화 비용을 모두 보고했는가?</li>
+      <li>학습이 양자 장치 안에서 이루어지는가, 고전 backprop·optimizer가 대부분을 담당하는가?</li>
+      <li>제한된 QA 결과를 보편 AQC 또는 BQP의 계산력으로 과장하지 않았는가?</li>
+      <li>동일 파라미터 수 비교뿐 아니라 wall-clock·에너지·정확도와 강한 고전 기준선을 비교했는가?</li>
+    </ol>
+
+    <div class="alert">
+      <p><b>현재 연구 성숙도 · 2026-07-29</b> Quantum neuromorphic computing과 quantum spiking neuron 연구는 실제 논문·실험이 존재하지만 아직 공통 표준, 대규모 오류보정 구현, 일반적인 복잡도 우위가 확립된 분야는 아닙니다. 2025년에 제안되어 2026년 개정된 stochastic quantum spiking network는 양자 기억과 국소 학습을 제시하지만, 특정 데이터셋·파라미터 예산의 실험 결과를 BQP 수준의 일반적 속도향상으로 해석해서는 안 됩니다.</p>
+    </div>
+  </div>
+</section>
+
+
+<section id="mipstar" class="mip-section">
+  <div class="wrap">
+    <p class="eyebrow">새 집중 트랙 · F → T/Q → G/O → R</p>
+    <h2>MIP*=RE — 수학 기초부터 증명 지도까지</h2>
+    <p class="lede">이 정리는 양자 알고리즘 한 과목만으로는 도달할 수 없습니다. 계산가능성·복잡도·PCP와 상호작용 증명, 밀도행렬·측정·얽힘, 비국소게임과 self-testing, 함수해석·C*-대수·von Neumann 대수가 DAG의 마지막 구간에서 합류합니다.</p>
+
+    <div class="mip-theorem">
+      <code>MIP* = RE</code>
+      <p>고전적 다항시간 검증기가 서로 통신하지 않지만 얽힘을 공유한 여러 무제한 prover와 상호작용하는 증명 시스템의 계산력이 recursively enumerable 언어 전체와 일치한다는 정리입니다. 이는 “양자컴퓨터가 정지 문제를 계산한다”는 뜻이 아니라, 무제한 prover 전략의 존재를 통해 반결정 가능한 명제를 검증하는 proof-system의 표현력에 관한 결과입니다.</p>
+    </div>
+
+    <div class="mip-spine">
+      <div><b>01 · Foundations</b><span>증명·선형대수·확률·해석·Hilbert 공간</span></div>
+      <div><b>02 · Classical TCS</b><span>RE·coRE, P/NP/PSPACE/NEXP, IP·MIP·PCP</span></div>
+      <div><b>03 · Quantum & Games</b><span>밀도행렬·POVM·얽힘·CHSH·비국소게임</span></div>
+      <div><b>04 · Rigidity & Compression</b><span>self-testing, Pauli·low-degree test, 재귀적 압축</span></div>
+      <div><b>05 · Operator Algebra</b><span>C*-대수, II₁ factor, Tsirelson·Connes embedding</span></div>
+    </div>
+
+    <div class="mip-route">
+      <h3>권장 완주 방식</h3>
+      <p><b>1차 완주</b>에서는 R4의 정리 구조를 설명할 수 있을 정도로 T·Q·G 줄기를 먼저 밟습니다. <b>2차 완주</b>에서는 O1–O4를 추가해 tensor-product correlation과 commuting-operator correlation의 차이, 그리고 Connes embedding의 부정적 해결까지 연결합니다. 전체 원문 증명의 기술적 세부는 대학원 수준의 장기 프로젝트로 잡는 편이 현실적입니다.</p>
+    </div>
+
+    <div class="mip-warning"><b>표기 주의.</b> 여기서 MIP는 mixed-integer programming이 아니라 <i>multi-prover interactive proof</i>입니다. 별표는 prover들이 사전에 양자 얽힘을 공유할 수 있음을 나타냅니다.</div>
+  </div>
+</section>
+
+<section class="demo" id="demo">
+  <div class="wrap">
+    <p class="eyebrow">D2 미리보기 · 직접 돌려보기</p>
+    <h2>Max-Cut을 이진 상태 동역학으로 풀기</h2>
+    <p class="lede">16개의 이진 스핀 상태가 이웃 상태를 보고 확률적으로 뒤집힙니다. 온도를 내리면 단일-스핀 Metropolis 담금질이 컷 값이 큰 상태를 탐색합니다. 오른쪽 래스터의 점은 <b>수락된 상태 뒤집힘 이벤트</b>이며, 실제 생물학적 스파이크와 동일한 것은 아닙니다.</p>
+
+    <div class="demo-grid">
+      <div class="stage">
+        <p class="stage-label">그래프 상태 — 주황색 간선이 잘린 간선</p>
+        <svg id="graph" viewBox="0 0 320 320" role="img" aria-label="16노드 그래프의 현재 스핀 상태"></svg>
+      </div>
+      <div>
+        <div class="stage">
+          <p class="stage-label">상태 뒤집힘 래스터 — 세로축 변수, 가로축 스윕</p>
+          <canvas id="raster" width="560" height="180"></canvas>
+        </div>
+        <div class="stage" style="margin-top:2px">
+          <p class="stage-label">컷 값 궤적 — 높을수록 좋은 해</p>
+          <canvas id="energy" width="560" height="120"></canvas>
+        </div>
+      </div>
+    </div>
+
+    <dl class="readout">
+      <div><dt>현재 컷</dt><dd id="rCut">0</dd></div>
+      <div><dt>최고 컷</dt><dd id="rBest">0</dd></div>
+      <div><dt>온도 T</dt><dd id="rTemp" class="hot">2.00</dd></div>
+      <div><dt>누적 뒤집힘</dt><dd id="rSpk">0</dd></div>
+    </dl>
+
+    <div class="demo-ctrl">
+      <button class="btn" id="btnRun">담금질 시작</button>
+      <button class="btn ghost" id="btnStep">한 스윕만</button>
+      <button class="btn ghost" id="btnNew">새 그래프</button>
+      <span class="slider-wrap">
+        <label for="coolRate">냉각 속도</label>
+        <input type="range" id="coolRate" min="1" max="60" value="22">
+        <span id="coolVal">보통</span>
+      </span>
+    </div>
+
+    <p class="demo-note">가중 Max-Cut 값은 <code>C(s)=½Σ<sub>(i,j)</sub>w<sub>ij</sub>(1−s<sub>i</sub>s<sub>j</sub>)</code>이고, 이를 최대화하는 것은 상수항을 제외하면 <code>E(s)=Σ<sub>(i,j)</sub>w<sub>ij</sub>s<sub>i</sub>s<sub>j</sub></code>를 최소화하는 것과 같습니다. 따라서 스핀 <code>i</code>를 뒤집을 때 <code>ΔE = −2·s<sub>i</sub>·Σ<sub>j</sub>w<sub>ij</sub>s<sub>j</sub></code>이며, 이 데모는 <code>min(1,e<sup>−ΔE/T</sup>)</code>를 쓰는 <b>Metropolis</b> 갱신입니다. 열욕조형 Glauber 갱신은 보통 로지스틱 확률을 사용합니다. 확률적 LIF 네트워크가 Boltzmann 분포를 샘플링하려면 뉴런 응답함수와 유효 온도를 보정해야 하므로 단순한 동일시는 피해야 합니다.</p>
+  </div>
+</section>
+
+<section id="rstdp">
+  <div class="wrap">
+    <p class="eyebrow">두 번째 갈래</p>
+    <h2>보상으로 배우는 길 — R-STDP</h2>
+    <p class="lede">위 데모는 네트워크를 에너지 지형 위에서 <b>이완</b>시키는 방식입니다. 다른 길도 있습니다. 좋은 해를 만드는 규칙 자체를 <b>학습</b>시키는 것. 그 출발점이 보상으로 조절되는 STDP이고, 트랙 C의 세 번째 모듈입니다.</p>
+
+    <div class="two-col">
+      <div>
+        <h3>왜 STDP만으로는 부족한가</h3>
+        <p>고전적인 pair-based STDP는 pre–post 활동의 시간 관계만으로 가중치 변화를 정하므로 과제 수준의 "잘했다" 신호를 직접 담지 않습니다. 이는 STDP가 곧 비지도 학습이라는 뜻은 아닙니다. 보상·보상예측오차·오류·새로움 같은 세 번째 신호를 곱하면 다양한 3-요인 학습 규칙이 되며, 그중 보상 신호를 쓰는 경우가 R-STDP입니다.</p>
+        <div class="formula">Δw ∝ <span class="f-pre">STDP(pre, post)</span> × <span class="f-mod">M(t)</span></div>
+        <p>문제는 시차입니다. 스파이크는 지금 일어나고 보상은 몇 초 뒤에 옵니다. 그 간격을 메우는 것이 <b>자격 흔적</b> — 최근의 국소 pre/post 상호작용을 저장하는 시냅스 변수입니다. 흔히 지수 감쇠로 모델링하지만, 형태와 시간상수 τe는 회로·과제·실험에 따라 달라집니다.</p>
+        <p>오른쪽에서 τe와 보상 지연을 직접 움직여 보세요. 흔적이 사라진 뒤에 보상이 도착하면 아무 일도 일어나지 않습니다. 이것이 Izhikevich가 <b>원격 보상 문제</b>라 부른 상황이고, 일부 피질·선조체·해마 실험에서는 초 단위의 자격 창과 뒤늦은 세 번째 신호의 결합이 관측되지만, 이를 모든 시냅스의 보편 시간상수로 일반화해서는 안 됩니다.</p>
+      </div>
+
+      <div class="elig-card">
+        <p class="lbl">자격 흔적 실험실 — 보상은 제때 도착했는가</p>
+        <svg id="elig" viewBox="0 0 460 200" role="img" aria-label="자격 흔적 감쇠와 보상 도착 시각의 관계"></svg>
+        <div class="elig-ctrl">
+          <label for="tauIn">흔적 시간상수 τe</label>
+          <input type="range" id="tauIn" min="2" max="40" value="10">
+          <output id="tauOut">1.0 s</output>
+          <label for="dIn">보상 지연 d</label>
+          <input type="range" id="dIn" min="0" max="60" value="8">
+          <output id="dOut">0.8 s</output>
+        </div>
+        <div class="elig-out"><b id="dwOut">45%</b><span id="verdict"></span></div>
+      </div>
+    </div>
+
+    <div class="compare">
+      <h3>같은 문제, 두 가지 길</h3>
+      <p class="lede">어느 쪽이 우월하다기보다, 문제를 한 번 푸는지 반복해서 푸는지가 갈림길입니다.</p>
+      <table class="sprint">
+        <thead><tr><th>기준</th><th>이완 기반 <span class="pill D">D2</span></th><th>보상 기반 <span class="pill C">C3</span> <span class="pill D">D3</span></th></tr></thead>
+        <tbody>
+          <tr><td>표현</td><td>변수 = 뉴런, 비용행렬 = 시냅스 가중치</td><td>상태 = 입력 스파이크, 출력 = 다음 선택</td></tr>
+          <tr><td>해를 얻는 방식</td><td>동역학이 저에너지 상태로 수렴</td><td>정책이 해를 한 조각씩 구성</td></tr>
+          <tr><td>학습 여부</td><td>학습 없음 — 인스턴스마다 처음부터</td><td>인스턴스 분포에서 학습, 새 문제에 재사용</td></tr>
+          <tr><td>강점</td><td>정식화가 명확하고 하드웨어 매핑이 직접적</td><td>비슷한 문제가 반복될수록 유리해짐</td></tr>
+          <tr><td>약점</td><td>매번 담금질 비용을 다시 지불</td><td>학습 비용, 분포 밖 일반화 취약</td></tr>
+          <tr><td>필요한 선행 모듈</td><td>A3 어트랙터 · D1 정식화</td><td>A4 가소성 · C3 R-STDP · D3 구성 정책<br><small>대리경사(C2)는 선택 사항</small></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="papers">
+  <div class="wrap">
+    <p class="eyebrow">랜드마크 읽을거리</p>
+    <h2>핵심 읽을거리 44편</h2>
+    <p class="lede">트랙별로 흐름을 잡아주는 리뷰와 전환점이 된 논문들입니다. 순서대로 읽기보다, 해당 모듈에 도착했을 때 한 편씩 붙이는 편이 효율적입니다.</p>
+    <div class="papers" id="paperList"></div>
+  </div>
+</section>
+
+<section id="tools">
+  <div class="wrap">
+    <p class="eyebrow">환경</p>
+    <h2>도구 스택</h2>
+    <p class="lede">트랙 C에서는 시뮬레이터를 목적에 따라 고릅니다. 생물학적 사실성이 필요하면 Brian2/NEST, 딥러닝식 학습이 필요하면 snnTorch/Norse/SpikingJelly, 하드웨어 이식이 목표라면 NIR을 중간 표현으로 두는 구성이 안전합니다. 트랙 D는 여기에 최적화 전용 도구를 얹습니다.</p>
+    <div class="tools">
+      <div>
+        <h3>Brian 2 <span class="tag A">A</span></h3>
+        <p>미분방정식을 그대로 문자열로 적으면 코드 생성으로 돌려주는 시뮬레이터. 단일 뉴런·소규모 회로 모델링과 Gerstner 교재 연습문제에 그대로 쓰입니다.</p>
+        <a href="https://github.com/brian-team/brian2">github.com/brian-team/brian2</a>
+      </div>
+      <div>
+        <h3>snnTorch <span class="tag C">C</span></h3>
+        <p>PyTorch 위에 스파이킹 뉴런을 얹어 대리경사로 학습합니다. 튜토리얼 1~7이 사실상 SNN 학습 입문 교재 역할을 합니다.</p>
+        <a href="https://snntorch.readthedocs.io/en/latest/tutorials/tutorial_5.html">snntorch.readthedocs.io</a>
+      </div>
+      <div>
+        <h3>Norse · SpikingJelly <span class="tag C">C</span></h3>
+        <p>같은 PyTorch 계열의 대안. Norse는 함수형 API와 이벤트 기반 설계, SpikingJelly는 속도와 대규모 비전 실험 쪽에 강점이 있습니다.</p>
+        <a href="https://norse.github.io/notebooks/intro_norse.html">norse.github.io</a>
+      </div>
+      <div>
+        <h3>NIR — 중간 표현 <span class="tag C">C</span></h3>
+        <p>연속시간 동역학과 이산 이벤트를 공통 그래프로 표현해 Norse·snnTorch·SpiNNaker2·SynSense 등 여러 스택 사이의 모델 교환을 돕는 중간 표현입니다. 다만 내보내기 성공이 수치적·시간적 동일성을 보장하지 않으므로 백엔드별 검증이 필요합니다.</p>
+        <a href="https://open-neuromorphic.org/">open-neuromorphic.org</a>
+      </div>
+      <div>
+        <h3>Lava-Optimization <span class="tag D">D</span></h3>
+        <p>QUBO·CSP 매핑과 뉴로모픽 솔버 예제를 제공했던 라이브러리입니다. 2026년 5월부터 저장소가 읽기 전용 아카이브 상태이므로 신규 프로젝트의 의존성으로 보기보다 재현·학습 자료로 취급하는 편이 안전합니다.</p>
+        <a href="https://github.com/lava-nc/lava-optimization">github.com/lava-nc/lava-optimization</a>
+      </div>
+      <div>
+        <h3>NeuroBench <span class="tag D">D</span></h3>
+        <p>알고리즘 트랙과 시스템 트랙을 분리해 성능 주장을 비교 가능하게 만드는 벤치마크 프레임워크입니다. QUBO는 시스템 벤치마크 사양에 포함되지만, Python 알고리즘 하네스의 기본 v1 과제 목록과는 별도로 관리됩니다.</p>
+        <a href="https://arxiv.org/abs/2304.04640">arXiv:2304.04640</a>
+      </div>
+    </div>
+    <div class="alert">
+      <p><b>2026년 7월 29일 기준 현황 체크</b>
+      <a href="https://github.com/lava-nc/lava">Lava 계열 저장소는 2026년 5월 13일 아카이브</a>되어 읽기 전용입니다. Intel은 차세대 Loihi와 공개 표준 AI 프레임워크 기반의 새 SDK를 예고했지만, 이 문서 검증 시점에는 공개 배포물을 확인할 수 없었습니다. 공식 공개 자료로 확인되는 대형 연구 시스템 <a href="https://newsroom.intel.com/artificial-intelligence/intel-builds-worlds-largest-neuromorphic-system-to-enable-more-sustainable-ai">Hala Point는 Loihi 2 프로세서 1,152개</a>로 구성됩니다. 실습은 <b>활성 유지되는 시뮬레이터 + NIR 모델 교환 + 재현 가능한 CPU 기준선</b>을 중심으로 짜고, 실제 Loihi 접근과 Lava 의존 코드는 별도 선택 경로로 분리하세요.</p>
+    </div>
+  </div>
+</section>
+
+<section id="sprint">
+  <div class="wrap">
+    <p class="eyebrow">실행 계획</p>
+    <h2>16주 스프린트</h2>
+    <p class="lede">주당 10~12시간 기준, 2주에 두 모듈씩입니다. 트랙을 순차가 아니라 병렬로 진행하는 이유는, 트랙 D의 문제의식이 있어야 트랙 A의 동역학이 왜 중요한지 체감되기 때문입니다.</p>
+    <table class="sprint">
+      <thead><tr><th>주차</th><th>모듈</th><th>산출물</th></tr></thead>
+      <tbody>
+        <tr><td>1–2주</td><td><span class="pill A">A1</span> 단일 뉴런 동역학<br><span class="pill C">C1</span> 스파이크 부호화</td><td><b>LIF F–I 곡선</b>을 직접 그리고, 같은 입력을 세 가지 부호화로 변환해 비교</td></tr>
+        <tr><td>3–4주</td><td><span class="pill A">A2</span> 신경 부호화와 변동성<br><span class="pill B">B1</span> NeuroAI 지형도</td><td>포아송 스파이크 열에서 <b>정보량 추정</b>, NeuroAI 두 방향을 정리한 1페이지 맵</td></tr>
+        <tr><td>5–6주</td><td><span class="pill A">A3</span> 네트워크 동역학<br><span class="pill D">D1</span> QUBO/Ising 정식화</td><td>Hopfield 용량 실험 + Max-Cut을 <b>QUBO 행렬로 손으로 변환</b></td></tr>
+        <tr><td>7–8주</td><td><span class="pill C">C2</span> 대리경사 학습<br><span class="pill D">D2</span> 동역학 기반 최적화</td><td>snnTorch 학습 완주 + <b>이 페이지의 Max-Cut 데모를 직접 재구현</b></td></tr>
+        <tr><td>9–10주</td><td><span class="pill A">A4</span> 시냅스 가소성<br><span class="pill C">C3</span> R-STDP</td><td><b>R-STDP 에이전트</b> 구현 — τe 스윕과 기준선 유무 비교</td></tr>
+        <tr><td>11–12주</td><td><span class="pill C">C4</span> 하드웨어와 이식성<br><span class="pill D">D4</span> 솔버와 벤치마킹</td><td>백엔드 두 곳에 같은 모델 올리기 + <b>TTS 곡선</b>으로 고전 솔버와 비교</td></tr>
+        <tr><td>13–14주</td><td><span class="pill B">B3</span> 크레딧 할당<br><span class="pill D">D3</span> 보상 기반 최적화</td><td>학습형 <b>구성 정책</b>을 만들어 담금질 솔버와 대결, 손익분기 계산</td></tr>
+        <tr><td>15–16주</td><td><span class="pill B">B2</span> 표현 비교<br><span class="pill B">B4</span> 아키텍처 원리</td><td><b>미니 논문 한 편</b>: 이완 기반과 보상 기반을 같은 축에서 정직하게 비교</td></tr>
+      </tbody>
+    </table>
+
+    <div class="projects">
+      <div>
+        <h3>제안 1 — 정직한 재현 <span class="tag D">D</span></h3>
+        <p>Loihi 2 QUBO 솔버 논문의 알고리즘을 CPU 시뮬레이션으로 재현하고, 논문이 주장하는 이득 중 어디까지가 <em>알고리즘</em> 덕분이고 어디부터가 <em>하드웨어</em> 덕분인지 분해합니다.</p>
+        <span class="scope">난이도 중 · 하드웨어 불필요 · 4~6주</span>
+      </div>
+      <div>
+        <h3>제안 2 — 리듬적 억제 재해석 <span class="tag D">D</span></h3>
+        <p>주기적 억제 신호를 담금질 스케줄로 보는 관점에서, 억제 주파수와 탈출 확률의 관계를 그래프 색칠 문제로 실험합니다. 신경과학 가설과 최적화 성능을 한 축에 놓는 시도입니다.</p>
+        <span class="scope">난이도 상 · 이론+실험 · 6~8주</span>
+      </div>
+      <div>
+        <h3>제안 3 — 이식성 실험 <span class="tag C">C</span></h3>
+        <p>같은 SNN을 NIR로 내보내 서로 다른 백엔드에서 돌리고, 수치 정밀도·시간 해상도 차이가 출력 품질에 주는 영향을 측정합니다. 벤더 종속성 문제를 정면으로 다룹니다.</p>
+        <span class="scope">난이도 중상 · 엔지니어링 비중 큼 · 4주</span>
+      </div>
+      <div>
+        <h3>제안 4 — 스케줄을 보상으로 배우기 <span class="tag C">C</span> <span class="tag D">D</span></h3>
+        <p>두 트랙을 실제로 붙이는 시도입니다. 냉각 스케줄과 억제 게이팅을 고정하는 대신, 해 품질 개선량을 보상으로 주고 R-STDP로 조절 신호를 학습시킵니다. τe가 문제 크기에 따라 어떻게 조정되어야 하는지가 핵심 관찰 대상입니다.</p>
+        <span class="scope">난이도 상 · 두 트랙 결합 · 6~8주</span>
+      </div>
+      <div>
+        <h3>제안 5 — SNN 복잡도 감사 <span class="tag C">C</span> <span class="tag D">D</span></h3>
+        <p>SNN으로 SAT·Max-Cut·maximum flow를 푼다는 논문 3편을 골라 자원 벡터 (T,N,M,E,B), uniformity, 정확성·근사성, 호스트 비용을 표로 재평가합니다. “빠른 timestep”과 “낮은 총 계산량”이 언제 갈라지는지 분석합니다.</p>
+        <span class="scope">난이도 중상 · 이론/서베이 · 3~4주</span>
+      </div>
+      <div>
+        <h3>제안 6 — 같은 QUBO, 세 가지 물리 <span class="tag C">C</span> <span class="tag D">D</span> <span class="q-badge">Quantum</span></h3>
+        <p>작은 Max-Cut·sparse-coding QUBO를 고전 simulated annealing, 확률적 SNN, transverse-field 양자 어닐링의 정확 대각화 또는 소규모 시뮬레이션으로 풉니다. 해 분포·TTS·근사비·자원 경계를 맞추고, 목적함수 공유와 동역학 차이를 분리합니다.</p>
+        <span class="scope">난이도 상 · 이론+실험 · 5~7주</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<section id="verification">
+  <div class="wrap">
+    <p class="eyebrow">검증 기록 · 2026-07-30</p>
+    <h2>검증과 구조 개정 기록</h2>
+    <div class="projects">
+      <div><h3>Max-Cut 부호와 MCMC 명칭</h3><p>기존 데모의 ΔE 부호가 Max-Cut 목적과 반대여서 정렬 상태를 선호했습니다. 에너지를 E=Σwᵢⱼsᵢsⱼ로 두고 ΔE=−2sᵢΣwᵢⱼsⱼ로 고쳤으며, 구현을 Glauber가 아니라 Metropolis 갱신으로 정확히 표기했습니다.</p></div>
+      <div><h3>에너지 관점의 적용 범위</h3><p>Hopfield·Ising·일부 샘플링 SNN에는 강력한 대응이 있지만, 모든 SNN·NeuroAI·학습형 정책이 에너지 최소화로 환원되는 것은 아닙니다. 대칭성·갱신 방식·확률 응답함수의 조건을 명시했습니다.</p></div>
+      <div><h3>뉴로모픽 비용 측정</h3><p>스파이크 수만으로 전력을 단정하지 않고 SynOps, 뉴런 업데이트, 메모리, I/O, 호스트와 정적 전력을 함께 보도록 수정했습니다. QUBO는 NeuroBench 시스템 벤치마크와 연결하되 알고리즘 하네스 목록과 구분했습니다.</p></div>
+      <div><h3>2026 도구 현황</h3><p>Lava 계열은 2026-05-13 아카이브 상태임을 반영했습니다. NIR은 모델 교환 표준이지 자동 컴파일·수치 동일성 보증이 아니라는 한계를 추가하고, 활성 시뮬레이터와 CPU 기준선을 기본 경로로 권장했습니다.</p></div>
+      <div><h3>양자복잡도 범위</h3><p>BQP·QMA·QIP의 의미와 알려진 포함관계를 추가하고, NP-complete 문제가 BQP에 속한다는 결과는 없음을 명시했습니다. Local Hamiltonian의 QMA-completeness도 “효율적 양자 알고리즘”과 구분했습니다.</p></div>
+      <div><h3>양자–SNN 관계</h3><p>QUBO 인터페이스를 공유하는 것과 계산 물리가 같은 것은 아니라는 점을 반영했습니다. 보편 AQC와 제한된 QA, 고전 확률적 SNN과 quantum spiking model을 분리하고 end-to-end 비용 감사 기준을 추가했습니다.</p></div>
+      <div><h3>MIP*=RE 전체 경로</h3><p>수학기초·계산가능성·고전 상호작용 증명·양자정보·비국소게임·self-testing·low-degree test·compression·연산자대수·Connes embedding에 산술적 계층·재귀정리를 보강해 28개 의존 노드로 구성했습니다.</p></div>
+      <div><h3>DAG 클릭·접근성</h3><p>빈 배경에서만 pan이 시작되도록 노드 선택과 드래그를 분리했습니다. 각 노드에 확장 hitbox, 키보드 선택, 더블클릭 확대와 빠른 노드 선택 메뉴를 추가했습니다.</p></div>
+      <div><h3>제외·대체한 자료</h3><p>비공식 MIP*=RE 세미나 PDF와 깨지기 쉬운 직접 강의 PDF를 핵심 경로에서 제외했습니다. 원 논문, 저자 공식 강의노트, CACM 개요와 STOC 논문으로 대체했습니다.</p></div>
+      <div><h3>보충·정정</h3><p>F4의 범위를 실제 자료에 맞게 실해석·위상·측도로 좁히고 Axler 공개 교재를 추가했습니다. MIPco=coRE 저자를 Junqiao Lin으로 정정하고 STOC 2026 링크, 2026년 6월 qIOP 후속 결과를 반영했습니다.</p></div>
+    </div>
+    <div class="alert"><p><b>읽는 법</b> 논문의 “빠르다·효율적이다”라는 수치는 문제 분포, 성공 기준, 호스트 포함 여부, 튜닝 시간, 기준선 구현에 종속됩니다. 이 페이지의 수치는 원 논문의 범위를 넘겨 일반화하지 않았으며, 재현 시에는 성공확률 기반 TTS와 전체 시스템 에너지를 함께 보고하세요.</p></div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>이 커리큘럼은 공개 접근 자료를 우선해 구성했습니다. 학술 문헌과 소프트웨어 저장소의 상태는 자주 바뀌므로, 특히 하드웨어·SDK 관련 항목은 시작 시점에 다시 확인하세요.</p>
+    <p style="margin-top:14px;font-family:var(--mono);font-size:11.5px">Compiled 2026-07-30 · rev.7 — 클릭 판정 개선 + 자료 재검증 + 산술적 계층 보강</p>
+  </div>
+</footer>
+
+<script>
+/* =========================================================
+   1. 커리큘럼 데이터 — 4트랙 16모듈
+   ========================================================= */
+const MODULES = [
+  /* ---------- A · 계산신경과학 ---------- */
+  {id:"A1",track:"A",level:"기초",hours:"20h",title:"단일 뉴런 동역학",
+   goal:"뉴런 하나가 왜, 언제 스파이크를 내는지 미분방정식 수준에서 설명한다.",
+   topics:["막전위 방정식과 시상수 τ","전도도 기반 모델과 LIF·AdEx 같은 현상론적 축약의 가정 비교","AdEx·Izhikevich 모델과 발화 패턴 분류","위상평면 분석, 안장-노드 분기와 발화 개시","불응기와 적응(adaptation)"],
+   res:[{t:"Neuronal Dynamics — 온라인 전문 + Brian 연습문제",u:"https://neuronaldynamics.epfl.ch/",n:"교재"},
+        {t:"Gerstner 영상강의 (EPFL)",u:"https://lcnwww.epfl.ch/gerstner/VideoLecturesGerstner.html",n:"강의"}],
+   task:"LIF와 AdEx의 F–I 곡선을 같은 축에 그리고, 입력 잡음 세기를 바꿔가며 곡선이 어떻게 부드러워지는지 설명하세요."},
+
+  {id:"A2",track:"A",level:"기초",hours:"18h",title:"신경 부호화와 변동성",
+   goal:"스파이크 열에서 정보를 읽어내는 표준 도구를 손에 익힌다.",
+   topics:["발화율 부호화 vs 시간 부호화","포아송 과정과 Fano factor","수용장 추정, 스파이크 트리거 평균","GLM으로 뉴런 반응 적합","해독(decoding)과 페어 상관의 영향"],
+   res:[{t:"Neuromatch Academy — Computational Neuroscience 교재",u:"https://compneuro.neuromatch.io/",n:"코스"},
+        {t:"NMA 코스 자료 저장소",u:"https://github.com/NeuromatchAcademy/course-content",n:"코드"}],
+   task:"공개 스파이크 데이터에 GLM을 적합시키고, 예측 성능이 자극 필터와 스파이크 이력 필터 중 어디서 오는지 분해하세요."},
+
+  {id:"A3",track:"A",level:"중급",hours:"24h",title:"네트워크 동역학과 어트랙터",
+   goal:"집단 수준에서 계산이 어떻게 창발하는지, 특히 에너지 함수 관점에서 이해한다. 트랙 D로 가는 직통로.",
+   topics:["흥분–억제 균형과 비동기 불규칙 상태","Hopfield 네트워크와 리아푸노프 함수","선분·링 어트랙터, 연속 어트랙터","승자독식(WTA)과 국소 경쟁 회로","신경장 모델과 패턴 형성"],
+   res:[{t:"Neuronal Dynamics 2부 — 네트워크와 인지 모델",u:"https://neuronaldynamics.epfl.ch/",n:"교재"},
+        {t:"Gerstner — Neuronal Dynamics of Cognition 강의",u:"https://lcnwww.epfl.ch/gerstner/NeuronalDynamics-MOOC2.html",n:"강의"}],
+   task:"무작위 독립 패턴을 저장하는 고전 Hopfield 네트워크에서 저장 용량이 무너지는 지점을 실험하고, 큰 N에서의 기준값 약 0.138N과 비교하세요. 상관된 패턴·유한 크기에서는 달라질 수 있음을 함께 기록합니다. 같은 에너지 함수가 D1의 QUBO와 어떻게 대응되는지 한 문단으로 적습니다."},
+
+  {id:"A4",track:"A",level:"중급",hours:"20h",title:"시냅스 가소성과 학습 규칙",
+   goal:"국소 정보만으로 가중치를 바꾸는 규칙들을 비교하고 한계를 안다.",
+   topics:["Hebbian 학습과 안정화 문제 (Oja, BCM)","STDP: 시간 창과 인과성","단기 가소성 — 촉진과 억압","2-요인 규칙의 한계 — '잘했다'가 들어갈 자리가 없다","자격 흔적의 실험적 근거: 도파민 도착 지연에 따른 LTP 성립/실패","항상성 유지 기전"],
+   res:[{t:"Neuronal Dynamics — 가소성 장",u:"https://neuronaldynamics.epfl.ch/",n:"교재"},
+        {t:"행동 시간척도의 자격 흔적 — 3-요인 규칙의 실험적 근거",u:"https://arxiv.org/abs/1801.05219",n:"리뷰"},
+        {t:"Brian 2 문서와 STDP 예제",u:"https://github.com/brian-team/brian2",n:"코드"}],
+   task:"STDP만으로 입력 상관 구조를 학습하는 실험을 만들고, 가중치 폭주를 막는 정규화를 두 가지 비교하세요. 이어서 지연된 보상을 붙였을 때 왜 그대로는 작동하지 않는지 서술합니다 — C3로 넘어가는 다리입니다."},
+
+  /* ---------- B · NeuroAI ---------- */
+  {id:"B1",track:"B",level:"기초",hours:"14h",title:"NeuroAI 지형도",
+   goal:"neuro→AI와 AI→neuro 두 방향을 구분하고, 자기 관심사를 지도 위에 놓는다.",
+   topics:["신경 원리에서 온 아키텍처 아이디어","모델을 뇌 이해의 도구로 쓰는 관점","희소성·이벤트 구동·신경조절이라는 공통 키워드","에너지 효율과 데이터 효율 문제 제기","분야의 열린 질문과 비판"],
+   res:[{t:"NeuroAI and Beyond — NSF 워크숍 기반 로드맵",u:"https://arxiv.org/abs/2604.18637",n:"리뷰"},
+        {t:"Neuromatch NeuroAI 코스 안내",u:"https://neuromatch.io/courses/",n:"코스"},
+        {t:"ARNI × Neuromatch NeuroAI 설계 노트",u:"https://arni-institute.org/education-neuromatch/",n:"참고"}],
+   task:"자기 연구 관심사를 두 방향 중 하나에 배치하고, 그 방향에서 검증 가능한 질문 3개를 적으세요."},
+
+  {id:"B2",track:"B",level:"중급",hours:"18h",title:"뇌–모델 표현 비교 방법론",
+   goal:"모델이 뇌와 '비슷하다'는 주장을 정량적으로 검증하는 절차를 배운다.",
+   topics:["표현 유사도 분석 (RSA)","인코딩 모델과 설명 분산","CKA·CCA 계열 정렬 지표","벤치마크 과적합과 지표의 한계","행동 수준 비교와 오류 패턴 일치"],
+   res:[{t:"Representational Similarity Analysis — Kriegeskorte et al.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC2605405/",n:"핵심 논문"},
+        {t:"Similarity of Neural Network Representations Revisited — CKA",u:"https://arxiv.org/abs/1905.00414",n:"논문"},
+        {t:"Neuromatch NeuroAI 코스 자료",u:"https://neuromatch.io/courses/",n:"코스"}],
+   task:"같은 신경 데이터에 서로 다른 정렬 지표 두 개를 적용해, 모델 순위가 지표에 따라 바뀌는지 확인하세요."},
+
+  {id:"B3",track:"B",level:"심화",hours:"22h",title:"크레딧 할당 — backprop 없이",
+   goal:"생물학적으로 그럴듯한 학습 알고리즘의 스펙트럼을 이해한다.",
+   topics:["역전파의 생물학적 비현실성 목록","피드백 정렬과 직접 피드백 정렬","e-prop — 자격 흔적 + 학습 신호로 BPTT 근사하기","R-STDP를 정책 경사의 국소 근사로 읽기 (C3와 연결)","예측 부호화와 평형 전파","국소 학습 규칙의 성능–일반성 트레이드오프"],
+   res:[{t:"Feedback Alignment — Lillicrap et al.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC5105169/",n:"논문"},
+        {t:"e-prop — Bellec et al.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC7367848/",n:"논문"},
+        {t:"3-요인 학습 규칙 개관 (Patterns 2025)",u:"https://arxiv.org/abs/2504.05341",n:"리뷰"}],
+   task:"작은 과제 하나에서 backprop, 피드백 정렬, 자격 흔적 기반 규칙의 학습 곡선을 나란히 그리고 차이의 원인을 설명하세요."},
+
+  {id:"B4",track:"B",level:"중급",hours:"18h",title:"신경 원리에서 온 아키텍처",
+   goal:"신경 회로의 구조적 원리를 인공 신경망 설계로 옮긴 사례와 그 한계를 안다.",
+   topics:["희소 부호화와 과완비 표현","분할 정규화(divisive normalization)와 이득 조절","예측 부호화 — 오차 신호를 국소화하기","흥분–억제 균형이 주는 안정성","상보 학습 시스템 — 빠른 기억과 느린 통합","신경조절 기반 게이팅과 지속 학습"],
+   res:[{t:"NeuroAI and Beyond — 계층적 분산 아키텍처 절",u:"https://arxiv.org/abs/2604.18637",n:"리뷰"},
+        {t:"Neuromatch NeuroAI 코스 자료",u:"https://neuromatch.io/courses/",n:"코스"}],
+   task:"희소성 제약을 넣은 표현과 넣지 않은 표현을 같은 과제에서 비교하고, 정확도가 아니라 어떤 속성(강건성·해석성·스파이크 수)이 달라지는지 보고하세요."},
+
+  /* ---------- C · SNN ---------- */
+  {id:"C1",track:"C",level:"기초",hours:"18h",title:"스파이킹 뉴런과 스파이크 부호화",
+   goal:"스파이크로 정보를 넣고 빼는 방법을 손에 익히고, 시간 해상도와 비용의 관계를 이해한다.",
+   topics:["프레임워크 위에서 LIF를 직접 구현하기","입력 부호화: direct · rate · latency · delta","출력 해독: 발화율, 첫 스파이크, 막전위 누적","이벤트 카메라(DVS) 데이터와 시간 창 설정","시간 스텝 수 T가 정확도·지연·에너지에 미치는 영향","시뮬레이터 선택 기준 — Brian2 계열 vs PyTorch 계열"],
+   res:[{t:"snnTorch 튜토리얼 1 — 스파이크 부호화",u:"https://snntorch.readthedocs.io/en/latest/tutorials/tutorial_1.html",n:"튜토리얼"},
+        {t:"Norse 입문 노트북",u:"https://norse.github.io/notebooks/intro_norse.html",n:"코드"},
+        {t:"Open Neuromorphic — 프레임워크 비교",u:"https://open-neuromorphic.org/",n:"참고"}],
+   task:"같은 데이터셋을 세 가지 부호화로 처리하고, T를 1→32로 늘리며 정확도–총스파이크 곡선을 그리세요."},
+
+  {id:"C2",track:"C",level:"중급",hours:"24h",title:"대리경사 학습",
+   goal:"스파이크의 미분 불가능성을 우회해 실제로 학습되는 네트워크를 만든다.",
+   topics:["대리경사 함수의 형태와 기울기 소실","시간에 대한 역전파(BPTT)와 메모리 비용","ANN→SNN 변환과 정확도 손실 진단","시간 스텝·막전위 상태를 줄이는 저지연 설계와 그 정확도 비용","학습 안정화: 임계값 초기화와 정규화","훈련 비용과 추론 이득을 분리해서 보고하기"],
+   res:[{t:"snnTorch 튜토리얼 5 — SNN 학습",u:"https://snntorch.readthedocs.io/en/latest/tutorials/tutorial_5.html",n:"튜토리얼"},
+        {t:"Surrogate Gradient Learning in SNNs — Neftci et al.",u:"https://arxiv.org/abs/1901.09948",n:"핵심 리뷰"},
+        {t:"snnTorch 튜토리얼 6 — 합성곱 SNN 대리경사",u:"https://snntorch.readthedocs.io/en/latest/tutorials/tutorial_6.html",n:"튜토리얼"}],
+   task:"동일 구조를 대리경사 학습과 ANN→SNN 변환으로 각각 만들고, 정확도·시간 스텝·총 스파이크를 한 표에 정리해 비교하세요."},
+
+  {id:"C3",track:"C",level:"중급",hours:"22h",title:"R-STDP와 3-요인 국소 학습",
+   goal:"국소 STDP에 전역 보상 신호를 곱해, 지연된 피드백만으로 학습하는 네트워크를 만든다.",
+   topics:["2-요인에서 3-요인으로: Δw_ij ∝ e_ij(t)·M(t)","자격 흔적과 시간 상수 τe — 원격 보상 문제(distal reward)","R-STDP vs R-max — 보상 최대화에서 유도한 규칙과의 차이","기준선(baseline) 빼기: 보상이 아니라 '기대보다 얼마나 나았는가'","액터–크리틱 SNN — 크리틱의 보상예측오차가 액터의 STDP를 게이팅","온칩 폐루프 구현의 제약과 실익"],
+   res:[{t:"Frémaux & Gerstner — 신경조절 STDP와 3-요인 학습 규칙의 이론",u:"https://www.frontiersin.org/journals/neural-circuits/articles/10.3389/fncir.2015.00085/full",n:"핵심 리뷰"},
+        {t:"3-요인 학습 개관 (기계학습 관점, 2025)",u:"https://arxiv.org/abs/2504.05341",n:"리뷰"},
+        {t:"BrainScaleS-2 온칩 R-STDP 폐루프 사례",u:"https://arxiv.org/abs/1912.12980",n:"논문"}],
+   task:"τe를 바꿔가며 보상 지연 0.5s·2s·5s에서 학습 곡선을 그리고, 학습이 무너지는 지점을 찾으세요. 기준선을 뺐을 때와 안 뺐을 때의 분산 차이도 함께 보고합니다."},
+
+  {id:"C4",track:"C",level:"심화",hours:"20h",title:"뉴로모픽 하드웨어와 이식성",
+   goal:"알고리즘이 실제 소자 위에서 받는 제약을 알고, 벤더 종속 없이 배포 경로를 짠다.",
+   topics:["Loihi 2 — 정수 연산, 그레이디드 스파이크, 코어당 자원 한계","SpiNNaker · BrainScaleS의 다른 설계 철학","온칩 학습이 가능한 규칙의 조건","NIR을 중간 표현으로 둔 이식 파이프라인","정밀도·시간 해상도 저하가 출력에 주는 영향","시뮬레이터에서 칩으로 갈 때 깨지는 것들","복잡도 자원 회계: timestep·뉴런·시냅스·스파이크·정밀도"],
+   res:[{t:"뉴로모픽 알고리즘·응용 기회 (Nature Comput. Sci.)",u:"https://www.nature.com/articles/s43588-021-00184-y",n:"리뷰"},
+        {t:"NIR — 통합 중간표현 논문",u:"https://arxiv.org/abs/2311.14641",n:"논문"},
+        {t:"Open Neuromorphic — NIR 지원 스택",u:"https://open-neuromorphic.org/neuromorphic-computing/software/data-tools/neuromorphic-intermediate-representation/",n:"현황"},
+        {t:"Lava 저장소 (2026-05 아카이브)",u:"https://github.com/lava-nc/lava",n:"레거시"},
+        {t:"A Neuromorphic Complexity Hierarchy",u:"https://arxiv.org/abs/2001.08439",n:"복잡도 이론"}],
+   task:"NIR이 지원하는 두 백엔드에서 동일 모델을 내보내고, 지원되지 않는 연산·이산화 방식·정밀도·시간 해상도 차이로 생기는 출력 오차를 정량화하세요. 변환 성공과 의미론적 동등성을 구분합니다."},
+
+  /* ---------- D · SNN × 조합최적화 ---------- */
+  {id:"D1",track:"D",level:"기초",hours:"18h",title:"조합최적화와 QUBO/Ising 정식화",
+   goal:"문제를 이차 이진 최적화 형태로 옮기는 손기술을 확보한다.",
+   topics:["Max-Cut, 그래프 색칠, 최대독립집합, TSP","제약조건을 페널티 항으로 흡수하기","QUBO ↔ Ising 변환과 계수 스케일 문제","그래프 밀도와 임베딩 비용","고전 기준선: 탐욕·국소탐색·전용 솔버, Max-Cut에서는 Goemans–Williamson"],
+   res:[{t:"Lava-Optimization QUBO 튜토리얼 (아카이브)",u:"https://github.com/lava-nc/lava-optimization/blob/main/tutorials/tutorial_02_solving_qubos.ipynb",n:"레거시 튜토리얼"},
+        {t:"D-Wave Ocean — QUBO 개념과 모델",u:"https://docs.dwavequantum.com/en/latest/concepts/models.html",n:"문서"},
+        {t:"Ising machine 하드웨어 리뷰",u:"https://arxiv.org/abs/2204.00276",n:"리뷰"}],
+   task:"그래프 색칠 문제를 QUBO로 변환하고, 페널티 계수를 바꾸며 실행 가능해와 최적해의 경계가 어떻게 움직이는지 관찰하세요."},
+
+  {id:"D2",track:"D",level:"중급",hours:"26h",title:"동역학으로 푸는 최적화",
+   goal:"신경망의 이완 과정을 최적화 알고리즘으로 설계할 수 있게 된다.",
+   topics:["Hopfield–Tank 연속 완화와 그 실패 사례","볼츠만 샘플링: heat-bath/Glauber와 Metropolis 갱신의 차이","확률적 LIF 뉴런으로 담금질 구현하기","리듬적 억제로 국소최적 탈출하기","국소 경쟁 알고리즘(LCA)과 희소 부호화","제약충족문제(CSP)를 스파이킹 네트워크로"],
+   res:[{t:"Max-Cut을 스파이킹 볼츠만 머신으로 (PCM 하드웨어 검증)",u:"https://www.ncbi.nlm.nih.gov/pmc/articles/PMC11633485/",n:"논문"},
+        {t:"양자 어닐링 vs 스파이킹 뉴로모픽 샘플링 비교",u:"https://www.nature.com/articles/s44335-025-00028-2",n:"논문"}],
+   task:"수정된 Max-Cut 부호를 사용해 이 페이지 데모를 재구현하고, Metropolis와 heat-bath 갱신 및 냉각 스케줄 3종(선형·기하·재가열)의 해 품질·성공확률·TTS를 비교하세요."},
+
+  {id:"D3",track:"D",level:"심화",hours:"24h",title:"보상으로 해를 구성하기",
+   goal:"이완이 아니라 정책 학습으로 조합최적해를 만드는 접근을 이해하고, SNN·R-STDP로 옮길 때의 제약을 안다.",
+   topics:["두 관점 대조: 한 번에 이완 vs 한 조각씩 구성","그래프 인코더 + 순차 디코더, 포인터 방식 정책","REINFORCE와 기준선 — 특정 가정에서 3-요인 규칙과 연결되는 지점, 그리고 불일치","보상 설계: 목적함수 값, 개선량, 실행 불가능 페널티","인스턴스 분포가 반복되는 문제(스케줄링·라우팅)에서의 이점","일반화 실패 진단: 크기 외삽과 분포 이동","학습 비용을 포함한 손익분기 계산"],
+   res:[{t:"기계학습 기반 조합최적화 논문 모음",u:"https://github.com/Thinklab-SJTU/awesome-ml4co",n:"목록"},
+        {t:"3-요인 학습의 강화학습·뉴로모픽 응용 절",u:"https://www.cell.com/patterns/fulltext/S2666-3899(25)00262-4",n:"리뷰"}],
+   task:"같은 인스턴스 분포에서 담금질 솔버와 학습된 구성 정책을 비교하고, 학습 비용까지 포함했을 때 정책이 이득이 되기 시작하는 인스턴스 개수를 계산하세요."},
+
+  {id:"D4",track:"D",level:"심화",hours:"22h",title:"최적화 전용 솔버와 벤치마킹",
+   goal:"최적화에 특화된 하드웨어 솔버들의 지형을 알고, '뉴로모픽·양자가 유리하다'는 주장을 반증 가능하게 만든다.",
+   topics:["Loihi 2 QUBO 솔버 — 하드웨어 인지형 병렬 담금질","결합 발진기 Ising machine(OIM), 광학·스핀트로닉스 구현","BQP·QMA와 최적화 휴리스틱의 구분","보편 adiabatic quantum computation과 제한된 quantum annealing의 구분","양자 어닐러와 비교할 때의 축 정하기","연결 밀도·minor embedding·chain break 오버헤드","시간 대비 해 품질(TTS/TTT) 곡선 그리기","에너지 측정의 함정 — 호스트·냉각·전후처리 포함 여부","고전 SOTA 솔버를 정직한 기준선으로 두기"],
+   res:[{t:"Loihi 2 QUBO 솔버 — 일부 인스턴스에서 1 ms 내 실행가능해, 특정 CPU 기준선 대비 최대 37× 에너지 효율",u:"https://arxiv.org/abs/2408.03076",n:"예비 결과"},
+        {t:"Watrous — Quantum Computational Complexity",u:"https://arxiv.org/abs/0804.3401",n:"복잡도 이론"},
+        {t:"Aharonov et al. — Adiabatic quantum computation is equivalent to standard quantum computation",u:"https://arxiv.org/abs/quant-ph/0405098",n:"핵심 논문"},
+        {t:"Quantum annealing 리뷰 — transverse-field Ising과 spectral gap",u:"https://arxiv.org/abs/2207.01827",n:"리뷰"},
+        {t:"NeuroBench — QUBO 시스템 벤치마크 사양",u:"https://github.com/NeuroBench/system_benchmarks/blob/main/QUBO.md",n:"벤치마크"}],
+   task:"문제 하나를 골라 SNN·고전 솔버·가능하면 소규모 QA 시뮬레이션의 TTS 또는 time-to-target 곡선을 같은 축에 그리세요. 임베딩·shot·호스트 비용과 희소/조밀 그래프의 물리 자원 증가를 함께 보고합니다."}
+];
+
+const MIP_MODULES = [{"id":"F1","track":"F","level":"기초","hours":"24h","title":"증명·집합·이산수학","goal":"정의–정리–증명의 언어와 계산이론에 필요한 이산수학을 안정적으로 사용한다.","topics":["명제논리와 술어논리","집합·관계·함수·가산성","귀납법·모순법·대우","그래프·조합론·확률적 방법의 입구","점근표기와 수학적 글쓰기"],"res":[{"t":"MIT Mathematics for Computer Science","u":"https://ocw.mit.edu/courses/6-042j-mathematics-for-computer-science-spring-2015/pages/readings/","n":"공개 교재"}],"task":"가산 집합의 합집합이 가산임을 증명하고, 대각선 논법으로 비가산 집합의 예를 설명하세요.","deps":[]},{"id":"F2","track":"F","level":"기초","hours":"36h","title":"선형대수 — 스펙트럼까지","goal":"양자상태와 연산자를 행렬·내적공간·스펙트럼 분해로 다룬다.","topics":["복소 벡터공간과 내적","직교성·Gram–Schmidt","선형사상·adjoint·unitary","고유값·spectral theorem","tensor product와 Schmidt decomposition의 준비"],"res":[{"t":"MIT 18.06 Linear Algebra — 강의노트","u":"https://math.mit.edu/~gs/LectureNotes/","n":"기초 강의"},{"t":"Axler — Linear Algebra Done Right (4판 공개)","u":"https://linear.axler.net/","n":"스펙트럼·연산자"}],"task":"Hermitian 행렬의 spectral decomposition을 계산하고 unitary diagonalization을 증명하세요.","deps":["F1"]},{"id":"F3","track":"F","level":"기초","hours":"28h","title":"확률·정보·집중부등식","goal":"검증기의 무작위성, 성공확률 증폭과 정보량을 정량적으로 다룬다.","topics":["조건부확률·독립성","기댓값·분산·조건부기댓값","Markov·Chebyshev·Chernoff bound","entropy·mutual information","확률적 검증과 union bound"],"res":[{"t":"MIT Probability and Random Variables","u":"https://ocw.mit.edu/courses/6-041sc-probabilistic-systems-analysis-and-applied-probability-fall-2013/","n":"OCW"}],"task":"Chernoff bound를 이용해 독립 반복에 의한 completeness/soundness 증폭을 유도하세요.","deps":["F1"]},{"id":"F4","track":"F","level":"중급","hours":"40h","title":"실해석·위상·측도의 기초","goal":"수렴·완비성·compactness와 측도·적분의 기본 도구를 증명 수준으로 익힌다.","topics":["metric space와 complete space","점별·균등·약수렴의 구분","compactness와 연속성","σ-대수·측도·Lebesgue 적분의 입구","Lᵖ 공간과 수렴정리"],"res":[{"t":"MIT 18.100A Real Analysis","u":"https://ocw.mit.edu/courses/18-100a-real-analysis-fall-2020/","n":"실해석"},{"t":"Axler — Measure, Integration & Real Analysis","u":"https://measure.axler.net/","n":"공개 교재"}],"task":"유한차원에서는 닫히고 유계인 집합이 compact이지만 무한차원에서는 실패하는 예를 설명하세요.","deps":["F1","F2"]},{"id":"F5","track":"F","level":"중급","hours":"48h","title":"함수해석과 Hilbert 공간","goal":"무한차원 양자모델과 연산자대수에 필요한 Banach·Hilbert 공간 도구를 확보한다.","topics":["Banach·Hilbert 공간","bounded operator와 operator norm","Riesz representation","weak/strong operator topology","Hahn–Banach·uniform boundedness·open mapping"],"res":[{"t":"Functional Analysis for Quantum Information","u":"https://www.math.uwaterloo.ca/~vpaulsen/FAQIChapter1.pdf","n":"강의노트"}],"task":"Riesz representation theorem을 사용해 Hilbert 공간의 연속 선형함수를 벡터와 대응시키세요.","deps":["F2","F4"]},{"id":"F6","track":"F","level":"심화","hours":"42h","title":"연산자·tensor product·완전양성","goal":"양자채널과 비국소 상관을 operator language로 옮긴다.","topics":["operator tensor products","positive·completely positive maps","Stinespring dilation","trace class와 duality","finite vs infinite dimensional subtlety"],"res":[{"t":"Operator Algebra Methods in QIT","u":"https://www.math.uwaterloo.ca/~vpaulsen/OpAlgQIT.pdf","n":"강의노트"}],"task":"Kraus 표현에서 complete positivity를 확인하고 Stinespring dilation과 연결하세요.","deps":["F5"]},{"id":"T1","track":"T","level":"기초","hours":"32h","title":"계산가능성·RE·정지문제","goal":"MIP*=RE의 오른쪽 항인 RE와 undecidability를 정확히 이해한다.","topics":["Turing machine과 universal computation","decidable·recognizable 언어","RE와 coRE","many-one reduction","halting problem·Rice theorem"],"res":[{"t":"MIT Theory of Computation","u":"https://ocw.mit.edu/courses/18-404j-theory-of-computation-fall-2020/","n":"OCW"}],"task":"HALT가 RE이지만 decidable하지 않음을 diagonalization과 reduction으로 증명하세요.","deps":["F1"]},{"id":"T2","track":"T","level":"중급","hours":"50h","title":"고전 계산복잡도","goal":"시간·공간·회로·비균일성의 복잡도 클래스를 reduction과 completeness로 다룬다.","topics":["P·NP·coNP·PSPACE·EXP·NEXP","polynomial reduction과 completeness","time/space hierarchy","uniform circuit·P/poly","randomized classes BPP·MA·AM"],"res":[{"t":"Arora–Barak, Computational Complexity","u":"https://theory.cs.princeton.edu/complexity/book.pdf","n":"공개 초고"}],"task":"QBF가 PSPACE-complete임을 알고리즘과 hardness 양쪽에서 설명하세요.","deps":["T1","F3"]},{"id":"T3","track":"T","level":"심화","hours":"55h","title":"IP·MIP·PCP와 검증","goal":"상호작용이 검증 능력을 어떻게 확장하는지 고전 결과부터 이해한다.","topics":["completeness·soundness·promise problem","IP=PSPACE","multi-prover interactive proof","MIP=NEXP","PCP theorem·low-degree testing의 고전적 역할"],"res":[{"t":"Arora–Barak — interactive proofs·PCP","u":"https://theory.cs.princeton.edu/complexity/","n":"교재"},{"t":"Shamir — IP=PSPACE","u":"https://doi.org/10.1145/146585.146609","n":"원 논문"},{"t":"Babai–Fortnow–Lund — MIP=NEXP","u":"https://doi.org/10.1007/BF01200056","n":"원 논문"}],"task":"sum-check protocol의 한 라운드를 직접 계산하고 왜 다항식의 낮은 차수가 soundness를 주는지 설명하세요.","deps":["T2","F3"]},{"id":"T4","track":"T","level":"심화","hours":"36h","title":"산술적 계층·재귀정리","goal":"RE·coRE를 넘어 비국소게임의 exact-value 문제와 자기참조 압축을 기술하는 논리 계층을 이해한다.","topics":["Σ₁=RE와 Π₁=coRE","Σ₂·Π₂와 양화사 교대","Kleene recursion theorem의 직관","promise problem과 exact-value problem의 차이","compression과 arithmetical hierarchy"],"res":[{"t":"Mousavi–Nezhadi–Yuen — Nonlocal Games, Compression Theorems, and the Arithmetical Hierarchy","u":"https://arxiv.org/abs/2110.04651","n":"STOC 2022"},{"t":"MIT Theory of Computation","u":"https://ocw.mit.edu/courses/18-404j-theory-of-computation-fall-2020/","n":"복습"}],"task":"Σ₁·Π₁·Π₂ 문장을 양화사 형태로 각각 쓰고, nonlocal-game value의 근사·정확 판정 문제가 서로 다른 층에 놓이는 이유를 설명하세요.","deps":["T1","T2"]},{"id":"Q1","track":"Q","level":"기초","hours":"36h","title":"양자역학의 선형대수 형식","goal":"순수상태·unitary·측정을 복소 Hilbert 공간의 언어로 계산한다.","topics":["ket·bra·Born rule","unitary dynamics","projective measurement","composite system과 tensor product","Bell state와 no-cloning"],"res":[{"t":"Watrous — Understanding Quantum Information","u":"https://arxiv.org/abs/2507.11536","n":"강의"}],"task":"Bell state의 부분측정 분포와 reduced state를 계산하세요.","deps":["F2","F3"]},{"id":"Q2","track":"Q","level":"중급","hours":"48h","title":"밀도연산자·POVM·양자채널","goal":"혼합상태와 일반 측정을 정확한 operator formalism으로 다룬다.","topics":["density operator와 partial trace","POVM·Naimark dilation","quantum channel·CPTP map","fidelity·trace distance","purification·Schmidt decomposition"],"res":[{"t":"Watrous, The Theory of Quantum Information","u":"https://cs.uwaterloo.ca/~watrous/TQI/TQI.pdf","n":"교재"}],"task":"두 상태의 trace distance가 최적 구별 성공확률과 연결되는 식을 유도하세요.","deps":["Q1","F5"]},{"id":"Q3","track":"Q","level":"심화","hours":"44h","title":"양자계산복잡도와 quantum proofs","goal":"BQP·QMA·QIP와 quantum verifier 모델을 고전 클래스와 구분한다.","topics":["uniform quantum circuits","BQP와 amplification","QMA·Local Hamiltonian","QIP=PSPACE의 의미","quantum advice와 interactive proof variants"],"res":[{"t":"Watrous — Quantum Computational Complexity","u":"https://arxiv.org/abs/0804.3401","n":"서베이"},{"t":"Vidick & Watrous — Quantum Proofs","u":"https://arxiv.org/abs/1610.01664","n":"서베이"}],"task":"QMA의 completeness/soundness와 BQP의 bounded error가 어떻게 다른지 예와 함께 쓰세요.","deps":["Q2","T2"]},{"id":"Q4","track":"Q","level":"중급","hours":"32h","title":"얽힘·Bell 부등식·CHSH","goal":"고전·양자·no-signalling 상관의 차이를 비국소 실험으로 이해한다.","topics":["local hidden variable","CHSH game","Tsirelson bound","entanglement ≠ communication","monogamy와 no-signalling"],"res":[{"t":"Watrous — Nonlocal games and Tsirelson theorem","u":"https://cs.uwaterloo.ca/~watrous/QIT-notes/QIT-notes.06.pdf","n":"강의노트"}],"task":"CHSH의 classical value 3/4와 quantum value cos²(π/8)을 계산하세요.","deps":["Q2"]},{"id":"G1","track":"G","level":"중급","hours":"40h","title":"비국소게임과 correlation sets","goal":"MIP*를 one-round game과 entangled value의 언어로 표현한다.","topics":["game specification와 strategy","classical·tensor-product·commuting strategies","ω·ω*·ωco","Cq·Cqa·Cqc","finite-dimensional approximation 문제"],"res":[{"t":"Vidick — Interactive Proofs with Quantum Devices","u":"https://www.weizmann.ac.il/math/vidick/teaching-lecture-notes","n":"강의노트"}],"task":"CHSH를 nonlocal game tuple로 쓰고 세 전략 모델에서 허용되는 operator 관계를 비교하세요.","deps":["Q4","T3"]},{"id":"G2","track":"G","level":"심화","hours":"36h","title":"XOR game·SDP·Tsirelson 정리","goal":"특수 비국소게임의 양자값을 convex optimization과 벡터 표현으로 계산한다.","topics":["XOR game bias","semidefinite programming","Gram matrix","Tsirelson vector representation","NPA hierarchy의 입구"],"res":[{"t":"Watrous — Nonlocal games lecture","u":"https://cs.uwaterloo.ca/~watrous/QIT-notes/QIT-notes.06.pdf","n":"강의노트"}],"task":"작은 XOR game의 primal/dual SDP를 작성하고 strong duality 조건을 확인하세요.","deps":["G1","F6"]},{"id":"G3","track":"G","level":"심화","hours":"48h","title":"Self-testing·rigidity·Pauli observables","goal":"고전 입출력 상관만으로 숨은 양자상태와 측정을 강제하는 기법을 익힌다.","topics":["robust self-testing","local isometry와 junk state","Pauli X/Z twisted commutation","parallel repetition과 rigidity","large entanglement certification"],"res":[{"t":"Natarajan–Vidick — quantum linearity test","u":"https://arxiv.org/abs/1610.03574","n":"논문"},{"t":"Vidick course notes","u":"https://www.weizmann.ac.il/math/vidick/teaching-lecture-notes","n":"강의노트"}],"task":"CHSH rigidity 명제에서 전략의 동치가 왜 exact equality가 아니라 local isometry까지인지 설명하세요.","deps":["G1","Q3"]},{"id":"G4","track":"G","level":"연구","hours":"70h","title":"Quantum low-degree test·PCP 구성요소","goal":"MIP*=RE 증명의 핵심 검증 장치가 큰 양자상태를 짧은 질문으로 인증하는 방식을 이해한다.","topics":["classical low-degree·plane-vs-point test","finite fields와 polynomial encoding","Pauli X/Z basis consistency","PCP of proximity","quantum soundness와 robustness"],"res":[{"t":"Natarajan–Vidick — Low-degree testing for quantum states (역사적 기반)","u":"https://arxiv.org/abs/1801.03821","n":"핵심 논문"},{"t":"Ji et al. — classical low-individual-degree test의 quantum soundness (필수 보정)","u":"https://arxiv.org/abs/2009.12982","n":"핵심 논문"}],"task":"low-degree test가 임의 함수 전체를 읽지 않고도 다항식 일관성을 검사하는 원리를 고전판부터 설명하세요.","deps":["G3","T3","F3"]},{"id":"O1","track":"O","level":"심화","hours":"55h","title":"C*-대수·상태·표현","goal":"양자 관측량과 상태를 추상 연산자대수의 언어로 확장한다.","topics":["unital C*-algebra","positive element와 state","GNS representation","completely positive map","universal C*-algebra와 generators/relations"],"res":[{"t":"Paulsen — Operator Algebra Methods in QIT","u":"https://www.math.uwaterloo.ca/~vpaulsen/OpAlgQIT.pdf","n":"강의노트"}],"task":"GNS construction이 추상 state에서 Hilbert 공간 표현을 만드는 과정을 정리하세요.","deps":["F5","F6","Q2"]},{"id":"O2","track":"O","level":"연구","hours":"65h","title":"von Neumann 대수·trace·II₁ factor","goal":"commuting-operator model과 Connes embedding을 기술할 수 있는 무한차원 틀을 배운다.","topics":["weak operator closure와 bicommutant","normal state와 predual","finite von Neumann algebra","factor와 type 분류의 입구","tracial ultrapower와 hyperfinite II₁ factor"],"res":[{"t":"Goldbring — Connes Embedding Problem guided tour","u":"https://arxiv.org/abs/2109.12682","n":"서베이"}],"task":"matrix algebra, B(H), hyperfinite II₁ factor가 어떤 의미에서 서로 다른지 비교표를 작성하세요.","deps":["O1"]},{"id":"O3","track":"O","level":"연구","hours":"50h","title":"Tensor vs commuting correlation","goal":"두 양자 전략 모델의 차이를 operator tensor product 문제로 번역한다.","topics":["minimal/maximal tensor product의 직관","spatial tensor strategy","commuting observable strategy","Cq·Cqa·Cqc의 closure","Tsirelson problem"],"res":[{"t":"Junge et al. — Connes embedding and Tsirelson problem","u":"https://arxiv.org/abs/1008.1142","n":"핵심 논문"}],"task":"tensor-product 모델에서는 Alice/Bob operator가 어떻게 분리되고 commuting 모델에서는 어떻게 표현되는지 쓰세요.","deps":["O2","G1"]},{"id":"O4","track":"O","level":"연구","hours":"55h","title":"Connes embedding·QWEP 경로","goal":"MIP*=RE의 복잡도 결과가 연산자대수의 오래된 문제를 부정적으로 해결하는 연결을 이해한다.","topics":["CEP statement와 microstate 직관","QWEP와 tensor-product reformulation","Tsirelson problem과의 동치 경로","ultraproduct·approximation","논리적 경로와 전통적 경로"],"res":[{"t":"Goldbring — guided tour","u":"https://www.ams.org/bull/2022-59-04/S0273-0979-2022-01768-5/","n":"서베이"},{"t":"Vidick — negative resolution survey","u":"https://ems.press/books/standalone/278/5585","n":"ICM 서베이"}],"task":"MIP*=RE → Cqa≠Cqc → CEP 부정의 논리적 연결을 한 페이지로 작성하세요.","deps":["O2","O3","T1"]},{"id":"R1","track":"R","level":"심화","hours":"35h","title":"MIP* 지형과 사전 결과","goal":"정리 직전까지 MIP* 하한이 어떻게 NEXP에서 iterated exponential로 성장했는지 이해한다.","topics":["MIP* 정의","NEXP⊆MIP*","NEEXP⊆MIP*","finite vs commuting upper bound 문제","game value approximation"],"res":[{"t":"Ito–Vidick — NEXP in MIP*","u":"https://arxiv.org/abs/1207.0550","n":"논문"},{"t":"Natarajan–Wright — NEEXP in MIP*","u":"https://arxiv.org/abs/1904.05870","n":"논문"}],"task":"고전 MIP=NEXP와 entangled prover MIP*의 차이를 verifier가 아니라 prover 전략 공간 관점에서 설명하세요.","deps":["T3","G1","Q3"]},{"id":"R2","track":"R","level":"연구","hours":"65h","title":"Compression theorem","goal":"거대한 검증을 더 짧은 verifier가 재귀적으로 인증하도록 압축하는 핵심 구조를 파악한다.","topics":["protocol compression의 입력·출력","question/answer reduction","history state와 delegated computation","gap 변화와 completeness","iterated exponential hierarchy"],"res":[{"t":"Fitzsimons–Ji–Vidick–Yuen — Quantum proof systems for iterated exponential time","u":"https://arxiv.org/abs/1805.12166","n":"핵심 논문"}],"task":"압축 전 verifier의 실행시간이 압축된 game description과 soundness gap에 어떻게 반영되는지 개념도를 그리세요.","deps":["R1","G3","G4"]},{"id":"R3","track":"R","level":"연구","hours":"55h","title":"재귀·self-reference·정지문제 환원","goal":"compression을 자기 자신에 적용해 비계산가능성으로 도약하는 논리 구조를 이해한다.","topics":["recursion theorem의 역할","self-referential verifier","halting/non-halting case","promise gap 1 vs 1/2","RE lower bound construction"],"res":[{"t":"Ji–Natarajan–Vidick–Wright–Yuen — MIP*=RE","u":"https://arxiv.org/abs/2001.04383","n":"원 논문"},{"t":"Mousavi–Nezhadi–Yuen — compression과 산술적 계층","u":"https://dl.acm.org/doi/10.1145/3519935.3519949","n":"STOC 2022"}],"task":"기계 M이 정지할 때와 정지하지 않을 때 game value가 갈라지는 과정을 의사코드로 설명하세요.","deps":["R2","T4"]},{"id":"R4","track":"R","level":"연구","hours":"90h","title":"MIP*=RE 증명 지도 완주","goal":"원 논문의 모듈들을 연결해 정리의 양방향 포함을 설명한다.","topics":["MIP*⊆RE upper bound","RE⊆MIP* lower bound","low individual degree test","compression procedure","recursive construction와 gap","finite-dimensional strategies의 열거"],"res":[{"t":"Ji–Natarajan–Vidick–Wright–Yuen — MIP*=RE","u":"https://arxiv.org/abs/2001.04383","n":"전체 증명"},{"t":"Vidick — Interactive Proofs with Quantum Devices","u":"https://www.weizmann.ac.il/math/vidick/teaching-lecture-notes","n":"저자 공식 강의노트"},{"t":"MIP*=RE — Communications of the ACM overview","u":"https://dl.acm.org/doi/10.1145/3485628","n":"개요"}],"task":"정리의 upper bound와 lower bound가 사용하는 계산가능성 논리를 각각 10문장 이내로 요약하고, 핵심 lemma 의존 그래프를 다시 그리세요.","deps":["R3","G4"]},{"id":"R5","track":"R","level":"연구","hours":"45h","title":"결과: undecidability와 CEP 부정","goal":"복잡도 정리가 양자상관과 연산자대수에 주는 정확한 결과를 과장 없이 정리한다.","topics":["entangled value의 constant-gap undecidability","Cqa ⊊ Cqc","Tsirelson problem 부정","Connes embedding 부정","무한 얽힘 차원과 closure"],"res":[{"t":"MIP*=RE abstract and consequences","u":"https://arxiv.org/abs/2001.04383","n":"원 논문"},{"t":"Goldbring guided tour","u":"https://arxiv.org/abs/2109.12682","n":"서베이"}],"task":"‘양자컴퓨터가 비계산가능 함수를 계산한다’는 오해가 왜 틀렸는지 verifier/prover/decision procedure를 구분해 반박하세요.","deps":["R4","O4"]},{"id":"R6","track":"R","level":"연구","hours":"45h","title":"후속 연구·열린 문제","goal":"MIP*=RE 이후의 proof-system 지형과 계산적으로 제한된 prover 문제를 추적한다.","topics":["zero-gap·arithmetical hierarchy","MIPco와 commuting model","computationally efficient provers","quantum PCP games version","quantum IOP·verification","정량적 soundness와 compression"],"res":[{"t":"Natarajan–Nirkhe — quantum PCP conjecture의 games version 현황","u":"https://arxiv.org/abs/2403.13084","n":"2024 서베이"},{"t":"Junqiao Lin — MIPco=coRE","u":"https://dl.acm.org/doi/10.1145/3798129.3800751","n":"STOC 2026"},{"t":"Sun–Vidick — Probabilistically Checking Quantum Proofs, with Interaction","u":"https://arxiv.org/abs/2606.09588","n":"2026 qIOP 후속"}],"task":"MIP*=RE에서 prover가 계산 무제한이라는 가정을 제한하면 어떤 질문들이 다시 열리는지 연구 제안 1페이지를 작성하세요.","deps":["R5","Q3","T4"]}];
+
+const PAPERS = [
+  {y:"1997",t:"Maass — Networks of spiking neurons: The third generation of neural network models",tr:"C",w:"형식적 스파이킹 뉴런의 계산 능력과 시간 부호화 관점을 세운 고전. 튜링 완전성과 효율적 계산을 구분해 읽습니다.",u:"https://doi.org/10.1016/S0893-6080(97)00011-7"},
+  {y:"2020",t:"Kwisthout & Donselaar — A Neuromorphic Complexity Hierarchy",tr:"C",w:"SNN 알고리즘을 시간·공간·에너지 자원으로 함께 분류하고, 입력과 알고리즘이 네트워크에 어떻게 인코딩되는지 formalize합니다.",u:"https://arxiv.org/abs/2001.08439"},
+  {y:"1997",t:"Bernstein & Vazirani — Quantum Complexity Theory",tr:"D",w:"BQP를 포함한 양자 계산복잡도 이론의 기초. 양자 병렬성·오류 제한·uniform quantum circuit의 의미를 고전 복잡도와 연결합니다.",u:"https://doi.org/10.1137/S0097539796300921"},
+  {y:"1998",t:"Kadowaki & Nishimori — Quantum Annealing in the Transverse Ising Model",tr:"D",w:"열적 담금질에 비가환 transverse field를 도입한 양자 어닐링의 출발점. QUBO를 공유해도 classical SNN과 탐색 동역학이 왜 다른지 보여줍니다.",u:"https://arxiv.org/abs/cond-mat/9804280"},
+  {y:"2004",t:"Aharonov et al. — Adiabatic Quantum Computation is Equivalent to Standard Quantum Computation",tr:"D",w:"보편 AQC와 게이트 양자계산의 다항 동치를 증명합니다. 이 결과를 현재의 제한된 noisy quantum annealer 전체에 그대로 적용하면 안 됩니다.",u:"https://arxiv.org/abs/quant-ph/0405098"},
+  {y:"2008",t:"Watrous — Quantum Computational Complexity",tr:"D",w:"BQP·QMA·QIP, quantum advice와 bounded-depth 회로를 체계적으로 정리한 표준 입문 자료입니다.",u:"https://arxiv.org/abs/0804.3401"},
+  {y:"2020",t:"Marković & Grollier — Quantum Neuromorphic Computing",tr:"C",w:"파라미터화 양자회로와 양자 oscillator 기반 neuromorphic hardware를 구분하며 양자–신경형 계산의 연구 지형을 정리합니다.",u:"https://arxiv.org/abs/2006.15111"},
+  {y:"2025",t:"Chen, Rajendran & Simeone — Stochastic Quantum Spiking Neural Networks with Quantum Memory and Local Learning",tr:"C",w:"multi-qubit 양자 기억과 국소 학습을 결합한 최신 quantum spiking 모델. 특정 실험 개선과 일반적 양자 복잡도 우위를 구분해 읽습니다.",u:"https://arxiv.org/abs/2506.21324"},
+  {y:"1985",t:"Hopfield & Tank — “Neural” computation of decisions in optimization problems",tr:"D",w:"신경망으로 최적화를 푼다는 발상의 원점. 연속 완화와 제약 페널티가 왜 실행 불가능해·국소최적을 만들 수 있는지 비판적으로 읽습니다.",u:"https://www.pnas.org/doi/10.1073/pnas.82.10.3088"},
+  {y:"2007",t:"Izhikevich — Solving the distal reward problem through linkage of STDP and dopamine signaling",tr:"A",w:"R-STDP의 출발점. 밀리초 활동과 지연된 보상을 느린 시냅스 흔적으로 연결합니다.",u:"https://pubmed.ncbi.nlm.nih.gov/17220510/"},
+  {y:"2008",t:"Legenstein, Pecevski & Maass — A learning theory for reward-modulated STDP",tr:"C",w:"R-STDP가 원하는 학습 효과를 내는 조건을 분석합니다. 규칙을 쓰기 전에 가정과 한계를 먼저 확인하게 해줍니다.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC2543108/"},
+  {y:"2015",t:"Mostafa, Müller & Indiveri — Rhythmic inhibition allows neural networks to search for maximally consistent states",tr:"D",w:"감마 리듬 억제를 제약충족 탐색 동역학으로 해석합니다. 일반 담금질과 동일하다고 가정하지 말고 갱신 분포를 비교하세요.",u:"https://arxiv.org/abs/1503.02777"},
+  {y:"2016",t:"Frémaux & Gerstner — Neuromodulated STDP, and theory of three-factor learning rules",tr:"C",w:"이 주제의 표준 리뷰. R-STDP·R-max·정책 경사의 관계를 한 프레임으로 정리합니다.",u:"https://www.frontiersin.org/journals/neural-circuits/articles/10.3389/fncir.2015.00085/full"},
+  {y:"2016",t:"Jonke, Habenschuss & Maass — Solving constraint satisfaction problems with networks of spiking neurons",tr:"D",w:"확률적 스파이킹 네트워크의 에너지 지형을 회로 모티프로 조립해 NP-hard CSP의 근사해를 샘플링합니다.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC4811945/"},
+  {y:"2018",t:"Gerstner et al. — Eligibility traces and plasticity on behavioral time scales",tr:"A",w:"자격 흔적이 이론적 편의가 아니라 측정된 현상임을 보이는 실험 종합. τe가 왜 초 단위인지 답합니다.",u:"https://arxiv.org/abs/1801.05219"},
+  {y:"2020",t:"BrainScaleS-2 — 가속 뉴로모픽 기판 위의 온칩 R-STDP 폐루프",tr:"C",w:"학습 규칙 전체가 칩 안에서 도는 드문 사례. 온칩 학습의 실제 제약을 보여줍니다.",u:"https://arxiv.org/abs/1912.12980"},
+  {y:"2021",t:"Eshraghian et al. — Training spiking neural networks using lessons from deep learning",tr:"C",w:"snnTorch의 근간이 되는 문헌. 대리경사 학습을 실전 코드로 옮길 때 계속 되돌아오게 됩니다.",u:"https://arxiv.org/abs/2109.12894"},
+  {y:"2022",t:"Schuman et al. — Opportunities for neuromorphic computing algorithms and applications",tr:"C",w:"비인지 응용까지 포함한 지도. 참고문헌 목록 자체가 트랙 C·D의 독서 리스트가 됩니다.",u:"https://www.nature.com/articles/s43588-021-00184-y"},
+  {y:"2022",t:"Mohseni, McMahon & Byrnes — Ising machines as hardware solvers of combinatorial optimization problems",tr:"D",w:"열·광학·스핀트로닉스·동역학·양자 어닐러를 성공확률과 TTS 축에서 비교합니다.",u:"https://arxiv.org/abs/2204.00276"},
+  {y:"2023",t:"Bybee et al. — Efficient optimization with higher-order Ising machines",tr:"D",w:"고차 상호작용이 SAT 정식화에서 보조변수와 연결 수를 줄일 수 있음을 보입니다.",u:"https://arxiv.org/abs/2212.03426"},
+  {y:"2024",t:"Pierro et al. — Solving QUBO on the Loihi 2 neuromorphic processor",tr:"D",w:"예비 실험의 1 ms 실행가능해와 최대 37× 에너지 효율이 어떤 문제·CPU 기준선·측정 경계에서 나온 수치인지 확인하세요.",u:"https://arxiv.org/abs/2408.03076"},
+  {y:"2025",t:"Henke et al. — Quantum annealing and spiking neuromorphic sampling for sparse-coding QUBO",tr:"D",w:"Loihi 2·D-Wave·simulated annealing·CPLEX를 같은 sparse-coding QUBO에서 비교하며, 방법별 우열이 설정에 따라 달라짐을 보여줍니다.",u:"https://arxiv.org/abs/2405.20525"},
+  {y:"2025",t:"Mazurek et al. — Three-factor learning in spiking neural networks",tr:"C",w:"보상뿐 아니라 오류·맥락 신호까지 포함하는 3-요인 규칙의 이론·알고리즘·응용을 정리합니다.",u:"https://arxiv.org/abs/2504.05341"},
+  {y:"2008",t:"Kriegeskorte et al. — Representational similarity analysis",tr:"B",w:"뇌·행동·모델을 표현 거리 행렬이라는 공통 언어로 비교하는 B2의 출발점입니다.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC2605405/"},
+  {y:"2016",t:"Lillicrap et al. — Random synaptic feedback weights support error backpropagation",tr:"B",w:"정확한 weight transport 없이도 학습할 수 있다는 feedback alignment의 대표 결과입니다.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC5105169/"},
+  {y:"2019",t:"Neftci, Mostafa & Zenke — Surrogate gradient learning in SNNs",tr:"C",w:"대리경사의 수학·구현·하드웨어 관점을 잇는 C2의 표준 리뷰입니다.",u:"https://arxiv.org/abs/1901.09948"},
+  {y:"2020",t:"Bellec et al. — e-prop: A solution to the learning dilemma for recurrent SNNs",tr:"B",w:"자격 흔적과 학습 신호를 분리해 BPTT의 온라인 근사를 구성합니다.",u:"https://pmc.ncbi.nlm.nih.gov/articles/PMC7367848/"},
+  {y:"2024",t:"Pedersen et al. — Neuromorphic Intermediate Representation",tr:"C",w:"7개 시뮬레이터와 4개 디지털 하드웨어에서 공통 모델 표현을 검증한 이식성의 기준점입니다.",u:"https://arxiv.org/abs/2311.14641"},
+  {y:"2025",t:"Yik et al. — The NeuroBench framework",tr:"C",w:"알고리즘 정확도와 시스템 지연·에너지 측정을 분리하고 QUBO를 포함한 벤치마크 절차를 제시합니다.",u:"https://www.nature.com/articles/s41467-025-56739-4"},
+  {y:"2026",t:"NeuroAI and Beyond — 신경과학과 AI를 잇는 연구 로드맵",tr:"B",w:"NSF 워크숍 기반. 근·중·장기 연구 과제 구분이 자기 연구 계획서를 쓸 때 유용합니다.",u:"https://arxiv.org/abs/2604.18637"},
+{y:"1991",t:"Babai, Fortnow & Lund — Non-deterministic exponential time has two-prover interactive protocols",tr:"T",w:"고전 multiprover interactive proof의 힘이 MIP=NEXP임을 보인 출발점입니다.",u:"https://doi.org/10.1007/BF01200056"},
+  {y:"1992",t:"Shamir — IP=PSPACE",tr:"T",w:"상호작용과 무작위성이 다항공간 계산 전체를 검증하게 하는 고전 정리입니다.",u:"https://doi.org/10.1145/146585.146609"},
+  {y:"2010",t:"Junge et al. — Connes' embedding problem and Tsirelson's problem",tr:"O",w:"연산자대수의 CEP와 양자상관의 tensor/commuting 모델 문제를 연결합니다.",u:"https://arxiv.org/abs/1008.1142"},
+  {y:"2012",t:"Ito & Vidick — A multi-prover interactive proof for NEXP sound against entangled provers",tr:"R",w:"얽힘이 고전 MIP의 계산력을 약화시키지 않음을 보인 MIP* 하한의 핵심 단계입니다.",u:"https://arxiv.org/abs/1207.0550"},
+  {y:"2017",t:"Slofstra — The set of quantum correlations is not closed",tr:"G",w:"finite-dimensional quantum correlation의 closure 문제와 undecidability가 MIP*=RE 이전부터 등장했음을 보여줍니다.",u:"https://arxiv.org/abs/1703.08618"},
+  {y:"2018",t:"Natarajan & Vidick — Low-degree testing for quantum states",tr:"G",w:"큰 얽힘 상태와 Pauli 측정을 짧은 classical question으로 검증하는 low-degree test 계열의 중심 논문입니다.",u:"https://arxiv.org/abs/1801.03821"},
+  {y:"2019",t:"Fitzsimons, Ji, Vidick & Yuen — Quantum proof systems for iterated exponential time",tr:"R",w:"재귀적 protocol compression을 통해 MIP* 하한을 임의의 iterated exponential 시간까지 확장합니다.",u:"https://arxiv.org/abs/1805.12166"},
+  {y:"2019",t:"Natarajan & Wright — NEEXP in MIP*",tr:"R",w:"MIP*=RE 직전의 중요한 base protocol과 exponential jump를 제공합니다.",u:"https://arxiv.org/abs/1904.05870"},
+  {y:"2020",t:"Ji et al. — Quantum soundness of the classical low individual degree test",tr:"G",w:"초기 증명에서 발견된 문제를 피하면서 MIP*=RE에 필요한 quantum soundness를 재확립합니다.",u:"https://arxiv.org/abs/2009.12982"},
+  {y:"2020",t:"Ji et al. — MIP*=RE",tr:"R",w:"MIP*와 RE의 일치, entangled value undecidability, Cqa⊊Cqc와 CEP 부정을 연결한 원 논문입니다.",u:"https://arxiv.org/abs/2001.04383"},
+  {y:"2022",t:"Goldbring — The Connes Embedding Problem: A guided tour",tr:"O",w:"함수해석 배경부터 MIP*=RE가 CEP를 부정하는 두 경로까지 설명하는 가장 유용한 연결 서베이입니다.",u:"https://arxiv.org/abs/2109.12682"},
+  {y:"2024",t:"Natarajan & Nirkhe — The status of the quantum PCP conjecture (games version)",tr:"R",w:"MIP*=RE 이후 quantum PCP를 논할 때 efficient prover 제한이 왜 중요해졌는지 정리합니다.",u:"https://arxiv.org/abs/2403.13084"},
+  {y:"2022",t:"Mousavi, Nezhadi & Yuen — Nonlocal Games, Compression Theorems, and the Arithmetical Hierarchy",tr:"R",w:"근사값 판정과 exact-value 판정이 산술적 계층의 서로 다른 층에 놓이는 이유를 compression 관점에서 통합합니다.",u:"https://dl.acm.org/doi/10.1145/3519935.3519949"},
+  {y:"2026",t:"Sun & Vidick — Probabilistically Checking Quantum Proofs, with Interaction",tr:"R",w:"QMA에 대한 상호작용형 국소 검증을 제공하며, quantum PCP와 효율적 prover 문제의 최신 경계를 보여줍니다.",u:"https://arxiv.org/abs/2606.09588"},
+  {y:"2026",t:"Junqiao Lin — MIPco=coRE",tr:"R",w:"commuting-operator prover 모델의 계산력을 coRE로 특성화한 STOC 2026 후속 결과입니다.",u:"https://dl.acm.org/doi/10.1145/3798129.3800751"}
+];
+
+const TRACK_META = {
+  A:{name:"계산신경과학",color:"#0E7C77"}, B:{name:"NeuroAI",color:"#C41E6B"}, C:{name:"SNN",color:"#4338A8"}, D:{name:"조합최적화",color:"#B4720B"},
+  F:{name:"수학기초",color:"#52606D"}, T:{name:"계산이론",color:"#7B3F98"}, Q:{name:"양자정보",color:"#2563A6"}, G:{name:"비국소게임",color:"#B44618"}, O:{name:"연산자대수",color:"#117864"}, R:{name:"MIP*=RE",color:"#8B1E3F"}
+};
+const TRACK_NAME = Object.fromEntries(Object.entries(TRACK_META).map(([k,v])=>[k,v.name]));
+const TAG_LABEL = TRACK_NAME;
+const DEP_MAP = {
+ A1:[],A2:["A1"],A3:["A1","A2"],A4:["A1","A2"],B1:[],B2:["A2","B1"],B3:["A4","C2","B1"],B4:["A3","B1"],
+ C1:["A1"],C2:["C1"],C3:["A4","C1"],C4:["C2","C3"],D1:["A3"],D2:["A3","D1","C1"],D3:["C3","D1","B3"],D4:["C4","D1","D2"]
+};
+const ALL_MODULES = [...MODULES.map(m=>({...m,deps:DEP_MAP[m.id]||[]})), ...MIP_MODULES];
+const MODULE_BY_ID = new Map(ALL_MODULES.map(m=>[m.id,m]));
+
+/* =========================================================
+   2. 인터랙티브 DAG · 필터 · 진행률
+   ========================================================= */
+const esc = s => String(s).replace(/[&<>\"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const dagSvg = document.getElementById("dagSvg");
+const detailRoot = document.getElementById("dagDetail");
+const viewport = document.getElementById("dagViewport");
+const done = new Set();
+const activeTracks = new Set(Object.keys(TRACK_META));
+let activeLevel = "all", searchTerm = "", selectedId = null;
+let world = {w:2600,h:1000};
+let view = {x:0,y:0,w:2600,h:1000};
+let drag = null, suppressBackgroundClick = false;
+const SVG_NS = "http://www.w3.org/2000/svg";
+const trackOrder = ["F","T","Q","G","O","R","A","B","C","D"];
+
+function ancestorsOf(id, out=new Set()){
+  const m=MODULE_BY_ID.get(id); if(!m) return out;
+  for(const d of m.deps||[]){ if(!out.has(d)){out.add(d);ancestorsOf(d,out);} }
+  return out;
+}
+function descendantsOf(id){
+  const out=new Set(), q=[id];
+  while(q.length){const cur=q.shift();for(const m of ALL_MODULES){if((m.deps||[]).includes(cur)&&!out.has(m.id)){out.add(m.id);q.push(m.id);}}}
+  return out;
+}
+function nodeStatus(m){
+  if(done.has(m.id)) return "done";
+  return (m.deps||[]).every(d=>done.has(d)) ? "ready" : "locked";
+}
+function setRoute(ids){activeTracks.clear();ids.forEach(x=>activeTracks.add(x));renderTrackFilters();renderDag(true);}
+
+document.getElementById("routeAll").addEventListener("click",()=>setRoute(Object.keys(TRACK_META)));
+document.getElementById("routeNeuro").addEventListener("click",()=>setRoute(["A","B","C","D"]));
+document.getElementById("routeMIP").addEventListener("click",()=>setRoute(["F","T","Q","G","O","R"]));
+document.getElementById("dagLevel").addEventListener("change",e=>{activeLevel=e.target.value;renderDag(true);});
+document.getElementById("dagSearch").addEventListener("input",e=>{searchTerm=e.target.value.trim().toLowerCase();applySearchHighlight();});
+document.getElementById("dagSearch").addEventListener("keydown",e=>{if(e.key==="Enter"){const m=visibleNodes().find(matchesSearch);if(m){selectNode(m.id);centerNode(m.id);}}});
+document.getElementById("dagQuickSelect").addEventListener("change",e=>{if(e.target.value){selectNode(e.target.value);focusNode(e.target.value);}});
+
+function renderTrackFilters(){
+  const root=document.getElementById("dagTrackFilters");root.innerHTML="";
+  for(const key of trackOrder){
+    const meta=TRACK_META[key], b=document.createElement("button");
+    b.className="dag-track-chip"+(activeTracks.has(key)?" active":""); b.style.setProperty("--track",meta.color);
+    b.textContent=`${key} ${meta.name}`; b.dataset.track=key; b.setAttribute("aria-pressed",String(activeTracks.has(key)));
+    b.addEventListener("click",()=>{activeTracks.has(key)?activeTracks.delete(key):activeTracks.add(key);renderTrackFilters();renderDag(true);});
+    root.appendChild(b);
+  }
+}
+
+function renderQuickSelect(nodes=visibleNodes()){
+  const q=document.getElementById("dagQuickSelect"), current=q.value;
+  q.innerHTML='<option value="">노드 빠른 선택…</option>';
+  for(const m of nodes){const o=document.createElement("option");o.value=m.id;o.textContent=`${m.id} · ${m.title}`;q.appendChild(o);}
+  if(nodes.some(m=>m.id===selectedId))q.value=selectedId;else if(nodes.some(m=>m.id===current))q.value=current;
+}
+
+function visibleNodes(){
+  const base=ALL_MODULES.filter(m=>activeTracks.has(m.track)&&(activeLevel==="all"||m.level===activeLevel));
+  const ids=new Set(base.map(m=>m.id));
+  for(const m of base) for(const a of ancestorsOf(m.id)) ids.add(a);
+  return ALL_MODULES.filter(m=>ids.has(m.id));
+}
+function computeLayers(nodes){
+  const ids=new Set(nodes.map(n=>n.id)), memo=new Map(), visiting=new Set();
+  function depth(id){
+    if(memo.has(id)) return memo.get(id); if(visiting.has(id)) return 0; visiting.add(id);
+    const m=MODULE_BY_ID.get(id); const ds=(m.deps||[]).filter(d=>ids.has(d));
+    const v=ds.length?1+Math.max(...ds.map(depth)):0; visiting.delete(id);memo.set(id,v);return v;
+  }
+  nodes.forEach(n=>depth(n.id)); return memo;
+}
+function wrapTitle(t,max=16){
+  const words=t.split(/\s+/), lines=[""];
+  for(const w of words){const i=lines.length-1; if((lines[i]+" "+w).trim().length<=max) lines[i]=(lines[i]+" "+w).trim(); else if(lines.length<2) lines.push(w); else {lines[1]=(lines[1]+" "+w).trim();}}
+  if(lines[1]&&lines[1].length>max+5) lines[1]=lines[1].slice(0,max+4)+"…"; return lines;
+}
+function svgEl(name,attrs={}){const e=document.createElementNS(SVG_NS,name);for(const[k,v]of Object.entries(attrs))e.setAttribute(k,v);return e;}
+
+function renderDag(fit=false){
+  const nodes=visibleNodes(), ids=new Set(nodes.map(n=>n.id)), layers=computeLayers(nodes);
+  const cols=new Map(); for(const n of nodes){const l=layers.get(n.id)||0;if(!cols.has(l))cols.set(l,[]);cols.get(l).push(n);}
+  for(const arr of cols.values())arr.sort((a,b)=>trackOrder.indexOf(a.track)-trackOrder.indexOf(b.track)||a.id.localeCompare(b.id));
+  const nodeW=240,nodeH=88,xGap=82,yGap=38,margin=66;
+  const maxLayer=Math.max(0,...cols.keys()), maxRows=Math.max(1,...[...cols.values()].map(x=>x.length));
+  world={w:margin*2+(maxLayer+1)*nodeW+maxLayer*xGap,h:margin*2+maxRows*nodeH+(maxRows-1)*yGap};
+  const pos=new Map();
+  for(const [l,arr] of cols){const colHeight=arr.length*nodeH+(arr.length-1)*yGap;const y0=margin+(world.h-2*margin-colHeight)/2;arr.forEach((n,i)=>pos.set(n.id,{x:margin+l*(nodeW+xGap),y:y0+i*(nodeH+yGap)}));}
+  dagSvg.innerHTML=""; dagSvg.setAttribute("viewBox",`${view.x} ${view.y} ${view.w} ${view.h}`);
+  const defs=svgEl("defs");
+  const marker=svgEl("marker",{id:"arrow",markerWidth:"8",markerHeight:"8",refX:"7",refY:"4",orient:"auto",markerUnits:"strokeWidth"});marker.appendChild(svgEl("path",{d:"M0,0 L8,4 L0,8 z",fill:"#AEBAC4"}));defs.appendChild(marker);dagSvg.appendChild(defs);
+  const edgeGroup=svgEl("g",{class:"edges"});
+  for(const m of nodes){for(const d of m.deps||[]){if(!ids.has(d)||!pos.has(d))continue;const a=pos.get(d),b=pos.get(m.id);const x1=a.x+nodeW,y1=a.y+nodeH/2,x2=b.x,y2=b.y+nodeH/2,mid=(x1+x2)/2;const p=svgEl("path",{class:"dag-edge",d:`M${x1},${y1} C${mid},${y1} ${mid},${y2} ${x2},${y2}`,"data-from":d,"data-to":m.id,"marker-end":"url(#arrow)"});edgeGroup.appendChild(p);}}
+  dagSvg.appendChild(edgeGroup);
+  const nodeGroup=svgEl("g",{class:"nodes"});
+  for(const m of nodes){const p=pos.get(m.id), meta=TRACK_META[m.track], status=nodeStatus(m), g=svgEl("g",{class:`dag-node ${status}${activeTracks.has(m.track)?'':' context'}`,transform:`translate(${p.x},${p.y})`,"data-id":m.id,style:`--node:${meta.color}`,tabindex:"0",role:"button","aria-label":`${m.id} ${m.title}`});
+    g.appendChild(svgEl("rect",{class:"node-hit",x:-12,y:-12,width:nodeW+24,height:nodeH+24,rx:14}));
+    g.appendChild(svgEl("rect",{class:"node-card",width:nodeW,height:nodeH,rx:10}));g.appendChild(svgEl("rect",{class:"node-strip",width:7,height:nodeH,rx:3,fill:meta.color}));
+    const idt=svgEl("text",{class:"node-id",x:17,y:19});idt.textContent=m.id;g.appendChild(idt);
+    const lines=wrapTitle(m.title);const tt=svgEl("text",{class:"node-title",x:17,y:41});lines.forEach((line,i)=>{const sp=svgEl("tspan",{x:17,dy:i?17:0});sp.textContent=line;tt.appendChild(sp);});g.appendChild(tt);
+    const mt=svgEl("text",{class:"node-meta",x:nodeW-14,y:18,"text-anchor":"end"});mt.textContent=`${m.level} · ${m.hours}`;g.appendChild(mt);
+    g.appendChild(svgEl("circle",{class:"status-dot",cx:nodeW-16,cy:nodeH-16,r:8}));
+    g.addEventListener("pointerdown",e=>e.stopPropagation());
+    g.addEventListener("click",e=>{e.stopPropagation();selectNode(m.id);});
+    g.addEventListener("dblclick",e=>{e.stopPropagation();selectNode(m.id);focusNode(m.id);});
+    g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();selectNode(m.id);focusNode(m.id);}});
+    nodeGroup.appendChild(g);}
+  dagSvg.appendChild(nodeGroup);
+  if(fit||!view.w){initialDagView();}else{clampView();setView();}
+  renderQuickSelect(nodes);updateProgress();applySelectionHighlight();applySearchHighlight();
+}
+
+function selectNode(id){selectedId=id;const q=document.getElementById("dagQuickSelect");if(q)q.value=id;renderDetail(id);applySelectionHighlight();}
+function jumpNode(id){if(!MODULE_BY_ID.has(id))return;selectedId=id;renderDetail(id);renderDag(false);centerNode(id);}
+window.jumpNode=jumpNode;
+function renderDetail(id){
+  const m=MODULE_BY_ID.get(id);if(!m)return;const meta=TRACK_META[m.track], prereq=m.deps||[], next=ALL_MODULES.filter(x=>(x.deps||[]).includes(id)).map(x=>x.id);
+  detailRoot.style.setProperty("--detail-color",meta.color);
+  const buttons=arr=>arr.length?arr.map(x=>`<button onclick="jumpNode('${x}')">${x}</button>`).join(""):"<span style='font-size:12px;color:var(--muted)'>없음</span>";
+  detailRoot.innerHTML=`<span class="detail-code">${m.id} · ${esc(meta.name)}</span><h3>${esc(m.title)}</h3><div class="detail-meta">${esc(m.level)} · ${esc(m.hours)} · 선수 ${prereq.length}개</div><p class="detail-goal">${esc(m.goal)}</p>
+  <h4>선행 노드</h4><div class="dag-prereq-buttons">${buttons(prereq)}</div><h4>후속 노드</h4><div class="dag-prereq-buttons">${buttons(next)}</div>
+  <h4>핵심 개념</h4><ul>${m.topics.map(x=>`<li>${esc(x)}</li>`).join("")}</ul><h4>자료</h4><ul>${m.res.map(r=>`<li><a href="${r.u}" target="_blank" rel="noopener">${esc(r.t)}</a> <small>${esc(r.n)}</small></li>`).join("")}</ul>
+  <div class="task"><b>자가 점검 과제</b>${esc(m.task)}</div><label class="dag-complete"><input id="detailDone" type="checkbox" ${done.has(id)?'checked':''}>이 노드 완료</label>`;
+  document.getElementById("detailDone").addEventListener("change",e=>{e.target.checked?done.add(id):done.delete(id);persist();renderDag(false);renderDetail(id);});
+}
+function applySelectionHighlight(){
+  const anc=selectedId?ancestorsOf(selectedId):new Set(), des=selectedId?descendantsOf(selectedId):new Set();
+  dagSvg.querySelectorAll(".dag-node").forEach(n=>{const id=n.dataset.id;n.classList.toggle("selected",id===selectedId);n.classList.toggle("dim",!!selectedId&&id!==selectedId&&!anc.has(id)&&!des.has(id));});
+  dagSvg.querySelectorAll(".dag-edge").forEach(e=>{const f=e.dataset.from,t=e.dataset.to;e.classList.toggle("incoming",!!selectedId&&anc.has(f)&&(t===selectedId||anc.has(t)));e.classList.toggle("outgoing",!!selectedId&&(f===selectedId||des.has(f))&&des.has(t));e.classList.toggle("active",e.classList.contains("incoming")||e.classList.contains("outgoing"));});
+}
+function matchesSearch(m){if(!searchTerm)return true;return [m.id,m.title,m.goal,...m.topics,TRACK_NAME[m.track]].join(" ").toLowerCase().includes(searchTerm);}
+function applySearchHighlight(){dagSvg.querySelectorAll(".dag-node").forEach(n=>{const m=MODULE_BY_ID.get(n.dataset.id);n.style.opacity=searchTerm&&!matchesSearch(m)?".14":"";});}
+
+function updateProgress(){
+  const total=ALL_MODULES.length,n=[...done].filter(x=>MODULE_BY_ID.has(x)).length,ready=visibleNodes().filter(m=>nodeStatus(m)==="ready").length;
+  document.getElementById("progressLabel").textContent=`${n} / ${total} 노드 완료`;document.getElementById("progressFill").style.width=`${100*n/total}%`;document.getElementById("readyLabel").textContent=`시작 가능 ${ready}`;
+}
+function persist(){try{localStorage.setItem("neuroai-mipre-dag-v7",JSON.stringify([...done]));}catch(e){}}
+function restore(){try{JSON.parse(localStorage.getItem("neuroai-mipre-dag-v7")||localStorage.getItem("neuroai-mipre-dag-v6")||"[]").forEach(id=>done.add(id));}catch(e){}}
+document.getElementById("resetProgress").addEventListener("click",()=>{if(confirm("모든 완료 기록을 지울까요?")){done.clear();persist();renderDag(false);if(selectedId)renderDetail(selectedId);}});
+
+function setView(){dagSvg.setAttribute("viewBox",`${view.x} ${view.y} ${view.w} ${view.h}`);}
+function clampView(){const minW=Math.min(world.w,420),minH=Math.min(world.h,260);view.w=Math.max(minW,Math.min(view.w,world.w*1.4));view.h=Math.max(minH,Math.min(view.h,world.h*1.4));view.x=Math.max(-80,Math.min(view.x,world.w-view.w+80));view.y=Math.max(-80,Math.min(view.y,world.h-view.h+80));}
+function initialDagView(){
+  const r=dagSvg.getBoundingClientRect(),aspect=Math.max(.8,r.width/Math.max(1,r.height));
+  const w=Math.min(world.w,1800),h=Math.min(world.h,w/aspect);
+  view={x:0,y:Math.max(0,(world.h-h)/2),w,h};clampView();setView();
+}
+function fitDag(){view={x:0,y:0,w:world.w,h:world.h};setView();}
+function zoomAt(f,cx=.5,cy=.5){const nw=view.w*f,nh=view.h*f;view.x+=view.w*cx-nw*cx;view.y+=view.h*cy-nh*cy;view.w=nw;view.h=nh;clampView();setView();}
+document.getElementById("dagZoomIn").addEventListener("click",()=>zoomAt(.78));document.getElementById("dagZoomOut").addEventListener("click",()=>zoomAt(1.28));document.getElementById("dagFit").addEventListener("click",fitDag);
+viewport.addEventListener("wheel",e=>{if(!(e.ctrlKey||e.metaKey))return;e.preventDefault();const r=dagSvg.getBoundingClientRect();zoomAt(e.deltaY>0?1.14:.86,(e.clientX-r.left)/r.width,(e.clientY-r.top)/r.height);},{passive:false});
+dagSvg.addEventListener("pointerdown",e=>{
+  if(e.button!==0)return;
+  if(e.target.closest&&e.target.closest(".dag-node"))return;
+  drag={x:e.clientX,y:e.clientY,vx:view.x,vy:view.y,moved:false,pointerId:e.pointerId};
+  dagSvg.setPointerCapture(e.pointerId);dagSvg.classList.add("dragging");
+});
+dagSvg.addEventListener("pointermove",e=>{if(!drag)return;const dx=e.clientX-drag.x,dy=e.clientY-drag.y;if(Math.hypot(dx,dy)>5)drag.moved=true;const r=dagSvg.getBoundingClientRect();view.x=drag.vx-dx*view.w/r.width;view.y=drag.vy-dy*view.h/r.height;clampView();setView();});
+function endPan(e){if(!drag)return;suppressBackgroundClick=drag.moved;drag=null;dagSvg.classList.remove("dragging");try{dagSvg.releasePointerCapture(e.pointerId)}catch(_){}if(suppressBackgroundClick)setTimeout(()=>suppressBackgroundClick=false,0);}
+dagSvg.addEventListener("pointerup",endPan);dagSvg.addEventListener("pointercancel",endPan);
+dagSvg.addEventListener("click",e=>{if(suppressBackgroundClick)return;if(e.target===dagSvg||e.target.classList.contains("edges")){selectedId=null;const q=document.getElementById("dagQuickSelect");if(q)q.value="";detailRoot.innerHTML='<p class="dag-detail-empty">노드를 선택하면 목표, 핵심 개념, 자료, 과제와 연결 경로가 표시됩니다.</p>';applySelectionHighlight();}});
+function nodeCenter(id){const n=dagSvg.querySelector(`.dag-node[data-id="${id}"]`);if(!n)return null;const tr=n.getAttribute("transform").match(/translate\(([^,]+),([^\)]+)/);if(!tr)return null;return{x:+tr[1]+120,y:+tr[2]+44};}
+function centerNode(id){const p=nodeCenter(id);if(!p)return;view.x=p.x-view.w/2;view.y=p.y-view.h/2;clampView();setView();}
+function focusNode(id){const p=nodeCenter(id);if(!p)return;const r=dagSvg.getBoundingClientRect(),aspect=Math.max(.8,r.width/Math.max(1,r.height));const targetW=Math.min(1250,world.w),targetH=Math.min(world.h,targetW/aspect);view={x:p.x-targetW/2,y:p.y-targetH/2,w:targetW,h:targetH};clampView();setView();}
+
+restore();renderTrackFilters();renderDag(true);
+
+/* =========================================================
+   3. Max-Cut 데모 — 단일-스핀 Metropolis 담금질  (D2)
+   ========================================================= */
+const N = 16;
+const gSvg = document.getElementById("graph");
+const rCan = document.getElementById("raster"), rCtx = rCan.getContext("2d");
+const eCan = document.getElementById("energy"), eCtx = eCan.getContext("2d");
+
+let W=[], spins=[], best=-Infinity, spikes=0, T=2.0, running=false, tCol=0, eHist=[], rafId=null;
+const pos = Array.from({length:N},(_,i)=>{
+  const a = -Math.PI/2 + i*2*Math.PI/N;
+  return {x:160+118*Math.cos(a), y:160+118*Math.sin(a)};
+});
+
+function newGraph(){
+  W = Array.from({length:N},()=>new Array(N).fill(0));
+  for(let i=0;i<N;i++) for(let j=i+1;j<N;j++){
+    if(Math.random()<0.30){ W[i][j]=1; W[j][i]=1; }
+  }
+  for(let i=0;i<N;i++){
+    if(W[i].every(v=>v===0)){
+      const j=(i+1+Math.floor(Math.random()*(N-1)))%N;
+      W[i][j]=1; W[j][i]=1;
+    }
+  }
+  reset(); buildSvg();
+}
+function reset(){
+  spins = Array.from({length:N},()=>Math.random()<0.5?1:-1);
+  best=cutValue().cut; spikes=0; T=2.0; tCol=0; eHist=[];
+  rCtx.clearRect(0,0,rCan.width,rCan.height);
+  eCtx.clearRect(0,0,eCan.width,eCan.height);
+  draw();
+}
+function cutValue(){
+  let edges=0, agree=0;
+  for(let i=0;i<N;i++) for(let j=i+1;j<N;j++) if(W[i][j]){ edges++; agree+=spins[i]*spins[j]; }
+  return {cut:(edges-agree)/2, edges};
+}
+function sweep(){
+  const cool = 1 - (+document.getElementById("coolRate").value)/1000;
+  for(let k=0;k<N;k++){
+    const i = Math.floor(Math.random()*N);
+    let local=0;
+    for(let j=0;j<N;j++) if(W[i][j]) local += spins[j];
+    const dE = -2*spins[i]*local; // E = Σ_(i,j) w_ij s_i s_j (Max-Cut equivalent up to a constant)
+    if(dE<0 || Math.random() < Math.exp(-dE/Math.max(T,1e-4))){
+      spins[i]*=-1; spikes++; markSpike(i);
+    }
+  }
+  T = Math.max(T*cool, 0.02);
+  const {cut} = cutValue();
+  if(cut>best) best=cut;
+  eHist.push(cut);
+  if(eHist.length>560) eHist.shift();
+  tCol++;
+}
+function buildSvg(){
+  let s = "";
+  for(let i=0;i<N;i++) for(let j=i+1;j<N;j++) if(W[i][j]){
+    s += `<line class="edge" id="e${i}_${j}" x1="${pos[i].x}" y1="${pos[i].y}" x2="${pos[j].x}" y2="${pos[j].y}"></line>`;
+  }
+  for(let i=0;i<N;i++){
+    s += `<circle class="node" id="n${i}" cx="${pos[i].x}" cy="${pos[i].y}" r="10"></circle>`;
+  }
+  gSvg.innerHTML = s;
+  draw();
+}
+function draw(){
+  for(let i=0;i<N;i++) for(let j=i+1;j<N;j++) if(W[i][j]){
+    const ln = document.getElementById(`e${i}_${j}`);
+    if(ln) ln.classList.toggle("cut", spins[i]!==spins[j]);
+  }
+  for(let i=0;i<N;i++){
+    const c = document.getElementById("n"+i);
+    if(c) c.setAttribute("fill", spins[i]===1 ? "#C41E6B" : "#0E7C77");
+  }
+  const {cut} = cutValue();
+  document.getElementById("rCut").textContent = cut;
+  document.getElementById("rBest").textContent = best===-Infinity?0:best;
+  document.getElementById("rTemp").textContent = T.toFixed(2);
+  document.getElementById("rSpk").textContent = spikes;
+  drawEnergy();
+}
+function markSpike(i){
+  const x = tCol % rCan.width;
+  const y = (i+0.5) * rCan.height / N;
+  rCtx.fillStyle = "#B4720B";
+  rCtx.fillRect(x, y-1.6, 2, 3.2);
+}
+function clearColumn(){
+  const x = tCol % rCan.width;
+  rCtx.clearRect(x,0,4,rCan.height);
+  rCtx.fillStyle = "rgba(196,30,107,.55)";
+  rCtx.fillRect(x+3,0,1,rCan.height);
+}
+function drawEnergy(){
+  const w=eCan.width, h=eCan.height;
+  eCtx.clearRect(0,0,w,h);
+  if(eHist.length<2) return;
+  const {edges} = cutValue();
+  const max = Math.max(edges,1);
+  eCtx.strokeStyle="#24384A"; eCtx.lineWidth=1;
+  eCtx.beginPath(); eCtx.moveTo(0,h-4); eCtx.lineTo(w,h-4); eCtx.stroke();
+  eCtx.strokeStyle="#B4720B"; eCtx.lineWidth=1.8; eCtx.beginPath();
+  eHist.forEach((v,k)=>{
+    const x = k*(w/Math.max(eHist.length,2));
+    const y = h-6 - (v/max)*(h-16);
+    k===0 ? eCtx.moveTo(x,y) : eCtx.lineTo(x,y);
+  });
+  eCtx.stroke();
+  if(best>-Infinity){
+    const yb = h-6 - (best/max)*(h-16);
+    eCtx.strokeStyle="rgba(196,30,107,.75)"; eCtx.setLineDash([3,4]); eCtx.lineWidth=1;
+    eCtx.beginPath(); eCtx.moveTo(0,yb); eCtx.lineTo(w,yb); eCtx.stroke(); eCtx.setLineDash([]);
+  }
+}
+function loop(){
+  if(!running) return;
+  clearColumn(); sweep(); draw();
+  if(T<=0.021) stop();
+  else rafId = requestAnimationFrame(loop);
+}
+function stop(){
+  running=false;
+  cancelAnimationFrame(rafId);
+  document.getElementById("btnRun").textContent = "다시 시작";
+}
+document.getElementById("btnRun").addEventListener("click",()=>{
+  if(running){ stop(); return; }
+  if(T<=0.021) reset();
+  running=true;
+  document.getElementById("btnRun").textContent = "일시정지";
+  loop();
+});
+document.getElementById("btnStep").addEventListener("click",()=>{
+  if(running) stop();
+  clearColumn(); sweep(); draw();
+});
+document.getElementById("btnNew").addEventListener("click",()=>{
+  if(running) stop();
+  document.getElementById("btnRun").textContent="담금질 시작";
+  newGraph();
+});
+const coolInput = document.getElementById("coolRate");
+coolInput.addEventListener("input",()=>{
+  const v = +coolInput.value;
+  document.getElementById("coolVal").textContent = v<12 ? "느림 (탐색 위주)" : v<38 ? "보통" : "빠름 (갇히기 쉬움)";
+});
+newGraph();
+
+/* =========================================================
+   4. 자격 흔적 위젯 — e(t)=exp(−t/τe), Δw ∝ e(d)  (C3)
+   ========================================================= */
+const eligSvg = document.getElementById("elig");
+const tauIn = document.getElementById("tauIn"), dIn = document.getElementById("dIn");
+const TMAX = 6, PX = t => 42 + (t/TMAX)*396, PY = e => 152 - e*116;
+
+function drawElig(){
+  const tau = (+tauIn.value)/10;
+  const d   = (+dIn.value)/10;
+  const dw  = Math.exp(-d/tau);
+
+  let curve = "";
+  for(let k=0;k<=160;k++){
+    const t = k*TMAX/160;
+    curve += (k?" L":"M") + PX(t).toFixed(1) + " " + PY(Math.exp(-t/tau)).toFixed(1);
+  }
+  let ticks = "";
+  for(let s=0;s<=TMAX;s++){
+    ticks += `<line x1="${PX(s)}" y1="152" x2="${PX(s)}" y2="157" stroke="#C4D0DA"></line>
+              <text x="${PX(s)}" y="171" text-anchor="middle" font-family="IBM Plex Mono" font-size="10" fill="#6E8395">${s}s</text>`;
+  }
+  const rx = PX(d), ry = PY(dw);
+
+  eligSvg.innerHTML = `
+    <line x1="42" y1="152" x2="438" y2="152" stroke="#C4D0DA"></line>
+    ${ticks}
+    <text x="42" y="28" font-family="IBM Plex Mono" font-size="10" fill="#0E7C77">pre–post 일치</text>
+    <line x1="42" y1="32" x2="42" y2="152" stroke="#0E7C77" stroke-width="2"></line>
+    <path d="${curve}" fill="none" stroke="#0E7C77" stroke-width="2" opacity=".85"></path>
+    <path d="${curve} L 438 152 L 42 152 Z" fill="#0E7C77" opacity=".10"></path>
+    <line x1="${rx}" y1="20" x2="${rx}" y2="152" stroke="#B4720B" stroke-width="2" stroke-dasharray="4 3"></line>
+    <text x="${rx>330?rx-6:rx+6}" y="30" text-anchor="${rx>330?"end":"start"}" font-family="IBM Plex Mono" font-size="10" fill="#B4720B">보상 도착</text>
+    <line x1="${rx}" y1="${ry}" x2="${rx}" y2="152" stroke="#B4720B" stroke-width="5"></line>
+    <circle cx="${rx}" cy="${ry}" r="4.5" fill="#B4720B" stroke="#FBFCFD" stroke-width="1.5"></circle>
+    <text x="8" y="${PY(1)+4}" font-family="IBM Plex Mono" font-size="10" fill="#6E8395">e=1</text>
+    <text x="8" y="156" font-family="IBM Plex Mono" font-size="10" fill="#6E8395">0</text>`;
+
+  document.getElementById("tauOut").textContent = tau.toFixed(1)+" s";
+  document.getElementById("dOut").textContent   = d.toFixed(1)+" s";
+  document.getElementById("dwOut").textContent  = (dw*100).toFixed(1)+"% 만큼 강화";
+  document.getElementById("verdict").textContent =
+    dw > 0.5  ? "보상이 제때 도착했습니다. 이 시냅스는 확실히 크레딧을 받습니다."
+  : dw > 0.15 ? "학습은 되지만 신호 대 잡음비가 나빠집니다. 반복 횟수가 크게 늘어납니다."
+  :             "흔적이 이미 사라졌습니다 — 원격 보상 문제. τe를 늘리거나 중간 보상을 설계해야 합니다.";
+}
+tauIn.addEventListener("input",drawElig);
+dIn.addEventListener("input",drawElig);
+drawElig();
+</script>
+</body>
+</html>
