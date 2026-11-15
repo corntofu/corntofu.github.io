@@ -150,13 +150,13 @@ cv:
         summary: "Fluent"
 
     Interests:
-      - name: Computer Science
+      - name: Computer Science & Graph Theory
         icon: fa-solid fa-tag
         keywords: "Spectral Graph Theory, Temporal Graph Theory, Random Graph Theory, GNN"
 
-      - name: Computational Neuroscience
+      - name: Computational Neuroscience & NeuroAI
         icon: fa-solid fa-tag
-        keywords: "SNN, Neuronal Dynamics, NeuroAI"
+        keywords: "SNN, Neuronal Dynamics, NeuroAI, Brain-Computer Interface"
 
     Certificates:
       - name: Machine Learning
