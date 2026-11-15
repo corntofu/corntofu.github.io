@@ -150,9 +150,13 @@ cv:
         summary: "Fluent"
 
     Interests:
-      - name: Physics
+      - name: Computer Science
         icon: fa-solid fa-tag
-        keywords: "Quantum Mechanics, Quantum Computing, Quantum Information, Quantum Cryptography, Quantum Communication, Quantum Teleportation"
+        keywords: "Spectral Graph Theory, Temporal Graph Theory, Random Graph Theory, GNN"
+
+      - name: Computational Neuroscience
+        icon: fa-solid fa-tag
+        keywords: "SNN, Neuronal Dynamics, NeuroAI"
 
     Certificates:
       - name: Machine Learning
