@@ -3,7 +3,7 @@ cv:
   label: Undergraduate Student
   email: kanght1219@pusan.ac.kr
   location: Busan, South Korea
-  image: ""
+  image: my_photo.jpg
   summary: I'm interested in Graph Theory, NeuroAI, BCI.
 
   social_networks:
@@ -27,7 +27,7 @@ cv:
         location: Busan, South Korea
         url: pusan.ac.kr
         area: Computer Science & Engineering - AI major
-        studyType: BS
+        studyType: Bachelor's Degree (BS)
         start_date: 2023
         end_date: 2027
         score: "3.99/4.5"
