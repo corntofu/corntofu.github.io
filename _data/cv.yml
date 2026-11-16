@@ -15,26 +15,23 @@ cv:
       username: example
 
   address:
-    street: 2712 Broadway St
-    city: San Francisco
-    region: California
-    postalCode: CA 94115
-    countryCode: US
+    street: 부산대학로63번길 2 
+    city: Busan
+    region: Busan metropolitan city
+    postalCode: 46241
+    countryCode: KR
 
   sections:
     Education:
-      - institution: University of Zurich
-        location: Zurich, Switzerland
-        url: https://www.uzh.ch/
-        area: Physics
-        studyType: PhD
-        start_date: 1900
-        end_date: 1905
-        score: ""
-        courses: "Theory of Relativity"
-        highlights:
-          - Description 1.
-          - Description 2.
+      - institution: Pusan National University
+        location: Busan, South Korea
+        url: pusan.ac.kr
+        area: Computer Science & Engineering - AI major
+        studyType: BS
+        start_date: 2023
+        end_date: 2027
+        score: "3.99/4.5"
+        #courses: "Theory of Relativity"
 
       - institution: Eidgenössische Technische Hochschule
         location: Zurich, Switzerland
