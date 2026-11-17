@@ -35,7 +35,7 @@ cv:
 
       - institution: Kyungpook National University
         location: Daegu, South Korea
-        area: Electronic Engineering Artifical Intelligence major
+        area: Electronic Engineering - Artifical Intelligence major
         studyType: Exchange Student
         start_date: 2025
         end_date: 2025
@@ -143,36 +143,30 @@ cv:
         keywords: "Quantum Mechanics, Quantum Computing, Quantum Information, Quantum Cryptography, Quantum Communication, Quantum Teleportation"
 
     Languages:
-      - name: German
+      - name: Korean
         summary: "Native speaker"
 
       - name: English
-        summary: "Fluent"
+        summary: "Intermediate"
 
     Interests:
-      - name: Computer Science & Graph Theory
+      - name: Graph Theory
         icon: fa-solid fa-tag
         keywords: "Spectral Graph Theory, Temporal Graph Theory, Random Graph Theory, GNN"
 
-      - name: Computational Neuroscience & NeuroAI
+      - name: Computational Neuroscience
         icon: fa-solid fa-tag
-        keywords: "SNN, Neuronal Dynamics, NeuroAI, Brain-Computer Interface"
+        keywords: "Neuronal Dynamics, Brain-Computer Interface"
+
+      - name: NeuroAI
+        icon: fa-solid fa-tag
+        keywords: "SNN, Brain-Inspired AI"
 
     Certificates:
       - name: Machine Learning
         date: 2018-01-01
         issuer: Stanford University
         icon: fa-solid fa-location-dot
-
-      - name: Quantum Computing
-        date: 2018-01-01
-        issuer: Stanford University
-        icon: fa-solid fa-tag
-
-      - name: Quantum Information
-        date: 2018-01-01
-        issuer: Stanford University
-        icon: fa-solid fa-envelope
 
     Projects:
       - name: Quantum Computing
