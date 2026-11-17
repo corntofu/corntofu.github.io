@@ -33,15 +33,18 @@ cv:
         score: "3.99/4.5"
         #courses: "Theory of Relativity"
 
-      - institution: Eidgenössische Technische Hochschule
-        location: Zurich, Switzerland
-        area: Physics
-        studyType: Federal teaching diploma
-        start_date: 1896
-        end_date: 1900
+      - institution: Kyungpook National University
+        location: Daegu, South Korea
+        area: Electronic Engineering Artifical Intelligence major
+        studyType: Exchange Student
+        start_date: 2025
+        end_date: 2025
         highlights:
-          - Description 1.
-          - Description 2.
+          - Intelligence HCI
+          - Introduction to Reinforcement Learning
+          - Deep Learning
+          - Algorithm 2
+          - Image Recognition
 
     Experience:
       - company: Institute for Advanced Study, Princeton University
