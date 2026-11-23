@@ -47,7 +47,7 @@ jobs:
           rendercv_input="$(dirname "$cv_file")/cv.rendercv.yml"
           python bin/prepare_rendercv_input.py "$cv_file" "$rendercv_input"
           rendercv render "$rendercv_input" --settings $settings
-          rm "$rendercv_input"
+          rm -f "$rendercv_input" "$(dirname "$cv_file")"/cv.rendercv-photo.*
           # keep only the PDFs (drops the .typ source and the photo copied next to it)
           find assets/rendercv/rendercv_output -type f ! -name "*.pdf" -delete
       - name: Upload rendercv_output as an artifact

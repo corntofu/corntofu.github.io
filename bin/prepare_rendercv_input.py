@@ -8,7 +8,9 @@ script maps those fields onto RenderCV's schema in a separate file and leaves
 _data/cv.yml untouched:
 
   label   -> headline
-  image   -> photo (as a path relative to the output file, if the image exists)
+  image   -> photo (copied next to the output as <output stem>-photo.<ext>,
+             with <ext> taken from the file's real format: a PNG saved as
+             .jpg makes Typst fail with "Error parsing image")
   summary -> a "Summary" section placed first
   address -> dropped (RenderCV has no field for it; `location` already covers it)
 
@@ -18,9 +20,26 @@ assets/rendercv/settings.yaml are resolved relative to it.
 """
 
 import os
+import shutil
 import sys
 
 import yaml
+
+
+SIGNATURES = {
+    b"\x89PNG\r\n\x1a\n": ".png",
+    b"\xff\xd8\xff": ".jpg",
+    b"GIF8": ".gif",
+}
+
+
+def real_extension(path: str) -> str:
+    with open(path, "rb") as handle:
+        head = handle.read(8)
+    for signature, extension in SIGNATURES.items():
+        if head.startswith(signature):
+            return extension
+    return os.path.splitext(path)[1]
 
 
 def main(source: str, target: str) -> None:
@@ -35,8 +54,12 @@ def main(source: str, target: str) -> None:
 
     image = cv.pop("image", None)
     if image and not cv.get("photo"):
-        photo = os.path.join("..", "assets", "img", image)
-        if os.path.isfile(os.path.join(os.path.dirname(os.path.abspath(target)), photo)):
+        target_dir = os.path.dirname(os.path.abspath(target))
+        image_path = os.path.join(target_dir, "..", "assets", "img", image)
+        if os.path.isfile(image_path):
+            stem = os.path.splitext(os.path.basename(target))[0]
+            photo = stem + "-photo" + real_extension(image_path)
+            shutil.copyfile(image_path, os.path.join(target_dir, photo))
             cv["photo"] = photo
 
     summary = cv.pop("summary", None)
