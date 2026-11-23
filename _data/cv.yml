@@ -15,7 +15,7 @@ cv:
       username: example
 
   address:
-    street: 부산대학로63번길 2 
+    street: 부산대학로63번길 2
     city: Busan
     region: Busan metropolitan city
     postalCode: 46241
