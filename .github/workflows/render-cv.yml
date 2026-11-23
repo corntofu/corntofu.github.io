@@ -42,8 +42,14 @@ jobs:
             echo "Missing RenderCV config file!"
             exit 1
           fi
-          rendercv render $cv_file --settings $settings
-          rm assets/rendercv/rendercv_output/*.typ
+          # cv.yml carries fields the site's CV page needs but RenderCV rejects,
+          # so render a converted copy next to it and delete it afterwards.
+          rendercv_input="$(dirname "$cv_file")/cv.rendercv.yml"
+          python bin/prepare_rendercv_input.py "$cv_file" "$rendercv_input"
+          rendercv render "$rendercv_input" --settings $settings
+          rm "$rendercv_input"
+          # keep only the PDFs (drops the .typ source and the photo copied next to it)
+          find assets/rendercv/rendercv_output -type f ! -name "*.pdf" -delete
       - name: Upload rendercv_output as an artifact
         uses: actions/upload-artifact@v7
         with:
