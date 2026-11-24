@@ -7,11 +7,11 @@ first_name: HyeonTaek
 middle_name: ""
 last_name: Kang
 description: >-
-  HyeonTaek Kang, undergraduate student at Pusan National University. Research interests include computational neuroscience, reinforcement learning, and graph algorithms.
+  HyeonTaek Kang, undergraduate student at Pusan National University. Research interests include computational neuroscience, brain–computer interfaces, time series analysis, reinforcement learning, and graph algorithms.
 footer_text: >
   Powered by <a href="https://jekyllrb.com/" target="_blank">Jekyll</a> with the <a href="https://github.com/alshedivat/al-folio">al-folio</a> theme.
   Hosted by <a href="https://pages.github.com/" target="_blank">GitHub Pages</a>.
-keywords: HyeonTaek Kang, Pusan National University, computational neuroscience, reinforcement learning, graph algorithms, spiking neural networks
+keywords: HyeonTaek Kang, Pusan National University, computational neuroscience, reinforcement learning, graph algorithms, spiking neural networks, BCI, time series analysis
 lang: en # the language of your site (for example: en, fr, cn, ru, etc.)
 icon: 🎓 # text favicon
 apple_touch_icon: # image name in /assets/img/ (or a rooted path / absolute URL) used for iOS home-screen bookmarks; needs a real 180x180 PNG, since Safari ignores the emoji favicon above. Left empty, iOS falls back to a screenshot of the page.

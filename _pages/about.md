@@ -23,7 +23,7 @@ latest_posts:
   limit: 3
 ---
 
-I’m an undergraduate student in the School of Computer Science and Engineering at Pusan National University. My research interests include computational neuroscience, reinforcement learning, graph algorithms, graph neural networks, and spiking neural networks.
+I’m an undergraduate student in the School of Computer Science and Engineering at Pusan National University. My research interests include computational neuroscience, brain–computer interfaces (BCI), time series analysis, reinforcement learning, graph algorithms, graph neural networks, and spiking neural networks.
 
 I worked as a research student in the Algorithm & Data Engineering (ALDE) Lab and the Brain & Cognitive Engineering (BCE) Lab at Pusan National University, and as a research intern in the CSP Lab at the Daegu Gyeongbuk Institute of Science & Technology (DGIST).
 
