@@ -21,13 +21,21 @@ cv:
           - GPA 3.99 / 4.5
 
     Research Interests:
-      - bullet: Computational neuroscience
-      - bullet: Brain–computer interfaces (BCI)
-      - bullet: Time series analysis
-      - bullet: Reinforcement learning
-      - bullet: Graph algorithms
-      - bullet: Graph neural networks
-      - bullet: Spiking neural networks
+      - bullet: |-
+          **Graph Algorithms**
+
+          - Graph neural networks (GNNs)
+      - bullet: |-
+          **Neuroscience**
+
+          - Computational neuroscience
+          - Brain–computer interfaces (BCI)
+          - Spiking neural networks (SNNs)
+      - bullet: |-
+          **Machine Learning**
+
+          - Reinforcement learning
+      - bullet: "**Time Series Analysis**"
 
     Research Experience:
       - bullet: "**Research Intern**, CSP Lab, Daegu Gyeongbuk Institute of Science & Technology (DGIST) · July 2026"
