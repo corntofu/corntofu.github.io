@@ -1,0 +1,192 @@
+.cv-print-actions {
+  text-align: right;
+}
+
+.cv-print-button {
+  padding: 0.4rem 0.8rem;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  color: var(--global-theme-color);
+  background: var(--global-card-bg-color, var(--global-bg-color));
+  cursor: pointer;
+}
+
+.cv-page .date-column .badge {
+  max-width: 8rem;
+  white-space: normal;
+  line-height: 1.3;
+}
+
+@media (min-width: 576px) {
+  .cv-page .date-column {
+    flex: 0 0 9rem;
+    max-width: 9rem;
+  }
+
+  .cv-page .date-column + div {
+    flex: 1 1 0;
+    max-width: none;
+    min-width: 0;
+  }
+}
+
+.cv-print-sheet[hidden] {
+  display: none;
+}
+
+@media print {
+  @page {
+    size: A4;
+    margin: 13mm 15mm;
+  }
+
+  html,
+  body.fixed-top-nav {
+    background: #fff !important;
+    color: #242c38;
+  }
+
+  body.fixed-top-nav {
+    padding: 0;
+  }
+
+  body > :not([role="main"]),
+  [role="main"] > .row > .col-sm-3,
+  .cv-page {
+    display: none !important;
+  }
+
+  [role="main"],
+  [role="main"] > .row,
+  [role="main"] > .row > .col-sm-9 {
+    display: block;
+    width: auto;
+    max-width: none;
+    margin: 0 !important;
+    padding: 0;
+  }
+
+  .cv-print-sheet[hidden] {
+    --cv-ink: #182b44;
+    --cv-muted: #49586a;
+    --cv-rule: #b2bfcd;
+    display: block !important;
+    color: #242c38;
+    font:
+      9.5pt / 1.37 "Helvetica Neue",
+      Arial,
+      "Liberation Sans",
+      sans-serif;
+  }
+
+  .cv-print-sheet :is(h1, h2, h3, p, address) {
+    margin: 0;
+  }
+
+  .cv-print-header {
+    border-top: 2.5pt solid var(--cv-ink);
+    padding-top: 8pt;
+    margin-bottom: 10pt;
+  }
+
+  .cv-print-sheet .cv-print-header h1 {
+    color: var(--cv-ink);
+    font:
+      600 28pt / 1.05 "Iowan Old Style",
+      "Palatino Linotype",
+      Georgia,
+      "Liberation Serif",
+      serif;
+    letter-spacing: -0.35pt;
+  }
+
+  .cv-print-subtitle {
+    color: var(--cv-muted);
+    padding-top: 3pt;
+    font-size: 10pt;
+  }
+
+  .cv-print-contact {
+    display: flex;
+    flex-wrap: wrap;
+    color: var(--cv-muted);
+    font-style: normal;
+    padding-top: 5pt;
+  }
+
+  .cv-print-contact > * + * {
+    border-left: 0.5pt solid var(--cv-rule);
+    margin-left: 7pt;
+    padding-left: 7pt;
+  }
+
+  .cv-print-sheet a {
+    color: inherit !important;
+    text-decoration: none;
+  }
+
+  .cv-print-section {
+    margin-top: 9pt;
+  }
+
+  .cv-print-sheet .cv-print-section h2 {
+    border-bottom: 0.5pt solid var(--cv-rule);
+    color: var(--cv-ink);
+    margin-bottom: 4pt;
+    padding-bottom: 2pt;
+    font-size: 9pt;
+    font-weight: 700;
+    letter-spacing: 0.9pt;
+    text-transform: uppercase;
+    break-after: avoid;
+  }
+
+  .cv-print-entry {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 3pt;
+    break-inside: avoid;
+  }
+
+  .cv-print-entry > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-right: 12pt;
+  }
+
+  .cv-print-sheet .cv-print-entry h3 {
+    color: var(--cv-ink);
+    font-size: 10pt;
+    font-weight: 700;
+    line-height: 1.3;
+  }
+
+  .cv-print-meta {
+    flex: 0 0 95pt;
+    color: var(--cv-muted);
+    text-align: right;
+    white-space: nowrap;
+  }
+
+  .cv-print-date {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .cv-print-interests {
+    columns: 2;
+    column-gap: 20pt;
+  }
+
+  .cv-print-interests > div,
+  .cv-print-contest {
+    margin-bottom: 2pt;
+    break-inside: avoid;
+  }
+
+  .cv-print-interests ul {
+    padding-left: 12pt;
+    margin: 0;
+  }
+}

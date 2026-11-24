@@ -1,0 +1,5 @@
+const cvPrintActions = document.querySelector(".cv-print-actions");
+cvPrintActions
+  .querySelector("button")
+  .addEventListener("click", () => window.print());
+cvPrintActions.hidden = false;

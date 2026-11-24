@@ -1,18 +1,9 @@
 name: Render a CV
 on:
-  push:
-    branches:
-      - main
-      - master
-    paths:
-      - "_data/cv.yml"
-      - "assets/rendercv/design.yaml"
-      - "assets/rendercv/locale.yaml"
-      - "assets/rendercv/settings.yaml"
   workflow_call:
   workflow_dispatch:
 permissions:
-  contents: write
+  contents: read
 jobs:
   rendercv:
     name: RenderCV
@@ -42,17 +33,16 @@ jobs:
             echo "Missing RenderCV config file!"
             exit 1
           fi
-          rendercv render $cv_file --settings $settings
-          rm assets/rendercv/rendercv_output/*.typ
+          # cv.yml carries fields the site's CV page needs but RenderCV rejects,
+          # so render a converted copy next to it and delete it afterwards.
+          rendercv_input="$(dirname "$cv_file")/cv.rendercv.yml"
+          python bin/prepare_rendercv_input.py "$cv_file" "$rendercv_input"
+          rendercv render "$rendercv_input" --settings $settings
+          rm -f "$rendercv_input" "$(dirname "$cv_file")"/cv.rendercv-photo.*
+          # keep only the PDFs (drops the .typ source and the photo copied next to it)
+          find assets/rendercv/rendercv_output -type f ! -name "*.pdf" -delete
       - name: Upload rendercv_output as an artifact
         uses: actions/upload-artifact@v7
         with:
           name: RenderCV Output
           path: assets/rendercv/rendercv_output
-      - name: Push the changes
-        run: |
-          git config --global user.name "${{ github.actor }}"
-          git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-          git add -A
-          git commit -m "chore: render the latest CV"
-          git push
