@@ -37,10 +37,19 @@ cv:
           - Reinforcement learning
       - bullet: "**Time Series Analysis**"
 
-    Research Experience:
-      - bullet: "**Research Intern**, CSP Lab, Daegu Gyeongbuk Institute of Science & Technology (DGIST) · July 2026"
-      - bullet: "**Research Student**, Brain & Cognitive Engineering (BCE) Lab, Pusan National University · June–August 2025"
-      - bullet: "**Research Student**, Algorithm & Data Engineering (ALDE) Lab, Pusan National University · January 2024–May 2025"
+    Experience:
+      - company: CSP Lab, Daegu Gyeongbuk Institute of Science & Technology (DGIST)
+        position: Research Intern
+        location: Daegu, South Korea
+        date: Jul 2026
+      - company: Brain & Cognitive Engineering (BCE) Lab, Pusan National University
+        position: Research Student
+        location: Busan, South Korea
+        date: Jun–Aug 2025
+      - company: Algorithm & Data Engineering (ALDE) Lab, Pusan National University
+        position: Research Student
+        location: Busan, South Korea
+        date: Jan 2024 – May 2025
 
     Honors and Awards:
       - title: UCPC 2026 Final Round
