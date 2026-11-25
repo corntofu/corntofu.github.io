@@ -1,0 +1,172 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> 선형대수와 군 1장: 동치류와 분할 | HyeonTaek Kang </title> <meta name="author" content="HyeonTaek Kang"> <meta name="description" content="동치관계가 집합을 분할하는 이유를 증명하고, 합동식과 선형사상의 핵, 군의 잉여류에 연결한다."> <meta name="keywords" content="HyeonTaek Kang, Pusan National University, computational neuroscience, reinforcement learning, graph algorithms, spiking neural networks, BCI, time series analysis"> <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; media-src 'self' https:; frame-src 'self' https:; connect-src 'self' https:;"> <style>
+  :root {
+    --max-content-width: 930px;
+  }
+</style> <link rel="stylesheet" href="/assets/css/tailwind.css?v=50c64c15cbb9fd1ce6056fdb8bcb4b62"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.5/css/academicons.min.css" integrity="sha256-SzrCOBJbGVFMahewkgjwnApaV2+av1DwMAA+/QGLyZw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/scholar-icons@1.0.3/css/scholar-icons.css" integrity="sha256-VY3hHVj/hNX3fYG6wtbA6TcKJQl7+FthzGSyIB64klY=" crossorigin="anonymous"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?v=591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%8E%93&lt;/text&gt;&lt;/svg&gt;"> <link rel="stylesheet" href="/assets/css/main.css?v=3116ba77db9ee1581d05bb3e86fbf7f1"> <link rel="canonical" href="https://corntofu.github.io/blog/2026/equivalence-classes-and-partitions/"> <script src="/assets/js/theme.js?v=5286c3e4c334d0ecb8fc0c40ff4fa7ec"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?v=5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
+    initTheme();
+  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">HyeonTaek</span> Kang </a> <button class="navbar-toggler collapsed navbar-toggler-main" type="button" data-nav-toggle="navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse navbar-collapse-main" id="navbarNav"> <ul class="navbar-nav navbar-menu-list flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV </a> </li> <li class="nav-item"> <button id="search-toggle" type="button" title="Search" aria-label="Open search"> <span class="nav-link">ctrl k <i class="fa-solid fa-magnifying-glass"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" type="button" title="Change theme" aria-label="Change color theme"> <i class="fa-half-sun-moon" id="light-toggle-system"></i> <i class="fa-solid fa-moon" id="light-toggle-dark"></i> <i class="fa-solid fa-sun" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <div class="post"> <header class="post-header"> <h1 class="post-title">선형대수와 군 1장: 동치류와 분할</h1> <p class="post-meta"> Created on November 25, 2026 </p> <p class="post-tags"> <a href="/blog/2026"> <i class="fa-solid fa-calendar fa-sm"></i> 2026 </a>   ·   <a href="/blog/tag/math"> <i class="fa-solid fa-hashtag fa-sm"></i> math</a>   <a href="/blog/tag/linear-algebra"> <i class="fa-solid fa-hashtag fa-sm"></i> linear-algebra</a>   <a href="/blog/tag/group-theory"> <i class="fa-solid fa-hashtag fa-sm"></i> group-theory</a>   ·   <a href="/blog/category/mathematics"> <i class="fa-solid fa-tag fa-sm"></i> Mathematics</a> </p> </header> <article class="post-content"> <div id="markdown-content"> <p>수학에서는 서로 다른 두 대상을 어떤 기준에서 같다고 취급한다. 예를 들어 정수 1과 7은 서로 다른 수지만, 3으로 나눈 나머지는 같다. 이렇게 <strong>같다고 보는 기준</strong>을 동치관계라고 하고, 그 기준으로 묶인 원소들의 집합을 동치류라고 한다.</p> <p>이 글에서는 동치관계와 분할이 서로 어떻게 대응하는지 증명하고, 이 아이디어가 선형대수와 군론에서 어떻게 나타나는지 살펴본다.</p> <h2 id="1-관계와-동치관계">1. 관계와 동치관계</h2> <p>집합 $X$ 위의 관계는 $X$의 두 원소 사이에 어떤 조건이 성립하는지를 나타낸다. $a$와 $b$가 관계에 있을 때 $a\sim b$라고 쓰자.</p> <p>관계 $\sim$이 다음 세 조건을 만족하면 <strong>동치관계(equivalence relation)</strong>라고 한다.</p> <ol> <li> <strong>반사성:</strong> 모든 $a\in X$에 대해 $a\sim a$.</li> <li> <strong>대칭성:</strong> $a\sim b$이면 $b\sim a$.</li> <li> <strong>추이성:</strong> $a\sim b$이고 $b\sim c$이면 $a\sim c$.</li> </ol> <p>세 조건은 우리가 흔히 생각하는 “같다”는 관계의 성질을 추상화한다. 다만 실제로 같은 원소일 필요는 없다. 어떤 정보를 무시할 때 구별되지 않으면 동치로 볼 수 있다.</p> <h3 id="예제-정수의-합동">예제: 정수의 합동</h3> <p>$n$을 양의 정수라 하자. 정수 $a,b$에 대해</p> \[a\sim b \quad\Longleftrightarrow\quad n\mid(a-b)\] <p>로 정의하면 이는 동치관계다. 보통 $a\equiv b\pmod n$으로 쓴다.</p> <ul> <li>$a-a=0$이므로 $n\mid(a-a)$: 반사성.</li> <li>$n\mid(a-b)$이면 $n\mid(b-a)$: 대칭성.</li> <li>$n\mid(a-b)$이고 $n\mid(b-c)$이면 $n\mid(a-c)$: 추이성.</li> </ul> <p>예를 들어 $7\equiv1\pmod 3$이다. 두 수의 차 $7-1=6$이 3의 배수이기 때문이다.</p> <h2 id="2-동치류란">2. 동치류란?</h2> <p>동치관계 $\sim$이 주어졌을 때 $a\in X$의 <strong>동치류(equivalence class)</strong>는 $a$와 동치인 모든 원소의 집합이다.</p> \[[a]=\{x\in X\mid x\sim a\}.\] <p>$a$를 이 동치류의 <strong>대표원(representative)</strong>이라고 한다. 반사성에 의해 $a\in[a]$이므로 동치류는 항상 공집합이 아니다.</p> <h3 id="예제-3을-법으로-하는-동치류">예제: 3을 법으로 하는 동치류</h3> <p>$\mathbb Z$에서 3을 법으로 하는 합동을 생각하자.</p> \[[0]=\{\ldots,-6,-3,0,3,6,\ldots\},\] \[[1]=\{\ldots,-5,-2,1,4,7,\ldots\},\] \[[2]=\{\ldots,-4,-1,2,5,8,\ldots\}.\] <p>모든 정수는 이 세 집합 중 하나에 속한다. 예를 들어 $7\in[1]$이고, $7$을 대표원으로 골라도 같은 집합이므로 $[7]=[1]$이다.</p> <blockquote> <p>$7$과 $1$은 서로 다른 원소지만, $[7]$과 $[1]$은 같은 <strong>집합</strong>이다. 동치와 실제 원소의 동일함을 구분하자.</p> </blockquote> <h3 id="핵심-성질-동치류는-같거나-서로소다">핵심 성질: 동치류는 같거나 서로소다</h3> <p>임의의 $a,b\in X$에 대해 다음 세 조건은 동치다.</p> \[a\sim b \quad\Longleftrightarrow\quad [a]=[b] \quad\Longleftrightarrow\quad [a]\cap[b]\ne\varnothing.\] <p><strong>증명.</strong></p> <p>먼저 $a\sim b$라고 하자. $x\in[a]$이면 $x\sim a$이고, 추이성에 의해 $x\sim b$이므로 $x\in[b]$이다. 따라서 $[a]\subseteq[b]$이다. 대칭성으로 $b\sim a$이므로 같은 논리를 반대로 적용하면 $[b]\subseteq[a]$이고, 결국 $[a]=[b]$이다.</p> <p>반대로 $[a]=[b]$라면 $a\in[a]=[b]$이므로 $a\sim b$이다.</p> <p>또한 $[a]=[b]$이면 $a\in[a]$이므로 교집합은 공집합이 아니다. 마지막으로 $x\in[a]\cap[b]$라면 $x\sim a$, $x\sim b$이다. 대칭성과 추이성으로 $a\sim x\sim b$이므로 $a\sim b$이다. 따라서 세 조건은 서로 동치다.</p> <p>특히 서로 다른 두 동치류는 공통 원소를 가질 수 없다.</p> <h2 id="3-분할이란">3. 분할이란?</h2> <p>집합 $X$의 <strong>분할(partition)</strong>은 $X$를 겹치지 않는 비어 있지 않은 부분집합들로 빠짐없이 나눈 것이다. 부분집합들의 모임 $\mathcal P$가 다음을 만족해야 한다.</p> <ol> <li>모든 $B\in\mathcal P$에 대해 $B\ne\varnothing$.</li> <li>서로 다른 $B,C\in\mathcal P$에 대해 $B\cap C=\varnothing$.</li> <li>모든 조각의 합집합이 $X$: $\bigcup_{B\in\mathcal P}B=X$.</li> </ol> <p>각 부분집합을 분할의 <strong>블록(block)</strong>이라고 한다. 즉 $X$의 모든 원소는 정확히 하나의 블록에 속한다.</p> <p>예를 들어 $X={1,2,3,4,5}$에 대해</p> \[\mathcal P=\bigl\{\{1,4\},\{2,5\},\{3\}\bigr\}\] <p>은 분할이다. 반면 ${{1,2},{2,3},{4,5}}$는 원소 2가 두 블록에 들어 있으므로 분할이 아니다.</p> <h2 id="4-동치관계가-분할을-만든다">4. 동치관계가 분할을 만든다</h2> <p><strong>정리.</strong> $X$ 위의 동치관계 $\sim$에 대해 모든 서로 다른 동치류의 모임</p> \[X/{\sim}=\{[a]\mid a\in X\}\] <p>은 $X$의 분할이다.</p> <p><strong>증명.</strong> 분할의 세 조건을 확인한다.</p> <ol> <li>반사성에 의해 $a\in[a]$이므로 모든 동치류는 비어 있지 않다.</li> <li>두 동치류가 공통 원소를 가지면 앞에서 증명한 성질에 의해 두 동치류는 같다. 따라서 서로 다른 동치류는 서로소다.</li> <li>모든 $x\in X$에 대해 $x\in[x]$이므로 동치류들의 합집합은 $X$ 전체다.</li> </ol> <p>따라서 동치류들은 $X$의 분할을 이룬다. $\square$</p> <p>여기서 $X/{\sim}$은 <strong>몫집합(quotient set)</strong>이라고 한다. 몫집합의 원소는 $X$의 원소 하나가 아니라 <strong>동치류라는 집합</strong>이다.</p> <p>예를 들어</p> \[\mathbb Z/3\mathbb Z=\{[0],[1],[2]\}\] <p>에서 $[0]$은 정수 0 하나가 아니라 3의 배수 전체의 집합이다.</p> <h2 id="5-분할도-동치관계를-만든다">5. 분할도 동치관계를 만든다</h2> <p>이번에는 반대 방향을 보자. $X$의 분할 $\mathcal P$가 주어졌을 때</p> \[a\sim b \quad\Longleftrightarrow\quad a\text{와 }b\text{가 같은 블록에 속한다}\] <p>로 정의한다. 그러면 이 관계는 동치관계다.</p> <ul> <li> <strong>반사성:</strong> 모든 원소는 자신이 속한 블록 안에 있다.</li> <li> <strong>대칭성:</strong> $a,b$가 같은 블록에 있으면 $b,a$도 같은 블록에 있다.</li> <li> <strong>추이성:</strong> $a,b$가 한 블록에 있고 $b,c$가 한 블록에 있으면, $b$를 포함하는 블록은 유일하므로 세 원소는 모두 같은 블록에 있다.</li> </ul> <p>이렇게 만든 관계에서 각 원소의 동치류는 그 원소가 속한 블록과 정확히 같다. 따라서 동치관계에서 분할을 만들고 다시 관계를 복원하거나, 분할에서 관계를 만들고 동치류를 취하면 원래 것으로 돌아온다.</p> \[\boxed{\text{집합 }X\text{ 위의 동치관계} \quad\longleftrightarrow\quad \text{집합 }X\text{의 분할}}\] <blockquote> <p>동치관계는 <strong>두 원소를 언제 같은 것으로 볼지</strong> 말해 준다. 분할은 그 기준으로 <strong>원소들이 어떻게 묶이는지</strong> 보여 준다.</p> </blockquote> <h2 id="6-선형대수-핵과-몫공간">6. 선형대수: 핵과 몫공간</h2> <p>벡터공간 $V$의 부분공간 $W$에 대해 다음 관계를 정의하자.</p> \[u\sim v \quad\Longleftrightarrow\quad u-v\in W.\] <p>$0\in W$이므로 반사성이 성립한다. $u-v\in W$이면 $v-u=-(u-v)\in W$이므로 대칭성이 성립한다. 또한 $u-v,v-w\in W$이면 $u-w=(u-v)+(v-w)\in W$이므로 추이성도 성립한다.</p> <p>따라서 동치류는</p> \[[v]=v+W=\{v+w\mid w\in W\}\] <p>이다. 이 동치류들의 집합은 <strong>몫공간</strong> $V/W$를 이룬다. $v$에서 $W$ 방향으로 움직여 얻는 벡터들을 하나의 대상으로 묶는다고 생각할 수 있다.</p> <p>예를 들어 $V=\mathbb R^2$, $W={(t,0)\mid t\in\mathbb R}$이면</p> \[[(a,b)]=(a,b)+W=\{(a+t,b)\mid t\in\mathbb R\}.\] <p>같은 높이의 점이 하나의 동치류를 이룬다. $\mathbb R^2$는 서로 겹치지 않는 수평선들로 분할된다.</p> <p>선형사상 $T:V\to U$에 대해서는</p> \[T(u)=T(v) \quad\Longleftrightarrow\quad T(u-v)=0 \quad\Longleftrightarrow\quad u-v\in\ker T.\] <p>즉 같은 출력으로 가는 벡터들은 $\ker T$에 대한 하나의 동치류를 이룬다. $T$가 구별하지 못하는 차이를 묶으면, 유도된 선형사상 $V/\ker T\to\operatorname{im}T$, $[v]\mapsto T(v)$는 잘 정의된 선형 동형이다. 이것이 선형대수에서의 <strong>제1동형정리</strong>다.</p> <h2 id="7-군론-잉여류와-몫군">7. 군론: 잉여류와 몫군</h2> <p>군 $G$의 부분군 $H$에 대해</p> \[a\sim b \quad\Longleftrightarrow\quad a^{-1}b\in H\] <p>로 정의하면 동치관계다. 이때 $a$의 동치류는 왼쪽 잉여류</p> \[aH=\{ah\mid h\in H\}\] <p>와 같다. 따라서 서로 다른 왼쪽 잉여류는 $G$를 분할한다.</p> <p>다만 <strong>잉여류들의 집합이 언제나 자연스럽게 군이 되는 것은 아니다.</strong> $H$가 정규부분군일 때에만 대표원 선택과 무관하게 $(aH)(bH)=abH$로 연산을 정의할 수 있고, 이때 몫군 $G/H$를 얻는다.</p> <p>정수의 경우 $\mathbb Z$는 덧셈군이고 $n\mathbb Z$는 정규부분군이므로, 앞의 $\mathbb Z/n\mathbb Z$는 몫집합이면서 덧셈에 관한 몫군이기도 하다.</p> <h2 id="8-연습문제">8. 연습문제</h2> <p><strong>Q1.</strong> $\mathbb Z$에서 $a\sim b\Longleftrightarrow 4\mid(a-b)$로 정의한다. 서로 다른 동치류를 모두 쓰고 $[-3]$을 그중 하나로 표현하라.</p> <p><strong>Q2.</strong> $\mathbb R$에서 $x\sim y\Longleftrightarrow x^2=y^2$로 정의한다. 동치관계임을 확인하고 $[2]$, $[0]$을 구하라.</p> <table> <tbody> <tr> <td> <strong>Q3.</strong> $\mathbb R$에서 $x\sim y\Longleftrightarrow</td> <td>x-y</td> <td>&lt;1$로 정의한다. 동치관계인지 판별하라.</td> </tr> </tbody> </table> <p><strong>Q4.</strong> $T:\mathbb R^2\to\mathbb R$, $T(x,y)=x+y$에 대해 $\ker T$와 $(1,2)$의 동치류 $(1,2)+\ker T$를 구하라.</p> <details> <summary><strong>정답과 해설</strong></summary> <ul> <li> <strong>Q1.</strong> 서로 다른 동치류는 $[0],[1],[2],[3]$이다. $-3-1=-4$이므로 $[-3]=[1]$이다.</li> <li> <strong>Q2.</strong> 제곱값의 같음은 반사성·대칭성·추이성을 모두 만족한다. $[2]={-2,2}$, $[0]={0}$이다. 대표원에 따라 원소의 개수가 다를 수 있다.</li> <li> <strong>Q3.</strong> 동치관계가 아니다. $0\sim0.6$, $0.6\sim1.2$이지만 $0\not\sim1.2$이므로 추이성이 성립하지 않는다.</li> <li> <strong>Q4.</strong> $\ker T={(t,-t)\mid t\in\mathbb R}$이고, $(1,2)+\ker T={(1+t,2-t)\mid t\in\mathbb R}={(x,y)\in\mathbb R^2\mid x+y=3}$이다.</li> </ul> </details> <h2 id="참고-자료">참고 자료</h2> <ul> <li><a href="https://personal.math.ubc.ca/~PLP/book/ch_relations-5.html" rel="external nofollow noopener" target="_blank">University of British Columbia, Equivalence relations and equivalence classes</a></li> <li><a href="https://sites.ualberta.ca/~jsylvest/books/EF/section-equiv-rel-classes.html" rel="external nofollow noopener" target="_blank">University of Alberta, Equivalence classes, partitions, and quotients</a></li> </ul> </div> </article> <br> <hr> <br> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <ul class="list-disc pl-7 my-3 space-y-2 marker:text-[var(--global-theme-color)]"> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-22029/">BOJ 22029 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/engineering-math-day-1-2/">공학수학 24일 학습 — Day 1–2: ODE의 구조와 풀이법 선택</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-18192/">BOJ 18192 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-16656/">BOJ 16656 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-26001/">BOJ 26001 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2025/marimo/">a post with marimo snippets</a> </li> </ul> </div> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2026 HyeonTaek Kang. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with the <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. </div> </footer> <script>
+  window.alFolio = {
+    compatBootstrap: false
+  };
+</script> <script src="/assets/js/nav-toggle.js?v=141bd79a73ebc0f0b6ea58e440ae79fc"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script> <script defer src="/assets/js/masonry.js?v=e49affc7bd2646f6acdad1dbe02c2359" type="text/javascript"></script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script> <script src="/assets/al_math/js/mathjax-setup.js"></script> <script src="/assets/js/tooltips-setup.js?v=fe487e99db6c43751e6e7bdb2d6a0611"></script> <script src="/assets/js/no_defer.js?v=53b1b1a645525975c963ce8bf8bfefcf"></script> <script defer src="/assets/js/common.js?v=87baac90f765f2f3362dcf6aaf312a8a"></script> <script defer src="/assets/js/copy_code.js?v=c8a01c11a92744d44b093fc3bda915df" type="text/javascript"></script> <script defer src="/assets/js/jupyter_new_tab.js?v=896d254890d9b47f0281f63bfccf0dee"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script> <script defer src="/assets/al_img_tools/js/zoom.js"></script> <script defer src="/assets/js/progress-bar.js?v=499464c5c63ced6cf7ad62509f1e2610" type="text/javascript"></script> <script src="https://cdn.jsdelivr.net/npm/vanilla-back-to-top@7.2.1/dist/vanilla-back-to-top.min.js" integrity="sha256-uMJJ3EoTyfRBoTbR+lrfu1uRQ87RZG8AR3cVNuQVeFg=" crossorigin="anonymous"></script> <script>
+    addBackToTop();
+  </script> <script type="module" src="/assets/al_search/js/search/ninja-keys.min.js"></script> <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys> <script src="/assets/al_search/js/search-setup.js"></script> <script>
+// get the ninja-keys element
+const ninja = document.querySelector('ninja-keys');
+
+// add the home and posts menu items
+ninja.data = [{
+    id: "nav-about",
+    title: "about",
+    section: "Navigation",
+    handler: () => {
+      window.location.href = "/";
+    },
+  },{id: "nav-blog",
+          title: "blog",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/blog/";
+          },
+        },{id: "nav-repositories",
+          title: "repositories",
+          description: "My GitHub profile and website source code.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/repositories/";
+          },
+        },{id: "nav-cv",
+          title: "CV",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/cv/";
+          },
+        },{id: "post-선형대수와-군-1장-동치류와-분할",
+        
+          title: "선형대수와 군 1장: 동치류와 분할",
+        
+        description: "동치관계가 집합을 분할하는 이유를 증명하고, 합동식과 선형사상의 핵, 군의 잉여류에 연결한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/equivalence-classes-and-partitions/";
+          
+        },
+      },{id: "post-boj-22029-풀이",
+        
+          title: "BOJ 22029 풀이",
+        
+        description: "철도",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-22029/";
+          
+        },
+      },{id: "post-공학수학-24일-학습-day-1-2-ode의-구조와-풀이법-선택",
+        
+          title: "공학수학 24일 학습 — Day 1–2: ODE의 구조와 풀이법 선택",
+        
+        description: "선형 ODE의 일반해와 특수해, 변수분리법, 적분인자법, 특성방정식, 미정계수법과 공진을 문제 풀이 중심으로 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/engineering-math-day-1-2/";
+          
+        },
+      },{id: "post-boj-18192-풀이",
+        
+          title: "BOJ 18192 풀이",
+        
+        description: "보고 정렬",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-18192/";
+          
+        },
+      },{id: "post-boj-16656-풀이",
+        
+          title: "BOJ 16656 풀이",
+        
+        description: "Interactive Array Guessing",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-16656/";
+          
+        },
+      },{id: "post-boj-26001-풀이",
+        
+          title: "BOJ 26001 풀이",
+        
+        description: "Jagged Skyline",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-26001/";
+          
+        },
+      },{id: "post-a-post-with-marimo-snippets",
+        
+          title: "a post with marimo snippets",
+        
+        description: "running Python in the browser with marimoa",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/marimo/";
+          
+        },
+      },{
+        id: 'social-email',
+        title: 'email',
+        section: 'Socials',
+        handler: () => {
+          window.open("mailto:%6B%61%6E%67%68%74%31%32%31%39@%70%75%73%61%6E.%61%63.%6B%72", "_blank");
+        },
+      },{
+        id: 'social-github',
+        title: 'GitHub',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://github.com/corntofu", "_blank");
+        },
+      },{
+        id: 'social-rss',
+        title: 'RSS Feed',
+        section: 'Socials',
+        handler: () => {
+          window.open("/feed.xml", "_blank");
+        },
+      },{
+      id: 'light-theme',
+      title: 'Change theme to light',
+      description: 'Change the theme of the site to Light',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("light");
+      },
+    },
+    {
+      id: 'dark-theme',
+      title: 'Change theme to dark',
+      description: 'Change the theme of the site to Dark',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("dark");
+      },
+    },
+    {
+      id: 'system-theme',
+      title: 'Use system default theme',
+      description: 'Change the theme of the site to System Default',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("system");
+      },
+    },];
+
+</script> <script src="/assets/al_search/js/shortcut-key.js"></script> </body> </html>
