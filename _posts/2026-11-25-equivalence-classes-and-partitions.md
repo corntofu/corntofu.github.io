@@ -227,19 +227,70 @@ $$
 
 **Q1.** $\mathbb Z$에서 $a\sim b\Longleftrightarrow 4\mid(a-b)$로 정의한다. 서로 다른 동치류를 모두 쓰고 $[-3]$을 그중 하나로 표현하라.
 
+<details markdown="1">
+<summary><strong>Q1 정답과 해설</strong></summary>
+
+서로 다른 동치류는 $[0],[1],[2],[3]$이다. $-3-1=-4$는 4의 배수이므로
+
+$$
+[-3]=[1]=\{\ldots,-7,-3,1,5,\ldots\}.
+$$
+
+</details>
+
 **Q2.** $\mathbb R$에서 $x\sim y\Longleftrightarrow x^2=y^2$로 정의한다. 동치관계임을 확인하고 $[2]$, $[0]$을 구하라.
 
-**Q3.** $\mathbb R$에서 $x\sim y\Longleftrightarrow |x-y|<1$로 정의한다. 동치관계인지 판별하라.
+<details markdown="1">
+<summary><strong>Q2 정답과 해설</strong></summary>
+
+제곱값의 같음은 반사성, 대칭성, 추이성을 모두 만족하므로 동치관계다. $x^2=4$의 해는 $x=\pm2$이고 $x^2=0$의 해는 $x=0$뿐이므로
+
+$$
+[2]=\{-2,2\},\qquad [0]=\{0\}.
+$$
+
+</details>
+
+**Q3.** $\mathbb R$에서 $x\sim y\Longleftrightarrow \lvert x-y\rvert\lt 1$로 정의한다. 동치관계인지 판별하라.
+
+<details markdown="1">
+<summary><strong>Q3 정답과 해설</strong></summary>
+
+동치관계가 아니다. 다음과 같이 추이성이 성립하지 않는 반례를 찾을 수 있다.
+
+$$
+0\sim 0.5,\qquad 0.5\sim 1,\qquad 0\not\sim 1.
+$$
+
+처음 두 쌍은 차의 절댓값이 $0.5$이지만, 마지막 쌍은 $\lvert 0-1\rvert=1$이므로 $\lvert x-y\rvert\lt 1$을 만족하지 않는다.
+
+</details>
 
 **Q4.** $T:\mathbb R^2\to\mathbb R$, $T(x,y)=x+y$에 대해 $\ker T$와 $(1,2)$의 동치류 $(1,2)+\ker T$를 구하라.
 
 <details markdown="1">
-<summary><strong>정답과 해설</strong></summary>
+<summary><strong>Q4 정답과 해설</strong></summary>
 
-- **Q1.** 서로 다른 동치류는 $[0],[1],[2],[3]$이다. $-3-1=-4$이므로 $[-3]=[1]$이다.
-- **Q2.** 제곱값의 같음은 반사성·대칭성·추이성을 모두 만족한다. $[2]=\{-2,2\}$, $[0]=\{0\}$이다. 대표원에 따라 원소의 개수가 다를 수 있다.
-- **Q3.** 동치관계가 아니다. $0\sim0.6$, $0.6\sim1.2$이지만 $0\not\sim1.2$이므로 추이성이 성립하지 않는다.
-- **Q4.** $\ker T=\{(t,-t)\mid t\in\mathbb R\}$이고, $(1,2)+\ker T=\{(1+t,2-t)\mid t\in\mathbb R\}=\{(x,y)\in\mathbb R^2\mid x+y=3\}$이다.
+$T(x,y)=0$이면 $x+y=0$이므로
+
+$$
+\ker T=\{(t,-t)\mid t\in\mathbb R\}.
+$$
+
+따라서 동치류는
+
+$$
+[(1,2)]=(1,2)+\ker T
+=\{(1+t,2-t)\mid t\in\mathbb R\}.
+$$
+
+$x=1+t$로 놓으면 두 번째 좌표가 $3-x$이므로, 같은 집합을 다음과 같이 쓸 수 있다.
+
+$$
+[(1,2)]=\{(x,3-x)\mid x\in\mathbb R\}.
+$$
+
+즉 $x+y=3$인 직선 전체다.
 
 </details>
 
