@@ -104,6 +104,64 @@ $$
 
 > **핵심:** 한 trial에서 관측한 $\rho(t)$와 우리가 알고 싶은 잠재적인 $r(t)$는 같은 것이 아니다. $r(t)$는 관측으로부터 *추정*해야 한다.
 
+### 2.3 $\langle\,\cdot\,\rangle$는 무슨 뜻인가?
+
+책에 반복해서 나오는 **angle brackets(꺾쇠괄호)**
+
+$
+\boxed{\langle X\rangle}
+$
+
+는 여기서는 보통 **평균(average)** 또는 **기댓값(expectation)**을 뜻한다. 단순히 $X$를 감싸는 괄호가 아니라, 어떤 기준으로 평균하는지가 중요하다. 아래첨자를 통해 그 기준을 명시할 수 있다.
+
+**(1) Ensemble average — 반복 trial에 대한 평균**
+
+같은 자극을 $M$번 제시하고 $k$번째 trial의 spike train을 $\rho_k(t)$라 하자.
+
+$
+\langle \rho(t)\rangle_{\mathrm{trials}}
+=\lim_{M\to\infty}\frac1M\sum_{k=1}^{M}\rho_k(t)
+=r(t).
+$
+
+즉 **동일한 시각 $t$에서 여러 시행의 반응을 평균**한다. 각 trial의 델타 함수가 합쳐지므로 위 식은 일반적인 점별 함수 등식보다는 분포(distribution) 또는 작은 시간 bin을 이용한 평균의 의미로 이해한다. 실제 실험에서는 유한한 trial 수를 사용해 추정한다.
+
+**(2) Time average — 한 기록을 시간에 따라 평균**
+
+시간에 따른 rate $r(t)$의 관측 구간 평균은
+
+$
+\boxed{
+\langle r\rangle_t
+=\frac1T\int_0^T r(t)\,dt
+}.
+$
+
+반면 **한 trial**의 spike train을 시간 평균하면
+
+$
+\langle\rho\rangle_t
+=\frac1T\int_0^T\rho(t)\,dt
+=\frac NT
+=r_{\mathrm{count}}
+$
+
+가 된다(관측 구간 내부에 있는 스파이크를 센다).
+
+**(3) 두 종류의 평균을 혼동하지 말 것**
+
+$
+\underbrace{\langle\rho(t)\rangle_{\mathrm{trials}}}_{\text{고정한 }t\text{에서 여러 시행 평균}}
+=r(t),
+\qquad
+\underbrace{\langle r\rangle_t}_{\text{시간에 따른 평균}}
+=\frac1T\int_0^T r(t)\,dt.
+$
+
+첫 번째 결과는 **시간의 함수**이고, 두 번째는 **숫자 하나**다. 동일한 값이라고 생각하면 안 된다. 같은 시간 구간에 대해 ensemble 평균과 시간 적분을 교환하면 $\mathbb E[N/T]=(1/T)\int_0^T r(t)\,dt$라는 관계를 얻지만, **한 trial의 시간 평균**이 언제나 ensemble 평균과 같다는 뜻은 아니다. (정상성과 에르고딕성 등 추가 조건 아래 긴 시간 평균으로 ensemble 평균을 추정할 수 있는 상황이 있다.)
+
+> **표기법 기억하기:** $\langle X\rangle$는 '무엇을 평균하는지'뿐 아니라 '**어떤 축에서 평균하는지**'를 함께 보자. 이 장에서는 특히 $\langle\cdot\rangle_{\mathrm{trials}}$와 $\langle\cdot\rangle_t$를 구분하면 된다. 다른 분야에서는 $\langle\cdot,\cdot\rangle$가 내적을 뜻하기도 하지만, 여기서 $\langle \rho(t)\rangle$는 내적이 아니다.
+
 ## 3. Kernel smoothing: 스파이크를 연속적인 rate로 바꾸기
 
 단일 spike train의 델타 함수는 매우 불연속적이다. 특정 시각 $t$의 근처에 발생한 스파이크들을 **시간 거리에 따라 가중합**하면 연속적인 rate 추정값을 만들 수 있다.
