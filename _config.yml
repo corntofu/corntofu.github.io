@@ -296,6 +296,52 @@ defaults:
       path: "assets"
     values:
       sitemap: false
+  # Shared typography for every Markdown blog post, including future posts.
+  # The al_folio_core post layout renders page._styles within the post.
+  - scope:
+      path: ""
+      type: "posts"
+    values:
+      _styles: |
+        /* Make Markdown heading levels visually distinct throughout the blog. */
+        .post .post-content #markdown-content h1,
+        .post .post-content #markdown-content h2,
+        .post .post-content #markdown-content h3 {
+          font-weight: 700;
+          line-height: 1.4;
+          letter-spacing: -0.018em;
+        }
+
+        .post .post-content #markdown-content h1 {
+          font-size: 2.15rem;
+          margin-top: 2.6rem;
+          margin-bottom: 1.45rem;
+        }
+
+        .post .post-content #markdown-content h2 {
+          font-size: 1.75rem;
+          margin-top: 2.3rem;
+          margin-bottom: 1.3rem;
+        }
+
+        .post .post-content #markdown-content h3 {
+          font-size: 1.38rem;
+          margin-top: 1.9rem;
+          margin-bottom: 1.1rem;
+        }
+
+        /* Avoid an oversized gap when a post already places an HR before a title. */
+        .post .post-content #markdown-content hr + h1,
+        .post .post-content #markdown-content hr + h2,
+        .post .post-content #markdown-content hr + h3 {
+          margin-top: 1.2rem;
+        }
+
+        @media (max-width: 600px) {
+          .post .post-content #markdown-content h1 { font-size: 1.9rem; }
+          .post .post-content #markdown-content h2 { font-size: 1.55rem; }
+          .post .post-content #markdown-content h3 { font-size: 1.25rem; }
+        }
 
 sass:
   style: compressed
