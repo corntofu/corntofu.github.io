@@ -452,11 +452,11 @@ $$
 r(t)=r_0+\int_0^\infty k(u)s(t-u)\,du.
 $$
 
-여기서 $k(u)$는 stimulus에 대한 causal temporal filter다. 이 식은 rate가 음수가 되지 않는 범위에서의 선형 근사로 생각한다. 자극 $s(t)$가 평균이 0이고 white noise라면
+여기서 $k(u)$는 stimulus에 대한 causal temporal filter다. 이 식은 rate가 음수가 되지 않는 범위에서의 선형 근사로 생각한다. 자극 $s(t)$가 평균이 0인 이상적 연속시간 white noise라면, **$q$를 noise intensity(한 시각의 일반적인 분산이 아님)**로 두어
 
 $$
 \mathbb E[s(t)]=0,\qquad
-\mathbb E[s(t-\tau)s(t-u)]=\sigma_s^2\delta(\tau-u)
+\mathbb E[s(t-\tau)s(t-u)]=q\delta(\tau-u)
 $$
 
 이다. 따라서
@@ -466,14 +466,14 @@ $$
 \mathbb E[s(t-\tau)r(t)]
 &=r_0\mathbb E[s(t-\tau)]\\
 &\quad+\int_0^\infty k(u)\mathbb E[s(t-\tau)s(t-u)]\,du\\
-&=\sigma_s^2 k(\tau)\qquad(\tau>0).
+&=q k(\tau)\qquad(\tau>0).
 \end{aligned}
 $$
 
 또한 $\bar r=r_0$이므로
 
 $$
-\boxed{\mathrm{STA}(\tau)\approx\frac{\sigma_s^2}{r_0}k(\tau)}.
+\boxed{\mathrm{STA}(\tau)\approx\frac{q}{r_0}k(\tau)}.
 $$
 
 따라서 **white-noise stimulus와 선형 근사가 맞는 경우 STA는 뉴런의 시간적 필터 $k(\tau)$에 비례**한다. 반면 colored noise를 쓰면 stimulus autocorrelation이 $k$에 convolution된 모양이 나오므로 STA를 곧바로 receptive field라고 해석하면 안 된다. 실제 뉴런의 비선형성과 stimulus 분포에 따라 추가적인 보정이 필요할 수 있다.
@@ -733,52 +733,228 @@ $r(t)$가 매우 빠르게 변하는 inhomogeneous Poisson model에서도 정밀
 
 ---
 
-## 12. Chapter 1을 읽으며 정리한 세 가지 질문
+## 12. Chapter 1을 읽으며 정리한 다섯 가지 질문
 
----
+앞서 공부하면서 생긴 질문과 해설을 모았다. **질문을 클릭하면 풀이가 펼쳐진다.**
 
-### Q1. Kernel smoothing은 특정 $t$의 주변 스파이크를 합쳐서 rate를 부드럽게 만드는 것인가?
+<details markdown="1">
+<summary><strong>Q1. Kernel smoothing은 특정 시각 근처의 스파이크를 합쳐서 rate를 부드럽게 만드는가?</strong></summary>
 
-**그렇다.** 정확히는 주변 spike를 동일하게 세는 것이 아니라, $K_h(t-t_i)$라는 가중치를 부여하여 합산한다.
+**그렇다.** 정확히는 주변 스파이크들을 동일하게 세는 것이 아니라, 각 spike와 시각 $t$ 사이의 거리에 따라 가중치를 주고 합한다.
 
 $$
-\hat r(t)=\sum_iK_h(t-t_i).
+\boxed{\hat r(t)=\sum_i K_h(t-t_i)}
 $$
 
-이 추정량을 여러 시각 $t$에 대해 계산하면 매끄러운 firing-rate 곡선을 얻는다. 그러나 smoothing이 강할수록 실제 빠른 rate 변화를 놓칠 수 있다.
+시각 $t$를 계속 움직이면서 이 값을 구하면 연속적인 firing-rate 추정값이 된다. Bandwidth $h$를 키우면 가까운 스파이크들이 더 넓은 범위에서 합쳐져 곡선이 매끄러워지지만, 빠른 시간적 변화는 사라질 수 있다.
 
----
+</details>
 
-### Q2. $n$에 비해 $p$가 작으므로 Poisson을 가정하는 것인가?
+<details markdown="1">
+<summary><strong>Q2. 작은 시간 구간의 spike 발생 확률이 작아서 Poisson 분포를 가정하는가?</strong></summary>
 
-**이항분포의 rare-event limit라는 직관은 맞지만, 그것만으로 충분하지 않다.**
+**이항분포의 rare-event limit라는 직관은 맞지만 독립성도 필요하다.** 구간 $[0,T]$를 폭 $\Delta t$로 나누면
 
 $$
 n=\frac{T}{\Delta t}\to\infty,\qquad
 p=r\Delta t\to0,\qquad
-np=rT
+np=rT=\lambda.
 $$
 
-이므로 Bernoulli bin들이 독립적이라면 Poisson으로 수렴한다. 실제 뉴런에서는 불응기, bursting, network state가 독립성을 깨뜨릴 수 있다.
+서로 다른 시간 bin의 spike 발생을 독립적인 Bernoulli 시행으로 모델링하면
 
----
+$$
+\operatorname{Binomial}(n,p)
+\xrightarrow[n\to\infty,\ p\to0,\ np=\lambda]{}
+\operatorname{Poisson}(\lambda).
+$$
 
-### Q3. Kernel smoothing과 Poisson model은 같은 종류의 도구인가?
+하지만 **사건이 드물다는 것만으로는 Poisson process라고 할 수 없다.** 실제 뉴런에서는 refractory period, bursting, network state가 독립성 가정을 깨뜨릴 수 있다.
 
-**아니다.** 역할이 다르다.
+</details>
 
-- **Kernel smoothing:** 관측된 $\rho(t)$에서 $\hat r(t)$를 얻는 **추정 방법**
-- **Poisson process:** 주어진 $r(t)$ 아래에서 $\rho(t)$가 확률적으로 어떻게 발생하는지 나타내는 **생성 모델**
+<details markdown="1">
+<summary><strong>Q3. Kernel smoothing과 Poisson process는 같은 종류의 도구인가?</strong></summary>
 
-둘을 연결하면 다음처럼 양방향으로 이해할 수 있다.
+**아니다. 서로 반대 방향에서 쓰인다.**
+
+- **Kernel smoothing:** 관측된 spike train $\rho(t)$로부터 $\hat r(t)$를 만드는 **추정 방법**
+- **Poisson process:** 주어진 rate $r(t)$로부터 가능한 spike train $\rho(t)$의 확률을 설명하는 **생성 모델**
 
 $$
 \underbrace{\rho(t)\xrightarrow{\ K_h*\ }\hat r(t)}_{\text{데이터 분석}}
-\qquad\qquad
-\underbrace{r(t)\xrightarrow{\ \text{Poisson model}\ }\rho(t)}_{\text{확률적 생성}}
+\qquad
+\underbrace{r(t)\xrightarrow{\ \text{Poisson process}\ }\rho(t)}_{\text{확률적 생성}}
 $$
 
-이 두 방향을 혼동하지 않는 것이 Chapter 1의 중요한 학습 포인트다.
+즉, 데이터에서 rate를 추정하는 문제와 rate가 주어졌을 때 spike가 어떻게 발생하는지 모델링하는 문제를 구별해야 한다.
+
+</details>
+
+<details markdown="1">
+<summary><strong>Q4. Inhomogeneous Poisson process에서 exp(-∫r(t)dt)는 무엇을 의미하는가?</strong></summary>
+
+**관측 구간 전체에 spike가 하나도 발생하지 않을 확률**이다. 먼저 누적 intensity를
+
+$$
+\Lambda(T)=\int_0^T r(t)\,dt
+$$
+
+로 정의하자. Inhomogeneous Poisson process에서는 $N(T)\sim\operatorname{Poisson}(\Lambda(T))$이므로
+
+$$
+\boxed{
+P(N(T)=0)=e^{-\Lambda(T)}
+=\exp\left(-\int_0^T r(t)\,dt\right)
+}.
+$$
+
+**왜 지수함수가 나올까?** 시간을 폭 $\Delta t$의 작은 구간들로 나누자. 구간 $[t_k,t_k+\Delta t]$에 spike가 없을 확률은 약 $1-r(t_k)\Delta t$이다. 서로 다른 구간의 spike count는 독립이므로
+
+$$
+P(N(T)=0)
+\approx\prod_k(1-r(t_k)\Delta t).
+$$
+
+양변에 로그를 취하고 $\log(1-x)\approx-x$를 적용하면
+
+$$
+\begin{aligned}
+\log P(N(T)=0)
+&\approx\sum_k\log(1-r(t_k)\Delta t)\\
+&\approx-\sum_k r(t_k)\Delta t\\
+&\xrightarrow[\Delta t\to0]{}
+-\int_0^T r(t)\,dt.
+\end{aligned}
+$$
+
+지수함수를 취하면 바로 $e^{-\Lambda(T)}$가 된다. 이 값은 **기대 spike 수 $\Lambda(T)$가 클수록 전체 무발화 확률이 작아진다**는 뜻이다.
+
+그런데 실제로 $t_1,\ldots,t_N$에서 spike가 발생했다면 왜 이 no-spike factor가 들어갈까?
+
+우리는 그 시각들에서만 spike가 발생하고 **그 밖에는 추가 spike가 없었다**는 전체 패턴의 확률밀도를 계산하기 때문이다. 예를 들어 $0<t_1<t_2<T$일 때
+
+$$
+\begin{aligned}
+p(t_1,t_2)
+&=\underbrace{e^{-\int_0^{t_1}r(t)\,dt}}_{\text{첫 spike 이전 무발화}}\,
+r(t_1)\\
+&\quad\cdot\underbrace{e^{-\int_{t_1}^{t_2}r(t)\,dt}}_{\text{두 spike 사이 무발화}}\,
+r(t_2)\,
+\underbrace{e^{-\int_{t_2}^{T}r(t)\,dt}}_{\text{마지막 spike 이후 무발화}}\\
+&=e^{-\int_0^T r(t)\,dt}\,r(t_1)r(t_2).
+\end{aligned}
+$$
+
+일반화하면
+
+$$
+\boxed{
+p(t_1,\ldots,t_N)
+=e^{-\int_0^T r(t)\,dt}\prod_{i=1}^N r(t_i)
+}.
+$$
+
+이것은 $0<t_1<\cdots<t_N<T$인 **정렬된 spike 발생 시각에 대한 결합확률밀도**다. 각 시각에서의 $r(t_i)$는 확률 자체가 아니라 단위시간당 intensity이므로, 전체 식도 확률이 아닌 밀도라는 점을 기억하자.
+
+</details>
+
+<details markdown="1">
+<summary><strong>Q5. White noise의 autocorrelation은 왜 σ²δ가 되는가?</strong></summary>
+
+우선 **분산(variance)과 autocorrelation을 구별**해야 한다. Section 5에서 쓰는 식은 한 시각의 분산이 아니라 서로 다른 두 시각 사이의 곱에 대한 기댓값이다.
+
+**1. 이산시간 white noise에서 출발하자.**
+
+$$
+s_k\overset{\mathrm{iid}}{\sim}\mathcal N(0,\sigma^2)
+$$
+
+라고 가정한다. 평균이 0이므로 $i=j$일 때
+
+$$
+\mathbb E[s_i s_i]=\mathbb E[s_i^2]
+=\operatorname{Var}(s_i)=\sigma^2
+$$
+
+이고, $i\ne j$일 때 독립성에 의해
+
+$$
+\mathbb E[s_i s_j]=\mathbb E[s_i]\mathbb E[s_j]=0
+$$
+
+이다. 따라서 Kronecker delta를 써서
+
+$$
+\boxed{
+R_s(i,j)=\mathbb E[s_i s_j]=\sigma^2\delta_{ij}
+}
+$$
+
+로 표현할 수 있다. 모든 white noise가 반드시 Gaussian일 필요는 없다. 시간에 따라 **서로 다른 lag에서 상관이 0**이라는 것이 핵심이다.
+
+**2. 연속시간에서는 Dirac delta가 등장한다.**
+
+이상적인 연속시간 white noise의 autocorrelation은
+
+$$
+\boxed{
+\mathbb E[s(t)s(t')]=q\,\delta(t-t')
+}
+$$
+
+로 표현한다. 이때 $q$는 **noise intensity**이며 일반적인 의미에서 '한 시각의 분산'이 아니다. 이상적인 연속시간 white noise는 각 시각에서 유한한 분산을 가지는 보통의 확률변수라기보다 generalized random process다.
+
+시간 간격이 $\Delta t$인 bin 평균으로 이산화하면
+
+$$
+s_k=\frac1{\Delta t}\int_{k\Delta t}^{(k+1)\Delta t}s(t)\,dt,
+\qquad
+\operatorname{Var}(s_k)=\frac{q}{\Delta t}
+$$
+
+가 된다. 따라서 $\Delta t\to0$일 때 개별 샘플의 분산이 일정하게 유지되는 것이 아니다. **이산시간의 $\sigma^2\delta_{ij}$와 연속시간의 $q\delta(t-t')$를 같은 의미의 분산으로 취급하면 안 된다.**
+
+**3. STA에서 왜 유용한가?**
+
+뉴런의 발화율이 자극에 대해 선형 근사된다고 하자.
+
+$$
+r(t)=r_0+\int_0^\infty k(u)s(t-u)\,du.
+$$
+
+평균이 0인 연속시간 white noise에 대해
+
+$$
+\mathbb E[s(t-\tau)s(t-u)]
+=q\delta(\tau-u)
+$$
+
+이므로
+
+$$
+\begin{aligned}
+\mathbb E[s(t-\tau)r(t)]
+&=\int_0^\infty k(u)\,
+\mathbb E[s(t-\tau)s(t-u)]\,du\\
+&=q\int_0^\infty k(u)\delta(\tau-u)\,du\\
+&=\boxed{qk(\tau)}\qquad(\tau>0).
+\end{aligned}
+$$
+
+마지막 단계는 Dirac delta의 *sifting property*로, 적분에서 $u=\tau$에 해당하는 필터값만 남는다는 뜻이다. $\bar r=r_0$인 선형 모델의 범위에서는
+
+$$
+\boxed{
+\mathrm{STA}(\tau)\approx\frac{q}{r_0}k(\tau)
+}
+$$
+
+를 얻는다. 결국 **white-noise stimulus를 사용하면 자극 자체의 시간 상관 때문에 필터가 흐려지는 문제를 줄여**, STA가 뉴런의 temporal receptive field $k(\tau)$에 비례하도록 만들 수 있다.
+
+> 앞의 Section 5.3에서 사용한 $\sigma_s^2\delta(\tau-u)$는 연속시간을 뜻할 경우 이산 샘플의 분산이 아니라 이곳의 **intensity $q$**에 해당한다.
+
+</details>
 
 ---
 
