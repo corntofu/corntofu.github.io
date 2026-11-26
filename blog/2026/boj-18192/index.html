@@ -4,7 +4,48 @@
   }
 </style> <link rel="stylesheet" href="/assets/css/tailwind.css?v=50c64c15cbb9fd1ce6056fdb8bcb4b62"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.5/css/academicons.min.css" integrity="sha256-SzrCOBJbGVFMahewkgjwnApaV2+av1DwMAA+/QGLyZw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/scholar-icons@1.0.3/css/scholar-icons.css" integrity="sha256-VY3hHVj/hNX3fYG6wtbA6TcKJQl7+FthzGSyIB64klY=" crossorigin="anonymous"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?v=591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%8E%93&lt;/text&gt;&lt;/svg&gt;"> <link rel="stylesheet" href="/assets/css/main.css?v=3116ba77db9ee1581d05bb3e86fbf7f1"> <link rel="canonical" href="https://corntofu.github.io/blog/2026/boj-18192/"> <script src="/assets/js/theme.js?v=5286c3e4c334d0ecb8fc0c40ff4fa7ec"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?v=5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
     initTheme();
-  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">HyeonTaek</span> Kang </a> <button class="navbar-toggler collapsed navbar-toggler-main" type="button" data-nav-toggle="navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse navbar-collapse-main" id="navbarNav"> <ul class="navbar-nav navbar-menu-list flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV </a> </li> <li class="nav-item"> <button id="search-toggle" type="button" title="Search" aria-label="Open search"> <span class="nav-link">ctrl k <i class="fa-solid fa-magnifying-glass"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" type="button" title="Change theme" aria-label="Change color theme"> <i class="fa-half-sun-moon" id="light-toggle-system"></i> <i class="fa-solid fa-moon" id="light-toggle-dark"></i> <i class="fa-solid fa-sun" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <div class="post"> <header class="post-header"> <h1 class="post-title">BOJ 18192 풀이</h1> <p class="post-meta"> Created on November 23, 2026 </p> <p class="post-tags"> <a href="/blog/2026"> <i class="fa-solid fa-calendar fa-sm"></i> 2026 </a>   ·   <a href="/blog/tag/ps"> <i class="fa-solid fa-hashtag fa-sm"></i> PS</a>   <a href="/blog/tag/math"> <i class="fa-solid fa-hashtag fa-sm"></i> math</a>   ·   <a href="/blog/category/problem"> <i class="fa-solid fa-tag fa-sm"></i> Problem</a>   <a href="/blog/category/solving"> <i class="fa-solid fa-tag fa-sm"></i> Solving</a> </p> </header> <article class="post-content"> <div id="markdown-content"> <p><a href="https://acmicpc.net/problem/18192" rel="external nofollow noopener" target="_blank">문제 링크</a></p> <h2 id="summary">Summary</h2> <p>$1 \leq N \leq 200$이고 두 명령어의 사용이 가능하다</p> <ul> <li>vector&lt;int&gt; copy_array(): 현재 배열을 복사한다. 2500회 이하 사용 가능</li> <li>shuffle_array(s, e): [s, e]의 배열을 랜덤으로 섞는다. 2500회 이하 사용 가능</li> </ul> <p>두 명령어를 잘 사용해서 배열을 정렬하는 게 이 문제의 목표.</p> <h2 id="solution">Solution</h2> <p>사실 26001과 비슷한 문제인데 이것도 무작위화에 의해 이득을 볼 수 있다.</p> <h2 id="code">Code</h2> <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"bogoSort.h"</span><span class="cp">
+  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">HyeonTaek</span> Kang </a> <button class="navbar-toggler collapsed navbar-toggler-main" type="button" data-nav-toggle="navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse navbar-collapse-main" id="navbarNav"> <ul class="navbar-nav navbar-menu-list flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV </a> </li> <li class="nav-item"> <button id="search-toggle" type="button" title="Search" aria-label="Open search"> <span class="nav-link">ctrl k <i class="fa-solid fa-magnifying-glass"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" type="button" title="Change theme" aria-label="Change color theme"> <i class="fa-half-sun-moon" id="light-toggle-system"></i> <i class="fa-solid fa-moon" id="light-toggle-dark"></i> <i class="fa-solid fa-sun" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <style type="text/css">
+    /* Make Markdown heading levels visually distinct throughout the blog. */
+.post .post-content #markdown-content h1,
+.post .post-content #markdown-content h2,
+.post .post-content #markdown-content h3 {
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.018em;
+}
+
+.post .post-content #markdown-content h1 {
+  font-size: 2.15rem;
+  margin-top: 2.6rem;
+  margin-bottom: 1.45rem;
+}
+
+.post .post-content #markdown-content h2 {
+  font-size: 1.75rem;
+  margin-top: 2.3rem;
+  margin-bottom: 1.3rem;
+}
+
+.post .post-content #markdown-content h3 {
+  font-size: 1.38rem;
+  margin-top: 1.9rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Avoid an oversized gap when a post already places an HR before a title. */
+.post .post-content #markdown-content hr + h1,
+.post .post-content #markdown-content hr + h2,
+.post .post-content #markdown-content hr + h3 {
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 600px) {
+  .post .post-content #markdown-content h1 { font-size: 1.9rem; }
+  .post .post-content #markdown-content h2 { font-size: 1.55rem; }
+  .post .post-content #markdown-content h3 { font-size: 1.25rem; }
+}
+
+  </style> <div class="post"> <header class="post-header"> <h1 class="post-title">BOJ 18192 풀이</h1> <p class="post-meta"> Created on November 23, 2026 </p> <p class="post-tags"> <a href="/blog/2026"> <i class="fa-solid fa-calendar fa-sm"></i> 2026 </a>   ·   <a href="/blog/tag/ps"> <i class="fa-solid fa-hashtag fa-sm"></i> PS</a>   <a href="/blog/tag/math"> <i class="fa-solid fa-hashtag fa-sm"></i> math</a>   ·   <a href="/blog/category/problem"> <i class="fa-solid fa-tag fa-sm"></i> Problem</a>   <a href="/blog/category/solving"> <i class="fa-solid fa-tag fa-sm"></i> Solving</a> </p> </header> <article class="post-content"> <div id="markdown-content"> <p><a href="https://acmicpc.net/problem/18192" rel="external nofollow noopener" target="_blank">문제 링크</a></p> <h2 id="summary">Summary</h2> <p>$1 \leq N \leq 200$이고 두 명령어의 사용이 가능하다</p> <ul> <li>vector&lt;int&gt; copy_array(): 현재 배열을 복사한다. 2500회 이하 사용 가능</li> <li>shuffle_array(s, e): [s, e]의 배열을 랜덤으로 섞는다. 2500회 이하 사용 가능</li> </ul> <p>두 명령어를 잘 사용해서 배열을 정렬하는 게 이 문제의 목표.</p> <h2 id="solution">Solution</h2> <p>사실 26001과 비슷한 문제인데 이것도 무작위화에 의해 이득을 볼 수 있다.</p> <h2 id="code">Code</h2> <div class="language-cpp highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="cp">#include</span> <span class="cpf">"bogoSort.h"</span><span class="cp">
 </span>
 <span class="kt">void</span> <span class="nf">sort_array</span><span class="p">(</span><span class="kt">int</span> <span class="n">N</span><span class="p">){</span>
     <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">){</span>
