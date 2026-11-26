@@ -24,6 +24,8 @@ $$
 
 반대로 실험 데이터에서는 관측한 스파이크열 $\rho(t)$에서 firing rate와 자극에 대한 선택성, 시간적 상관을 추정한다.
 
+---
+
 ## 1. Spike train을 함수로 표현하기
 
 뉴런의 활동전위는 파형의 모양보다 **발생 시각**이 정보 분석에서 중요한 경우가 많다. 스파이크가 $t_1,\ldots,t_N$에 발생했다면 이를 디랙 델타 함수의 합으로 표현한다.
@@ -53,9 +55,13 @@ $$
 
 즉, **이산적인 발생 시각을 연속시간 신호처리와 연결**할 수 있다.
 
+---
+
 ## 2. Firing rate: 정확히 무엇을 평균하는가?
 
 같은 자극을 반복해서 제시해도 매번 정확히 같은 스파이크가 발생하지는 않는다. 따라서 뉴런 반응을 하나의 결정론적 spike train보다 **확률적 반응**으로 기술한다.
+
+---
 
 ### 2.1 시간 의존 firing rate
 
@@ -75,6 +81,8 @@ $$
 $$
 
 라고 쓸 수 있다. 오른쪽은 델타 함수의 ensemble 평균이므로 적분의 의미로 해석한다.
+
+---
 
 ### 2.2 Spike-count rate
 
@@ -104,13 +112,15 @@ $$
 
 > **핵심:** 한 trial에서 관측한 $\rho(t)$와 우리가 알고 싶은 잠재적인 $r(t)$는 같은 것이 아니다. $r(t)$는 관측으로부터 *추정*해야 한다.
 
+---
+
 ### 2.3 $\langle\,\cdot\,\rangle$는 무슨 뜻인가?
 
 책에 반복해서 나오는 **angle brackets(꺾쇠괄호)**
 
-$
+$$
 \boxed{\langle X\rangle}
-$
+$$
 
 는 여기서는 보통 **평균(average)** 또는 **기댓값(expectation)**을 뜻한다. 단순히 $X$를 감싸는 괄호가 아니라, 어떤 기준으로 평균하는지가 중요하다. 아래첨자를 통해 그 기준을 명시할 수 있다.
 
@@ -118,11 +128,11 @@ $
 
 같은 자극을 $M$번 제시하고 $k$번째 trial의 spike train을 $\rho_k(t)$라 하자.
 
-$
+$$
 \langle \rho(t)\rangle_{\mathrm{trials}}
 =\lim_{M\to\infty}\frac1M\sum_{k=1}^{M}\rho_k(t)
 =r(t).
-$
+$$
 
 즉 **동일한 시각 $t$에서 여러 시행의 반응을 평균**한다. 각 trial의 델타 함수가 합쳐지므로 위 식은 일반적인 점별 함수 등식보다는 분포(distribution) 또는 작은 시간 bin을 이용한 평균의 의미로 이해한다. 실제 실험에서는 유한한 trial 수를 사용해 추정한다.
 
@@ -130,37 +140,39 @@ $
 
 시간에 따른 rate $r(t)$의 관측 구간 평균은
 
-$
+$$
 \boxed{
 \langle r\rangle_t
 =\frac1T\int_0^T r(t)\,dt
 }.
-$
+$$
 
 반면 **한 trial**의 spike train을 시간 평균하면
 
-$
+$$
 \langle\rho\rangle_t
 =\frac1T\int_0^T\rho(t)\,dt
 =\frac NT
 =r_{\mathrm{count}}
-$
+$$
 
 가 된다(관측 구간 내부에 있는 스파이크를 센다).
 
 **(3) 두 종류의 평균을 혼동하지 말 것**
 
-$
+$$
 \underbrace{\langle\rho(t)\rangle_{\mathrm{trials}}}_{\text{고정한 }t\text{에서 여러 시행 평균}}
 =r(t),
 \qquad
 \underbrace{\langle r\rangle_t}_{\text{시간에 따른 평균}}
 =\frac1T\int_0^T r(t)\,dt.
-$
+$$
 
 첫 번째 결과는 **시간의 함수**이고, 두 번째는 **숫자 하나**다. 동일한 값이라고 생각하면 안 된다. 같은 시간 구간에 대해 ensemble 평균과 시간 적분을 교환하면 $\mathbb E[N/T]=(1/T)\int_0^T r(t)\,dt$라는 관계를 얻지만, **한 trial의 시간 평균**이 언제나 ensemble 평균과 같다는 뜻은 아니다. (정상성과 에르고딕성 등 추가 조건 아래 긴 시간 평균으로 ensemble 평균을 추정할 수 있는 상황이 있다.)
 
 > **표기법 기억하기:** $\langle X\rangle$는 '무엇을 평균하는지'뿐 아니라 '**어떤 축에서 평균하는지**'를 함께 보자. 이 장에서는 특히 $\langle\cdot\rangle_{\mathrm{trials}}$와 $\langle\cdot\rangle_t$를 구분하면 된다. 다른 분야에서는 $\langle\cdot,\cdot\rangle$가 내적을 뜻하기도 하지만, 여기서 $\langle \rho(t)\rangle$는 내적이 아니다.
+
+---
 
 ## 3. Kernel smoothing: 스파이크를 연속적인 rate로 바꾸기
 
@@ -187,6 +199,8 @@ $$
 $$
 
 즉 spike 하나가 총 spike count에 1만큼 기여하고, $\hat r(t)$의 단위는 Hz가 된다. 별도로 $N$으로 나누는 일반적인 확률밀도 추정(KDE)과는 정규화가 다르다.
+
+---
 
 ### 3.1 Gaussian kernel의 직관
 
@@ -216,6 +230,8 @@ $$
 
 신호처리 관점에서는 spike train에 smoothing filter를 적용하는 것과 같다.
 
+---
+
 ### 3.2 Bandwidth와 bias–variance trade-off
 
 | Bandwidth | 장점 | 단점 |
@@ -231,7 +247,52 @@ $$
 
 이므로, kernel smoothing은 실제 rate 자체가 아니라 **실제 rate를 kernel로 흐리게 만든 값**을 평균적으로 추정한다. 이것이 smoothing bias의 원인이다.
 
-### 3.3 Causal kernel이 필요한 이유
+---
+
+### 3.3 직접 실험: Gaussian bandwidth $h$를 바꿔 보기
+
+이 실험은 **11개의 고정된 spike 발생 시각**을 사용한다. 슬라이더의 $h$를 바꾸면 두 그래프가 동시에 갱신된다. 왼쪽은 정규화된 Gaussian kernel $K_h(u)$, 오른쪽은 동일한 kernel을 spike마다 더한 $\hat r(t)=\sum_iK_h(t-t_i)$다. 오른쪽 아래 주황색 짧은 선들이 실제 spike의 발생 시각이다.
+
+<link rel="stylesheet" href="{{ '/assets/css/neuroscience-kernel-smoothing.css' | relative_url }}">
+
+<div id="nc-kernel-demo" class="nc-kernel-demo">
+  <p class="nc-kernel-heading">Interactive · Gaussian kernel smoothing</p>
+  <p class="nc-kernel-intro">Bandwidth를 조절하며 kernel의 폭과 smoothed firing rate의 변화를 비교하자. 그래프 축은 비교를 위해 고정되어 있다.</p>
+  <div class="nc-kernel-controls">
+    <label for="nc-kernel-bandwidth">Bandwidth <i>h</i></label>
+    <output id="nc-kernel-bandwidth-value" for="nc-kernel-bandwidth">45 ms</output>
+  </div>
+  <input id="nc-kernel-bandwidth" type="range" min="10" max="180" value="45" step="5" aria-describedby="nc-kernel-insight">
+  <div class="nc-kernel-limits"><span>10 ms · 세밀한 시간 구조</span><span>180 ms · 강한 smoothing</span></div>
+  <div class="nc-kernel-charts">
+    <div class="nc-kernel-chart">
+      <h4>① Gaussian kernel의 모양</h4>
+      <p>넓어질수록 높이는 낮아지지만 면적은 1로 일정하다.</p>
+      <svg id="nc-kernel-shape" viewBox="0 0 620 245" role="img" aria-label="Gaussian kernel shape depending on bandwidth"></svg>
+    </div>
+    <div class="nc-kernel-chart">
+      <h4>② Spike train의 smoothing 결과</h4>
+      <p>동일한 11개 spike에 각 kernel을 적용한 결과다.</p>
+      <svg id="nc-kernel-rate" viewBox="0 0 620 245" role="img" aria-label="Smoothed spike firing rate depending on bandwidth"></svg>
+    </div>
+  </div>
+  <div class="nc-kernel-summary">
+    <span class="nc-kernel-metric">Spike 수: <strong>11</strong></span>
+    <span class="nc-kernel-metric">Kernel의 최대 높이: <strong id="nc-kernel-peak">8.9 Hz</strong></span>
+    <span class="nc-kernel-metric">관측 구간: <strong>1 s</strong></span>
+  </div>
+  <p id="nc-kernel-insight" class="nc-kernel-insight" aria-live="polite">슬라이더를 움직여 bandwidth의 효과를 확인한다.</p>
+  <p class="nc-kernel-footnote">실제 실험 데이터가 아닌 고정된 예제다. 관측구간 밖에도 Gaussian kernel의 꼬리가 이어질 수 있으며, 이 그래프는 숨겨진 실제 rate가 아니라 추정량을 보여준다.</p>
+  <noscript><p>이 시각화를 사용하려면 JavaScript가 필요하다.</p></noscript>
+</div>
+
+<script defer src="{{ '/assets/js/neuroscience-kernel-smoothing.js' | relative_url }}"></script>
+
+**관찰할 점:** $h$가 작으면 spike에 가까운 부분에 좁고 높은 peak가 생기고, $h$가 커지면 여러 peak가 겹쳐 넓은 봉우리가 된다. 전체 시간축에서 적분한 추정 firing rate는 항상 spike 수인 11이 된다.
+
+---
+
+### 3.4 Causal kernel이 필요한 이유
 
 Gaussian kernel은 시각 $t$에서 $t$ **이후**에 발생한 spike도 사용한다. 사후 분석에는 괜찮지만 실시간 decoding에는 맞지 않는다.
 
@@ -246,6 +307,8 @@ K(u)=
 $$
 
 $\hat r(t)=\sum_i K(t-t_i)$에서 $t_i>t$이면 $K(t-t_i)=0$이므로 미래 spike를 참조하지 않는다. 실시간 BCI에서는 이런 인과성과 smoothing에 따른 지연을 함께 고려해야 한다.
+
+---
 
 ## 4. Tuning curve: 자극의 어떤 속성에 반응하는가?
 
@@ -276,6 +339,8 @@ $$
 
 혹은 전체 spike train에 대한 $P(t_1,\ldots,t_N\mid s)$가 필요하다. 이것이 spike statistics가 등장하는 이유다.
 
+---
+
 ## 5. Spike-triggered average: 스파이크 직전에는 어떤 자극이 있었는가?
 
 Tuning curve는 **자극을 기준으로 반응을 평균**한다. Spike-triggered average(STA)는 반대로 **spike를 기준으로 그 이전 자극을 평균**한다.
@@ -294,26 +359,126 @@ $$
 
 가령 $\tau=20\,\mathrm{ms}$ 근처에서 STA가 크게 양수라면, spike가 발생하기 약 20 ms 전에 자극이 평균적으로 높았다는 뜻이다.
 
-STA는 stimulus–response **reverse correlation**과 연결된다. 충분히 긴 stationary 기록에서 시간 평균을 쓰면, 적절한 부호 convention 아래
+---
+
+### 5.1 Spike 평균은 왜 시간 적분으로 바뀌는가?
+
+정의에서 시작하자. $N>0$개의 spike가 $t_1,\ldots,t_N$에 발생했다고 하면
 
 $$
-\mathrm{STA}(\tau)
-\approx
-\frac{\langle s(t-\tau)\rho(t)\rangle_t}
-{\langle\rho(t)\rangle_t}.
+\mathrm{STA}_{\mathrm{obs}}(\tau)=\frac1N\sum_i s(t_i-\tau)
 $$
 
-### 왜 white noise stimulus를 쓰는가?
-
-시간적으로 상관이 강한 stimulus를 쓰면 관측된 STA에는 **뉴런의 선호 자극**뿐 아니라 **stimulus 자체의 시간 상관**도 섞인다.
-
-반면 이상적인 white noise는
+이다. $\rho(t)=\sum_i\delta(t-t_i)$를 대입하면 delta 함수의 성질에 의해
 
 $$
-C_{ss}(\tau)=\sigma_s^2\delta(\tau)
+\begin{aligned}
+\int_0^T s(t-\tau)\rho(t)\,dt
+&=\int_0^T s(t-\tau)\sum_i\delta(t-t_i)\,dt\\
+&=\sum_i s(t_i-\tau).
+\end{aligned}
 $$
 
-처럼 서로 다른 시간의 입력이 상관되지 않는다. 따라서 뉴런의 시간적 필터를 추정하기에 유리하다. 다만 **STA가 언제나 실제 receptive field와 정확히 일치하는 것은 아니다.** 입력 분포와 뉴런의 선형성·비선형성에 대한 가정이 필요하다.
+따라서 (분석할 스파이크와 그 이전 자극을 충분히 기록했다면)
+
+$$
+\boxed{
+\mathrm{STA}_{\mathrm{obs}}(\tau)
+=\frac1N\int_0^T s(t-\tau)\rho(t)\,dt
+}.
+$$
+
+**여기에는 근사가 없다.** Delta 함수가 $t_i$에서의 자극값만 선택했기 때문이다. $\tau>0$에 대해 $s(t-\tau)$로 쓰는 것은 spike 발생 시점의 **이전 자극**을 보기 위해서다.
+
+---
+
+### 5.2 시간 평균으로 나누면 cross-correlation이 된다
+
+위 식의 분자와 분모를 $T$로 나누자.
+
+$$
+\begin{aligned}
+\mathrm{STA}_{\mathrm{obs}}(\tau)
+&=\frac{\frac1T\int_0^T s(t-\tau)\rho(t)\,dt}{N/T}\\
+&=\boxed{
+\frac{\langle s(t-\tau)\rho(t)\rangle_{t,T}}
+{\langle \rho\rangle_{t,T}}
+}.
+\end{aligned}
+$$
+
+여기서 $\langle X\rangle_{t,T}:=T^{-1}\int_0^T X(t)\,dt$는 **유한 구간 시간 평균**이며 $\langle\rho\rangle_{t,T}=N/T$다. 이 비율식도 정확하다. 즉 기존에 표시한 $\approx$의 근거가 단순히 '합을 적분으로 바꾼다'는 것은 아니다.
+
+이제 **관측한 스파이크** $\rho$ 대신 **기대 발화율** $r$를 연결한다. Stimulus $s$가 주어졌을 때
+
+$$
+\mathbb E[\rho(t)\mid s]=r(t\mid s)
+$$
+
+이고, 따라서
+
+$$
+\mathbb E[s(t-\tau)\rho(t)\mid s]
+=s(t-\tau)r(t\mid s).
+$$
+
+많은 반복 시행 또는 적절한 정상성·에르고딕성 조건에서 긴 기록을 사용하면 관측한 spike–stimulus 평균을 이 기대값에 가까운 rate–stimulus 평균으로 추정할 수 있다. **유한 표본의 비율을 기대값의 비율로 바꾸는 것은 일반적으로 근사**라는 점을 주의하자.
+
+책에서 사용하는 cross-correlation의 한 표기법을
+
+$$
+Q_{rs}(\ell)=\frac1T\int_0^T r(t)s(t+\ell)\,dt
+$$
+
+로 정의하고 $\bar r=T^{-1}\int_0^T r(t)\,dt$라 놓으면
+
+$$
+\boxed{
+\mathrm{STA}(\tau)\approx\frac{Q_{rs}(-\tau)}{\bar r}
+}.
+$$
+
+**왜 $-\tau$인가?** $Q_{rs}(\ell)$는 시각 $t+\ell$의 stimulus를 이용하는 반면 STA는 spike 시각 $t$보다 $\tau$만큼 앞선 $t-\tau$를 사용하기 때문이다. 즉 $\ell=-\tau$다.
+
+> **정리:** Spike 합 $\to$ delta 적분 $\to$ 관측 시간 평균의 비율은 정확한 변형이다. $\rho(t)$를 확률적 평균 $r(t)$로 바꾸고 유한 표본을 ensemble average로 추정하는 지점에서 통계적 근사와 조건이 필요하다.
+
+---
+
+### 5.3 White noise stimulus와 선형 receptive field
+
+자극 자체에 시간 상관이 크면 STA에는 뉴런의 반응 특성과 자극의 autocorrelation이 섞인다. 이를 간단한 선형 근사로 확인해 보자.
+
+$$
+r(t)=r_0+\int_0^\infty k(u)s(t-u)\,du.
+$$
+
+여기서 $k(u)$는 stimulus에 대한 causal temporal filter다. 이 식은 rate가 음수가 되지 않는 범위에서의 선형 근사로 생각한다. 자극 $s(t)$가 평균이 0이고 white noise라면
+
+$$
+\mathbb E[s(t)]=0,\qquad
+\mathbb E[s(t-\tau)s(t-u)]=\sigma_s^2\delta(\tau-u)
+$$
+
+이다. 따라서
+
+$$
+\begin{aligned}
+\mathbb E[s(t-\tau)r(t)]
+&=r_0\mathbb E[s(t-\tau)]\\
+&\quad+\int_0^\infty k(u)\mathbb E[s(t-\tau)s(t-u)]\,du\\
+&=\sigma_s^2 k(\tau)\qquad(\tau>0).
+\end{aligned}
+$$
+
+또한 $\bar r=r_0$이므로
+
+$$
+\boxed{\mathrm{STA}(\tau)\approx\frac{\sigma_s^2}{r_0}k(\tau)}.
+$$
+
+따라서 **white-noise stimulus와 선형 근사가 맞는 경우 STA는 뉴런의 시간적 필터 $k(\tau)$에 비례**한다. 반면 colored noise를 쓰면 stimulus autocorrelation이 $k$에 convolution된 모양이 나오므로 STA를 곧바로 receptive field라고 해석하면 안 된다. 실제 뉴런의 비선형성과 stimulus 분포에 따라 추가적인 보정이 필요할 수 있다.
+
+---
 
 ## 6. Poisson process: 왜 등장하는가?
 
@@ -324,6 +489,8 @@ $$
 3. $\Delta t$가 충분히 짧아 하나의 구간에서 두 개 이상의 spike가 발생할 확률은 더 작은 차수다.
 
 $firing\ rate$가 일정할 때 이 가정이 **homogeneous Poisson process**로 이어진다.
+
+---
 
 ### 6.1 Binomial에서 Poisson으로: 직접 유도
 
@@ -374,6 +541,8 @@ $$
 
 또한 *Poisson distribution*은 구간 안의 **spike 개수**를 나타내고, *Poisson process*는 여러 시간 구간의 count 및 **발생 시각의 구조**까지 정의한다.
 
+---
+
 ### 6.2 Poisson spike count의 평균과 분산
 
 $$
@@ -391,6 +560,8 @@ $$
 이다. 흔히 $F<1$은 Poisson보다 규칙적인 count, $F>1$은 더 큰 count variability를 뜻한다.
 
 그러나 **$F=1$이라고 해서 그 과정이 반드시 Poisson인 것은 아니다.**
+
+---
 
 ### 6.3 Interspike interval(ISI)
 
@@ -425,6 +596,8 @@ $$
 
 가령 평균 발화율 $r=20\,\mathrm{Hz}$라면 평균 ISI는 $50\,\mathrm{ms}$다. 그렇다고 모든 spike가 50 ms마다 규칙적으로 발생하는 것은 아니다.
 
+---
+
 ## 7. 실제 뉴런은 왜 완전한 Poisson process가 아닌가?
 
 실제 뉴런은 spike 직후 일정 시간 동안 재발화가 어렵거나 불가능한 **refractory period**를 갖는다. 따라서 직전 spike의 존재가 다음 spike의 확률에 영향을 준다.
@@ -440,6 +613,8 @@ Poisson model과 실제 기록을 비교할 때 확인할 항목은 다음과 �
 | 시간적 의존성 | 서로 다른 구간의 increment가 독립 | spike history에 따른 의존성 |
 
 Poisson은 생물학적 진실이라기보다는 **간단하고 분석 가능한 기준 모델(null model)**로 이해하는 편이 정확하다.
+
+---
 
 ## 8. Inhomogeneous Poisson process
 
@@ -478,6 +653,8 @@ $$
 
 단, $r(t)$를 쓰는 것만으로 실제 history dependence가 해결되는 것은 아니다. Inhomogeneous Poisson에서도 **주어진 rate 아래에서 서로 겹치지 않는 구간의 count는 독립**이라는 가정이 남는다.
 
+---
+
 ## 9. Renewal process와 spike history
 
 **Renewal process**에서는 연속된 ISI가 서로 독립이고 같은 분포를 따른다. 다음 spike까지의 위험도(hazard)는 마지막 spike 이후 경과시간에 의존할 수 있다.
@@ -485,6 +662,8 @@ $$
 Homogeneous Poisson process는 ISI가 지수분포인 renewal process의 특수한 경우다. 반면 refractory period를 갖는 renewal process는 짧은 ISI를 억제할 수 있다.
 
 핵심 차이는 **시간이 일정한가**보다 **직전 spike 이후의 경과시간이 다음 spike 확률에 영향을 주는가**다.
+
+---
 
 ## 10. Correlation으로 보는 시간적 구조
 
@@ -507,15 +686,21 @@ $$
 
 다만 **상관관계가 곧 직접적인 synaptic connection을 의미하지는 않는다.** 공통 입력으로도 correlation이 생긴다. 또한 $\tau=0$에서 같은 spike가 자신과 짝을 이루는 항은 별도로 해석해야 한다.
 
+---
+
 ## 11. Neural code의 구분: rate와 timing을 단순 대립시키지 말자
 
 이 장 후반부에서는 neural code를 여러 기준으로 나누어 생각한다.
+
+---
 
 ### Independent-spike vs correlation code
 
 주어진 stimulus에서 spike train의 확률이 $r(t)$만으로 설명되는가? 아니면 개별 spike들 사이의 시간적 관계가 추가 정보를 담는가?
 
 Inhomogeneous Poisson model은 독립적인 spike event로부터 시간에 따른 반응 패턴을 생성하는 기준 예시다.
+
+---
 
 ### Independent-neuron vs population correlation code
 
@@ -527,6 +712,8 @@ P(\rho_1,\ldots,\rho_M\mid s)
 $$
 
 로 나뉘는가? 그렇지 않다면 뉴런 사이의 상관이 추가 정보를 담을 수 있다.
+
+---
 
 ### Rate vs temporal code
 
@@ -544,7 +731,11 @@ $$
 
 $r(t)$가 매우 빠르게 변하는 inhomogeneous Poisson model에서도 정밀한 시간 패턴이 나타날 수 있다. 따라서 **temporal coding과 correlation coding은 같은 개념이 아니다.**
 
+---
+
 ## 12. Chapter 1을 읽으며 정리한 세 가지 질문
+
+---
 
 ### Q1. Kernel smoothing은 특정 $t$의 주변 스파이크를 합쳐서 rate를 부드럽게 만드는 것인가?
 
@@ -555,6 +746,8 @@ $$
 $$
 
 이 추정량을 여러 시각 $t$에 대해 계산하면 매끄러운 firing-rate 곡선을 얻는다. 그러나 smoothing이 강할수록 실제 빠른 rate 변화를 놓칠 수 있다.
+
+---
 
 ### Q2. $n$에 비해 $p$가 작으므로 Poisson을 가정하는 것인가?
 
@@ -567,6 +760,8 @@ np=rT
 $$
 
 이므로 Bernoulli bin들이 독립적이라면 Poisson으로 수렴한다. 실제 뉴런에서는 불응기, bursting, network state가 독립성을 깨뜨릴 수 있다.
+
+---
 
 ### Q3. Kernel smoothing과 Poisson model은 같은 종류의 도구인가?
 
@@ -584,6 +779,8 @@ $$
 $$
 
 이 두 방향을 혼동하지 않는 것이 Chapter 1의 중요한 학습 포인트다.
+
+---
 
 ## 13. 연습문제
 
@@ -610,6 +807,8 @@ Poisson process의 유도에 두 번째 가정이 왜 필요한가?
 
 </details>
 
+---
+
 ## 마무리
 
 Chapter 1의 기본 구조는 다음 네 문장으로 압축된다.
@@ -620,6 +819,8 @@ Chapter 1의 기본 구조는 다음 네 문장으로 압축된다.
 4. Neural coding을 논하려면 평균 발화율, 정확한 spike timing, spike 사이 상관, neuron 사이 상관을 구분해야 한다.
 
 **다음 장으로 연결:** Chapter 2에서는 자극을 받아 시간에 따른 $r(t)$를 예측하는 구체적인 encoding model을 다룬다.
+
+---
 
 ## 참고 자료
 
