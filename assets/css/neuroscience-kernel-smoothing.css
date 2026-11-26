@@ -1,0 +1,141 @@
+.nc-kernel-demo {
+  margin: 1.5rem 0 2rem;
+  padding: 1.4rem;
+  border: 1px solid rgba(115, 127, 150, 0.27);
+  border-radius: 18px;
+  background: linear-gradient(140deg, rgba(13, 148, 136, 0.055), rgba(129, 98, 214, 0.055));
+  box-shadow: 0 8px 26px rgba(15, 23, 42, 0.035);
+}
+.nc-kernel-demo .nc-kernel-heading {
+  font-size: 1.12rem;
+  font-weight: 750;
+  margin: 0 0 0.35rem;
+}
+.nc-kernel-demo .nc-kernel-intro {
+  margin: 0 0 1.2rem;
+  font-size: 0.95rem;
+  opacity: 0.83;
+}
+.nc-kernel-demo .nc-kernel-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.7rem;
+  font-weight: 650;
+}
+.nc-kernel-demo .nc-kernel-controls output {
+  font-variant-numeric: tabular-nums;
+  border-radius: 9px;
+  background: rgba(13, 148, 136, 0.12);
+  color: inherit;
+  padding: 0.25rem 0.65rem;
+  white-space: nowrap;
+}
+.nc-kernel-demo input[type="range"] {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0;
+  accent-color: #0d9488;
+  cursor: pointer;
+}
+.nc-kernel-demo .nc-kernel-limits {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  opacity: 0.65;
+  margin-bottom: 1.2rem;
+}
+.nc-kernel-demo .nc-kernel-charts {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+.nc-kernel-demo .nc-kernel-chart {
+  border: 1px solid rgba(115, 127, 150, 0.18);
+  border-radius: 14px;
+  background: rgba(125, 125, 125, 0.045);
+  padding: 0.8rem 0.65rem 0.25rem;
+  min-width: 0;
+}
+.nc-kernel-demo .nc-kernel-chart h4 {
+  margin: 0 0 0.2rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+.nc-kernel-demo .nc-kernel-chart p {
+  margin: 0 0 0.7rem;
+  font-size: 0.79rem;
+  opacity: 0.7;
+}
+.nc-kernel-demo svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  overflow: visible;
+}
+.nc-kernel-demo .nc-kernel-grid {
+  stroke: currentColor;
+  stroke-opacity: 0.14;
+  stroke-width: 1;
+}
+.nc-kernel-demo .nc-kernel-grid-vertical {
+  stroke-opacity: 0.075;
+}
+.nc-kernel-demo .nc-kernel-baseline {
+  stroke: currentColor;
+  stroke-opacity: 0.4;
+  stroke-width: 1.3;
+}
+.nc-kernel-demo .nc-kernel-curve {
+  fill: none;
+  stroke-width: 3.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.nc-kernel-demo .nc-kernel-tick,
+.nc-kernel-demo .nc-kernel-axis-title {
+  fill: currentColor;
+  opacity: 0.7;
+  font-size: 12px;
+}
+.nc-kernel-demo .nc-kernel-axis-title {
+  font-size: 11px;
+}
+.nc-kernel-demo .nc-kernel-raster {
+  stroke: #d97706;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+}
+.nc-kernel-demo .nc-kernel-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-top: 1rem;
+}
+.nc-kernel-demo .nc-kernel-metric {
+  border-radius: 9px;
+  background: rgba(13, 148, 136, 0.1);
+  padding: 0.42rem 0.7rem;
+  font-size: 0.83rem;
+}
+.nc-kernel-demo .nc-kernel-insight {
+  border-left: 3px solid #0d9488;
+  padding: 0.65rem 0.85rem;
+  background: rgba(13, 148, 136, 0.055);
+  margin: 1rem 0 0;
+  font-size: 0.94rem;
+  line-height: 1.65;
+}
+.nc-kernel-demo .nc-kernel-footnote {
+  margin: 0.7rem 0 0;
+  font-size: 0.78rem;
+  opacity: 0.72;
+}
+@media (max-width: 840px) {
+  .nc-kernel-demo .nc-kernel-charts { grid-template-columns: 1fr; }
+}
+@media (max-width: 500px) {
+  .nc-kernel-demo { padding: 0.95rem; }
+  .nc-kernel-demo .nc-kernel-chart { padding: 0.65rem 0.4rem 0.25rem; }
+}
