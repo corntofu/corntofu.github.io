@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "이인석 선형대수와 군 2장 - 벡터 공간 (Vector Spaces)"
+title: "선형대수와 군 2장 - 벡터 공간 (Vector Spaces)"
 date: 2026-11-27 23:30:00 +0900
 description: "벡터 공간의 공리, 부분공간, 다양한 벡터 공간의 예시와 동형사상"
 tags: [math, linear-algebra]
