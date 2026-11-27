@@ -78,24 +78,110 @@ E[D]=\frac1T\int_0^T
 \tag{2.3}
 $$
 
-$dE/dD$에 해당하는 functional derivative를 0으로 놓는다. 핵심 계산을 보자. $D$를 $D+\varepsilon\eta$만큼 변화시키고 $\varepsilon$의 일차항을 구하면
+이때 $D$는 수 하나가 아니라 **함수**이므로 보통의 도함수 $dE/dD$ 대신 **variation(변분)**을 사용한다. 핵심은 *필터를 아주 조금 바꿨을 때 오차가 얼마나 변하는가?*를 계산하는 것이다.
+
+**① 먼저 예측 오차와 perturbation의 출력을 따로 정의한다.**
 
 $$
-\delta E
-=-\frac2T\int_0^T
-\left[r(t)-r_0-\int_0^\infty D(u)s(t-u)\,du\right]
-\left[\int_0^\infty \eta(\tau)s(t-\tau)\,d\tau\right]dt.
+e_D(t)=r(t)-r_0-\int_0^\infty D(u)s(t-u)\,du,
 $$
 
-모든 작은 변화 $\eta(\tau)$에 대해 $\delta E=0$이 되려면 각각의 lag $\tau$에 대해
+$$
+a_\eta(t)=\int_0^\infty\eta(u)s(t-u)\,du.
+$$
+
+여기서 $\eta(u)$는 필터에 더할 **임의의 함수(변화 방향)**이고 $\varepsilon$은 그 변화량의 크기를 정하는 작은 실수다. 실제로 필터를
+
+$$
+D_\varepsilon(u)=D(u)+\varepsilon\eta(u)
+$$
+
+로 바꾸면 선형 모델의 예측은 $\varepsilon a_\eta(t)$만큼 증가한다. 그러므로 새 **예측 오차**는
+
+$$
+\begin{aligned}
+e_{D_\varepsilon}(t)
+&=r(t)-r_0-\int_0^\infty[D(u)+\varepsilon\eta(u)]s(t-u)\,du\\
+&=e_D(t)-\varepsilon a_\eta(t).
+\end{aligned}
+$$
+
+마이너스 부호는 **오차 = 실제값 − 예측값**이므로 예측값이 증가한 만큼 오차는 감소하기 때문에 나온다.
+
+**② 오차의 제곱을 전개한다.** 위 식을 원래의 squared-error functional에 대입하면
+
+$$
+\begin{aligned}
+E[D+\varepsilon\eta]
+&=\frac1T\int_0^T[e_D(t)-\varepsilon a_\eta(t)]^2\,dt\\
+&=\frac1T\int_0^T
+[e_D(t)^2-2\varepsilon e_D(t)a_\eta(t)
++\varepsilon^2a_\eta(t)^2]\,dt\\
+&=E[D]
+-\frac{2\varepsilon}{T}\int_0^T e_D(t)a_\eta(t)\,dt\\
+&\quad+\frac{\varepsilon^2}{T}\int_0^T a_\eta(t)^2\,dt.
+\end{aligned}
+$$
+
+**③ $\varepsilon$의 일차항만 남긴다.** $\varepsilon^2$항은 $\varepsilon\to0$에서 일차 변화율에 기여하지 않으므로, **1차 variation(Gâteaux derivative)**를
+
+$$
+\delta E[D;\eta]
+:=\left.\frac{d}{d\varepsilon}E[D+\varepsilon\eta]\right|_{\varepsilon=0}
+$$
+
+로 정의하면
+
+$$
+\boxed{
+\begin{aligned}
+\delta E[D;\eta]
+&=-\frac2T\int_0^T e_D(t)a_\eta(t)\,dt\\
+&=-\frac2T\int_0^T
+\left[r(t)-r_0-\int_0^\infty D(u)s(t-u)\,du\right]\\
+&\qquad\qquad\cdot\left[\int_0^\infty\eta(\tau)s(t-\tau)\,d\tau\right]dt.
+\end{aligned}
+}
+$$
+
+바로 이 식이 앞에서 생략했던 $\delta E$의 유도다. **제곱의 미분에서 계수 $-2$가 나오고, perturbation이 convolution에 선형으로 들어가므로 $\int\eta(\tau)s(t-\tau)\,d\tau$가 나타난다.**
+
+**④ 왜 이것을 0으로 두면 Wiener–Hopf equation이 될까?**
+
+적분 순서를 바꿀 수 있다고 가정하고, $\eta(\tau)$는 $t$에 의존하지 않는다는 점을 이용하면
+
+$$
+\begin{aligned}
+\delta E[D;\eta]
+&=-2\int_0^\infty
+\eta(\tau)\left[\frac1T\int_0^T e_D(t)s(t-\tau)\,dt\right]d\tau\\
+&=-2\int_0^\infty
+\eta(\tau)\langle e_D(t)s(t-\tau)\rangle_t\,d\tau.
+\end{aligned}
+$$
+
+최적 필터에서는 **모든 허용된 변화 방향 $\eta$**에 대해 일차 변화가 0이어야 한다. 따라서 적분 안의 계수가 각 $\tau$에서 0이어야 한다(엄밀히는 거의 모든 $\tau$).
+
+$$
+\boxed{
+\langle e_D(t)s(t-\tau)\rangle_t=0
+}
+$$
+
+이것이 **orthogonality principle(직교성 원리)**다. 최적의 선형 예측을 하고도 남은 오차는, 예측에 사용된 각 시간 지연의 입력 $s(t-\tau)$와 상관되지 않아야 한다. 상관이 남는다면 해당 입력의 가중치 $D(\tau)$를 조금 더 조정해 오차를 줄일 수 있기 때문이다.
+
+오차의 정의를 대입하면
 
 $$
 \langle (r(t)-r_0)s(t-\tau)\rangle_t
-=
-\int_0^\infty D(u)\langle s(t-u)s(t-\tau)\rangle_t\,du
+=\int_0^\infty D(u)\langle s(t-u)s(t-\tau)\rangle_t\,du
 $$
 
-를 만족해야 한다. 평균이 0인 stationary stimulus를 생각하면
+로 이어진다. 평균이 0인 stationary stimulus를 가정하면 이 식이 곧 다음의 Wiener–Hopf equation이 된다.
+
+> **핵심 요약:** $D\to D+\varepsilon\eta$ → 예측 오차가 $e_D-\varepsilon a_\eta$로 바뀜 → 제곱을 전개 → $\varepsilon$의 일차항을 선택 → 모든 $\eta$에 대해 0이 되도록 함 → 남은 오차와 입력의 직교성.
+
+여기서 평균이 0인 stationary stimulus를 생각하면
 
 $$
 Q_{ss}(\ell)=\langle s(t)s(t+\ell)\rangle_t,\qquad
@@ -638,6 +724,7 @@ $$
 ## 참고 자료
 
 - Peter Dayan and L. F. Abbott, *Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems*, Chapter 2, **Neural Encoding II: Reverse Correlation and Visual Receptive Fields**, pp. 45–84.
+- [Biomedical Signal Processing — Wiener Filter: MSE, 직교성 원리, Wiener–Hopf 유도](https://kimnguyen2002.github.io/biomedical-signal-processing/ch16_noise_removal/02_wiener_filter.html)
 - [Dayan & Abbott, 원문 PDF — Yale Boulder School](https://boulderschool.yale.edu/sites/default/files/files/DayanAbbott.pdf)
 - [Theoretical Neuroscience — MIT Press 도서 정보](https://mitpress.mit.edu/9780262541855/theoretical-neuroscience/)
 - [Chapter 1 학습 노트]({{ '/blog/2026/dayan-abbott-chapter-1/' | relative_url }})
