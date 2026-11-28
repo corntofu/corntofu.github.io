@@ -1,0 +1,257 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> Dayan &amp; Abbott Chapter 3 — Neural Decoding | HyeonTaek Kang </title> <meta name="author" content="HyeonTaek Kang"> <meta name="description" content="Neural encoding의 역문제: Bayesian decoding, signal detection(d′·ROC·AUC), population vector, Poisson MLE, Fisher information·Cramér–Rao bound, spike-train reconstruction을 수식과 직관으로 정리한다."> <meta name="keywords" content="HyeonTaek Kang, Pusan National University, computational neuroscience, reinforcement learning, graph algorithms, spiking neural networks, BCI, time series analysis"> <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; media-src 'self' https:; frame-src 'self' https:; connect-src 'self' https:;"> <style>
+  :root {
+    --max-content-width: 930px;
+  }
+</style> <link rel="stylesheet" href="/assets/css/tailwind.css?v=50c64c15cbb9fd1ce6056fdb8bcb4b62"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.5/css/academicons.min.css" integrity="sha256-SzrCOBJbGVFMahewkgjwnApaV2+av1DwMAA+/QGLyZw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/scholar-icons@1.0.3/css/scholar-icons.css" integrity="sha256-VY3hHVj/hNX3fYG6wtbA6TcKJQl7+FthzGSyIB64klY=" crossorigin="anonymous"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?v=591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%8E%93&lt;/text&gt;&lt;/svg&gt;"> <link rel="stylesheet" href="/assets/css/main.css?v=3116ba77db9ee1581d05bb3e86fbf7f1"> <link rel="canonical" href="https://corntofu.github.io/blog/2026/dayan-abbott-chapter-3/"> <script src="/assets/js/theme.js?v=5286c3e4c334d0ecb8fc0c40ff4fa7ec"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?v=5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
+    initTheme();
+  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">HyeonTaek</span> Kang </a> <button class="navbar-toggler collapsed navbar-toggler-main" type="button" data-nav-toggle="navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse navbar-collapse-main" id="navbarNav"> <ul class="navbar-nav navbar-menu-list flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV </a> </li> <li class="nav-item"> <button id="search-toggle" type="button" title="Search" aria-label="Open search"> <span class="nav-link">ctrl k <i class="fa-solid fa-magnifying-glass"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" type="button" title="Change theme" aria-label="Change color theme"> <i class="fa-half-sun-moon" id="light-toggle-system"></i> <i class="fa-solid fa-moon" id="light-toggle-dark"></i> <i class="fa-solid fa-sun" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <style type="text/css">
+    /* Make Markdown heading levels visually distinct throughout the blog. */
+.post .post-content #markdown-content h1,
+.post .post-content #markdown-content h2,
+.post .post-content #markdown-content h3 {
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.018em;
+}
+
+.post .post-content #markdown-content h1 {
+  font-size: 2.15rem;
+  margin-top: 2.6rem;
+  margin-bottom: 1.45rem;
+}
+
+.post .post-content #markdown-content h2 {
+  font-size: 1.75rem;
+  margin-top: 2.3rem;
+  margin-bottom: 1.3rem;
+}
+
+.post .post-content #markdown-content h3 {
+  font-size: 1.38rem;
+  margin-top: 1.9rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Avoid an oversized gap when a post already places an HR before a title. */
+.post .post-content #markdown-content hr + h1,
+.post .post-content #markdown-content hr + h2,
+.post .post-content #markdown-content hr + h3 {
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 600px) {
+  .post .post-content #markdown-content h1 { font-size: 1.9rem; }
+  .post .post-content #markdown-content h2 { font-size: 1.55rem; }
+  .post .post-content #markdown-content h3 { font-size: 1.25rem; }
+}
+
+  </style> <div class="post"> <header class="post-header"> <h1 class="post-title">Dayan &amp; Abbott Chapter 3 — Neural Decoding</h1> <p class="post-meta"> Created on November 28, 2026 </p> <p class="post-tags"> <a href="/blog/2026"> <i class="fa-solid fa-calendar fa-sm"></i> 2026 </a>   ·   <a href="/blog/tag/computational-neuroscience"> <i class="fa-solid fa-hashtag fa-sm"></i> computational-neuroscience</a>   ·   <a href="/blog/category/computational"> <i class="fa-solid fa-tag fa-sm"></i> Computational</a>   <a href="/blog/category/neuroscience"> <i class="fa-solid fa-tag fa-sm"></i> Neuroscience</a> </p> </header> <article class="post-content"> <div id="markdown-content"> <p><em>Peter Dayan &amp; L. F. Abbott, Theoretical Neuroscience</em>, Chapter 3: <strong>Neural Decoding</strong> (pp. 87–122) 학습 노트.</p> <blockquote> <p><strong>이번 장의 질문:</strong> 뉴런의 반응을 기록했을 때 <strong>어떤 자극이 들어왔는지</strong>, 또는 자극의 방향·세기·시간적 변화를 얼마나 정확하게 복원할 수 있을까?</p> </blockquote> <p>Chapter 1에서는 spike train을 통계적으로 표현했고, Chapter 2에서는 stimulus로부터 firing rate를 예측했다. Chapter 3은 <strong>역방향 추론</strong>을 다룬다.</p> \[\boxed{ \underbrace{s}_{\text{stimulus}} \xrightarrow[\text{Ch. 1–2}]{\text{encoding}} \underbrace{\boldsymbol r,\rho(t)}_{\text{neural response}} \xrightarrow[\text{Ch. 3}]{\text{decoding}} \underbrace{\hat s}_{\text{stimulus estimate}} }\] <p>이 장에서 추정 대상은 정적인 자극 변수 $s$일 수도 있고, 시간에 따라 변하는 전체 자극 $s(t)$일 수도 있다. 크게 다음의 네 절로 구성된다.</p> <table> <thead> <tr> <th>원문 절</th> <th>주요 내용</th> <th>핵심 도구</th> </tr> </thead> <tbody> <tr> <td>3.1 Encoding and Decoding</td> <td>조건부 확률을 뒤집기</td> <td>Bayes’ theorem</td> </tr> <tr> <td>3.2 Discrimination</td> <td>두 자극을 구별하기</td> <td>$d’$, ROC, likelihood-ratio test</td> </tr> <tr> <td>3.3 Population Decoding</td> <td>여러 뉴런의 정보를 결합하기</td> <td>population vector, ML, MAP, Fisher information</td> </tr> <tr> <td>3.4 Spike Train Decoding</td> <td>시간에 따라 변하는 자극을 복원하기</td> <td>reconstruction kernel, Wiener–Hopf, Fourier</td> </tr> </tbody> </table> <hr> <h2 id="1-encoding에서-decoding으로-31">1. Encoding에서 Decoding으로 (3.1)</h2> <h3 id="11-우리가-아는-확률과-알고-싶은-확률">1.1 우리가 아는 확률과 알고 싶은 확률</h3> <p>Encoding model은 자극 $s$가 주어졌을 때 뉴런 반응 $\boldsymbol r$가 관측될 확률을 설명한다.</p> \[\boxed{p(\boldsymbol r\mid s)}\] <p>Decoding에서는 반응 $\boldsymbol r$를 관측한 상태에서 원래 자극에 대한 확률을 구하고 싶다.</p> \[\boxed{p(s\mid\boldsymbol r)}\] <p>그 관계는 Bayes’ theorem이다.</p> \[\boxed{ p(s\mid\boldsymbol r) = \frac{p(\boldsymbol r\mid s)p(s)} {p(\boldsymbol r)} } \tag{3.3}\] <table> <thead> <tr> <th>항</th> <th>의미</th> </tr> </thead> <tbody> <tr> <td>$p(\boldsymbol r\mid s)$</td> <td> <strong>Likelihood</strong>: 이 자극이 주어졌을 때 관측한 반응이 얼마나 그럴듯한가</td> </tr> <tr> <td>$p(s)$</td> <td> <strong>Prior</strong>: 뉴런 반응을 보기 전 자극이 등장할 가능성</td> </tr> <tr> <td>$p(s\mid\boldsymbol r)$</td> <td> <strong>Posterior</strong>: 관측한 신경 반응을 고려한 자극의 분포</td> </tr> <tr> <td>$p(\boldsymbol r)$</td> <td> <strong>Evidence</strong>: 가능한 모든 자극을 종합한 반응의 주변확률</td> </tr> </tbody> </table> <p>연속적인 stimulus라면 분모는</p> \[p(\boldsymbol r) = \int p(\boldsymbol r\mid s)p(s)\,ds\] <p>로 계산한다. 여기서 $p$는 변수가 연속이면 확률<strong>밀도</strong>이고 이산이면 확률질량함수로 이해한다.</p> <p><strong>중요:</strong> Likelihood가 높아도 prior가 매우 작으면 posterior가 크지 않을 수 있다. Decoding은 encoding model만 뒤집으면 끝나는 작업이 아니다.</p> <h3 id="12-작은-예제-spike-count만-보고-ab-구별하기">1.2 작은 예제: spike count만 보고 A/B 구별하기</h3> <p>1초 동안 자극 A를 제시하면 평균 5회, B를 제시하면 평균 15회 발화한다고 하자. 독립적인 Poisson spike-count model을 쓰면</p> \[N\mid A\sim\operatorname{Poisson}(5), \qquad N\mid B\sim\operatorname{Poisson}(15).\] <p>실제로 $N=12$개를 관측했다면 likelihood ratio는</p> \[\begin{aligned} \frac{P(N=12\mid B)}{P(N=12\mid A)} &amp;=\frac{15^{12}e^{-15}/12!}{5^{12}e^{-5}/12!}\\ &amp;=3^{12}e^{-10}\approx24.1. \end{aligned}\] <p>두 자극의 prior가 같다면</p> \[P(B\mid N=12) =\frac{24.1}{1+24.1} \approx0.960.\] <p>관측한 spike 수 12개는 B를 더 지지하지만, 이것은 <strong>확정 판정</strong>이 아니라 prior와 noise model에 의존하는 확률적 추론이다.</p> <hr> <h2 id="2-두-자극을-구분하는-성능-discrimination-32">2. 두 자극을 구분하는 성능: Discrimination (3.2)</h2> <h3 id="21-random-dot-motion-실험">2.1 Random-dot motion 실험</h3> <p>원문은 원숭이가 점들의 운동 방향을 판단하는 고전적인 random-dot motion task를 소개한다. 움직이는 점들의 일부만 같은 방향으로 이동하도록 하며 그 비율인 <strong>coherence</strong>를 조절한다.</p> <ul> <li>Coherence가 <strong>작다</strong> → 움직임 방향을 구분하기 어렵다.</li> <li>Coherence가 <strong>크다</strong> → 움직임 방향을 구분하기 쉽다.</li> <li>MT 영역 뉴런은 자신의 <strong>preferred direction</strong>과 반대 방향에 대해 서로 다른 firing-rate 분포를 나타낼 수 있다.</li> </ul> <p>따라서 뉴런 하나의 반응만으로도 판별을 수행할 수 있는지 알아볼 수 있다.</p> <h3 id="22-두-분포-사이의-거리-d">2.2 두 분포 사이의 거리 $d’$</h3> <p>선호 방향(+)과 반대 방향(−)의 반응이 <strong>동일 분산</strong>의 Gaussian이라고 가정하자.</p> \[r\mid+\sim\mathcal N(\mu_+,\sigma_r^2), \qquad r\mid-\sim\mathcal N(\mu_-,\sigma_r^2).\] <p>두 반응 분포의 분리 정도를</p> \[\boxed{ d'=\frac{\mu_+-\mu_-}{\sigma_r} } \tag{3.4}\] <p>로 정의한다($\mu_+&gt;\mu_-$ 가정).</p> <p><strong>왜 평균 차이를 표준편차로 나눌까?</strong> 평균이 10 Hz 차이 나더라도 trial 간 변동이 1 Hz인 경우와 20 Hz인 경우의 판별 난이도는 전혀 다르다. $d’$는 <strong>평균의 차이를 noise의 크기로 정규화</strong>한 값이다.</p> <h3 id="23-threshold에서-roc-curve로">2.3 Threshold에서 ROC curve로</h3> <p>뉴런의 spike-count firing rate가 $z$ 이상이면 +, 미만이면 −라고 판단하자.</p> \[\hat s= \begin{cases} +,&amp;r\ge z,\\ -,&amp;r&lt;z. \end{cases}\] <p>Threshold $z$에 따라 두 비율이 변한다.</p> \[\mathrm{TPR}(z)=P(r\ge z\mid+), \qquad \mathrm{FPR}(z)=P(r\ge z\mid-).\] <p>여러 threshold의 점 $(\mathrm{FPR},\mathrm{TPR})$을 연결하면 <strong>ROC curve</strong>가 된다. ROC가 대각선 근처면 판별력이 낮고, 왼쪽 위 모서리에 가까우면 판별력이 높다.</p> <p><strong>AUC와 2AFC의 연결</strong>은 특히 중요하다. + 자극의 반응 $r_+$ 하나와 − 자극의 반응 $r_-$ 하나를 독립적으로 뽑아 비교하는 <em>two-alternative forced choice</em> 과제에서는</p> \[\boxed{ \mathrm{AUC} =P(r_+&gt;r_-)+\tfrac12P(r_+=r_-) }\] <p>이다. 연속 분포에서는 tie 확률이 0이어서 $\mathrm{AUC}=P(r_+&gt;r_-)$가 된다.</p> <p>동일 분산 Gaussian이라면 $r_+-r_-$의 분산이 $2\sigma_r^2$이므로</p> \[\boxed{ P(\text{correct in 2AFC}) =\Phi\left(\frac{d'}{\sqrt2}\right) }\] <p>이다. $\Phi$는 표준정규분포 CDF다.</p> <table> <thead> <tr> <th>$d’$</th> <th>2AFC 정답 확률 (AUC)</th> </tr> </thead> <tbody> <tr> <td>0</td> <td>50.0%</td> </tr> <tr> <td>1</td> <td>약 76.0%</td> </tr> <tr> <td>2</td> <td>약 92.1%</td> </tr> <tr> <td>3</td> <td>약 98.3%</td> </tr> </tbody> </table> <h3 id="24-왜-likelihood-ratio-test가-더-일반적인가">2.4 왜 likelihood-ratio test가 더 일반적인가?</h3> <p>Firing-rate threshold는 두 Gaussian 분포를 비교할 때 직관적이지만, 일반적인 분포에서는 최적의 판별 경계가 단순한 $r$의 threshold가 아닐 수 있다.</p> <p>Likelihood ratio를 사용하면</p> \[\boxed{\Lambda(r)=\frac{p(r\mid+)}{p(r\mid-)}}\] <p>라고 정의할 수 있다. 양쪽 prior와 오분류 비용이 같을 때는 $\Lambda(r)&gt;1$이면 +로 판단한다. Prior와 비용이 다르면 판정 임계값이 바뀐다.</p> <p><strong>핵심:</strong> 좋은 판별기는 단순히 평균 firing rate를 비교하는 것이 아니라 반응이 나타날 <strong>전체 확률분포</strong>를 고려한다.</p> <hr> <h2 id="3-population-decoding-여러-뉴런이-함께-투표한다-33">3. Population decoding: 여러 뉴런이 함께 투표한다 (3.3)</h2> <p>뉴런 하나의 발화는 불규칙하다. 여러 뉴런의 정보를 조합하면 보다 안정적으로 자극을 추정할 수 있다. Population response를</p> \[\boldsymbol r=(r_1,r_2,\ldots,r_M)\] <p>로 쓰자. 여기서 $M$은 뉴런 수다.</p> <h3 id="31-population-vector">3.1 Population vector</h3> <p>원문은 귀뚜라미 cercal system의 공기 흐름 방향 추정과 운동피질의 방향 선택성을 예제로 다룬다.</p> <p>뉴런 $a$의 preferred direction을 단위벡터 $\boldsymbol c_a$라 하고, 그 뉴런의 반응을 $r_a$라 하자. 단순한 population vector는</p> \[\boxed{ \boldsymbol v_{\mathrm{pop}} =\sum_{a=1}^{M}w_a r_a\boldsymbol c_a }\] <p>로 만들 수 있다. $w_a$는 뉴런별 firing-rate scale을 정규화하는 가중치다. 예를 들어 $w_a=1/r_{\max,a}$로 선택하면 뉴런별 최대 반응을 기준으로 정규화할 수 있다.</p> <p>결과 벡터의 방향</p> \[\hat\theta=\operatorname{atan2}(v_y,v_x)\] <p>를 자극 방향의 추정값으로 사용하는 것이다.</p> <p><strong>직관:</strong> 뉴런이 자신이 좋아하는 방향으로 ‘투표’하고, 강하게 발화할수록 더 큰 표를 행사한다.</p> <p>하지만 tuning curve가 불균일하거나 뉴런 사이의 noise correlation이 강하면 단순 벡터합은 최적 decoder가 아닐 수 있다.</p> <hr> <h2 id="4-poisson-population에서-maximum-likelihood-33">4. Poisson population에서 Maximum Likelihood (3.3)</h2> <h3 id="41-encoding-distribution을-이용해-원래-자극-찾기">4.1 Encoding distribution을 이용해 원래 자극 찾기</h3> <p>뉴런 $a$의 tuning curve를 $f_a(s)$라 하고, 길이 $T$인 trial에서 spike count $n_a$를 관측했다고 하자.</p> \[n_a\mid s\sim\operatorname{Poisson}(Tf_a(s)).\] <p>자극 $s$가 주어졌을 때 뉴런 사이의 spike count가 조건부 독립이라면</p> \[\boxed{ P(\boldsymbol n\mid s) =\prod_{a=1}^{M} \frac{[Tf_a(s)]^{n_a}}{n_a!} e^{-Tf_a(s)} }.\] <p>Decoding에서는 $\boldsymbol n$을 이미 관측했다. 따라서 가장 그럴듯한 $s$를 구하면 된다.</p> \[\boxed{ \hat s_{\mathrm{ML}} =\arg\max_s P(\boldsymbol n\mid s) }.\] <h3 id="42-log-likelihood-미분">4.2 Log-likelihood 미분</h3> <p>로그를 취하면</p> \[\ell(s)= \sum_{a=1}^{M} \left[ n_a\log(Tf_a(s)) -Tf_a(s)-\log(n_a!) \right].\] <p>$t$가 아닌 <strong>자극 변수 $s$</strong>로 미분하면</p> \[\boxed{ \ell'(s) =\sum_{a=1}^{M} \left[ n_a\frac{f_a'(s)}{f_a(s)} -Tf_a'(s) \right] }.\] <p>이를 0으로 놓고 후보해들을 비교하면 maximum likelihood estimate를 찾을 수 있다. 최대점이 경계에 있거나 여러 극값이 존재할 수 있으므로 미분식 $=0$만으로 언제나 해가 정해지는 것은 아니다.</p> <h3 id="43-gaussian-tuning-curve의-특별한-경우">4.3 Gaussian tuning curve의 특별한 경우</h3> \[f_a(s) =f_{\max,a}\exp\left[-\frac{(s-s_a)^2}{2\sigma_a^2}\right]\] <p>이면</p> \[\frac{f_a'(s)}{f_a(s)} =-\frac{s-s_a}{\sigma_a^2}.\] <p>뉴런들의 선호 자극이 충분히 조밀하고 균등하게 배치되어 $\sum_a f_a(s)$가 거의 일정하다면 $\sum_a Tf_a’(s)\approx0$이다. 이 <strong>추가 가정</strong> 아래</p> \[\boxed{ \hat s_{\mathrm{ML}} \approx \frac{\displaystyle\sum_a n_a s_a/\sigma_a^2} {\displaystyle\sum_a n_a/\sigma_a^2} } \tag{3.32}\] <p>가 된다. 각 뉴런의 tuning 폭까지 같으면</p> \[\boxed{ \hat s_{\mathrm{ML}} \approx\frac{\sum_a n_a s_a}{\sum_a n_a} } \tag{3.33}\] <p>이다. 뉴런의 preferred stimulus를 <strong>발화량으로 가중평균</strong>한 것이므로 population vector와 연결되는 직관을 준다.</p> <blockquote> <p>이 간단한 가중평균 공식은 보편적인 MLE 공식이 아니다. 특히 자극의 경계 근처에서 $\sum_a f_a(s)$가 크게 변하면 원래 log-likelihood 전체를 최적화해야 한다.</p> </blockquote> <hr> <h2 id="5-bayesian-estimation-mle-map-posterior-mean-33">5. Bayesian estimation: MLE, MAP, Posterior mean (3.3)</h2> <h3 id="51-map는-mle와-어떻게-다른가">5.1 MAP는 MLE와 어떻게 다른가?</h3> <p>Bayesian decoding에서는</p> \[p(s\mid\boldsymbol n) \propto P(\boldsymbol n\mid s)p(s)\] <p>라는 posterior 전체를 고려한다.</p> <ul> <li> <strong>MLE:</strong> $\hat s_{\mathrm{ML}}=\arg\max_s P(\boldsymbol n\mid s)$</li> <li> <strong>MAP:</strong> $\hat s_{\mathrm{MAP}}=\arg\max_s P(\boldsymbol n\mid s)p(s)$</li> </ul> <p>Prior가 균일하면 둘은 같지만, 그렇지 않으면 MLE보다 흔한 자극 쪽으로 MAP 추정값이 이동할 수 있다.</p> <h3 id="52-제곱오차를-최소화하는-추정량은-무엇인가">5.2 제곱오차를 최소화하는 추정량은 무엇인가?</h3> <p>Bayesian decision theory에서는 <strong>어떤 loss를 최소화하느냐</strong>가 중요하다. 관측된 응답 $\boldsymbol n$에서 제곱오차 loss를 사용하는 경우</p> \[R(\hat s\mid\boldsymbol n) = \int (s-\hat s)^2p(s\mid\boldsymbol n)\,ds\] <p>를 최소화해야 한다.</p> \[\begin{aligned} \frac{\partial R}{\partial\hat s} &amp;=\int 2(\hat s-s)p(s\mid\boldsymbol n)\,ds\\ &amp;=2\left(\hat s-\mathbb E[s\mid\boldsymbol n]\right). \end{aligned}\] <p>따라서</p> \[\boxed{\hat s_{\mathrm{Bayes,L2}}=\mathbb E[s\mid\boldsymbol n]}\] <p>가 된다. 이것은 <strong>posterior mean</strong>이다.</p> <table> <thead> <tr> <th>추정법</th> <th>최소화하거나 최대화하는 기준</th> </tr> </thead> <tbody> <tr> <td>MLE</td> <td>Likelihood 최대</td> </tr> <tr> <td>MAP</td> <td>Posterior 최대</td> </tr> <tr> <td>Posterior mean</td> <td>Posterior expected squared error 최소</td> </tr> <tr> <td>Posterior median</td> <td>Posterior expected absolute error 최소</td> </tr> </tbody> </table> <p>Posterior가 비대칭이면 MAP와 mean이 달라질 수 있다. 그러므로 ‘Bayesian decoder’가 곧 MAP만을 뜻하지는 않는다.</p> <hr> <h2 id="6-fisher-information-어느-정도로-정밀하게-추정할-수-있나-33">6. Fisher information: 어느 정도로 정밀하게 추정할 수 있나? (3.3)</h2> <h3 id="61-decoder를-설계하는-것과-한계를-구하는-것은-다른-문제">6.1 Decoder를 설계하는 것과 한계를 구하는 것은 다른 문제</h3> <p>앞에서는 decoding 방법을 만들었다. 이제 <strong>어떤 decoder를 쓰더라도 neural response의 불확실성 때문에 남는 추정 오차의 하한</strong>을 생각해 보자.</p> <p>자극 $s$에 대한 Fisher information은</p> \[\boxed{ I_F(s)= \mathbb E_{\boldsymbol r\mid s} \left[ \left( \frac{\partial}{\partial s} \log p(\boldsymbol r\mid s) \right)^2 \right] }\] <p>로 정의한다. 괄호 안의 미분을 <strong>score function</strong>이라 한다.</p> <p>Likelihood가 $s$에 민감하게 변할수록 서로 가까운 두 자극을 잘 구분할 수 있다. Fisher information은 이 <strong>국소적 구분 가능성</strong>을 정량화한다.</p> <h3 id="62-poisson-population의-fisher-information-직접-유도">6.2 Poisson population의 Fisher information 직접 유도</h3> <p>4절의 독립 Poisson log-likelihood를 다시 쓰자.</p> \[\ell(s)=\sum_a [n_a\log f_a(s)-Tf_a(s)]+\mathrm{const}.\] <p>미분하면</p> \[\begin{aligned} \ell'(s) &amp;=\sum_a \left[n_a\frac{f_a'(s)}{f_a(s)}-Tf_a'(s)\right]\\ &amp;=\sum_a \big(n_a-Tf_a(s)\big)\frac{f_a'(s)}{f_a(s)}. \end{aligned}\] <p>Poisson distribution의 평균과 분산은 모두 $Tf_a(s)$이므로</p> \[\mathbb E[n_a-Tf_a(s)\mid s]=0, \qquad \operatorname{Var}(n_a\mid s)=Tf_a(s).\] <p>서로 다른 뉴런의 count가 조건부 독립이라는 가정 아래 교차항의 기댓값이 0이 되어</p> \[\begin{aligned} I_F(s) &amp;=\mathbb E[(\ell'(s))^2\mid s]\\ &amp;=\sum_a Tf_a(s) \left[\frac{f_a'(s)}{f_a(s)}\right]^2\\ &amp;=\boxed{ T\sum_{a=1}^{M}\frac{[f_a'(s)]^2}{f_a(s)} }. \end{aligned} \tag{3.44}\] <p><strong>해석:</strong> 각 뉴런의 정보 기여는 <strong>tuning-curve 기울기의 제곱</strong>에 비례하고 그 시점의 <strong>평균 발화율</strong>에 반비례한다. 이 결과는 $f_a(s)&gt;0$이고 Poisson 독립 가정이 적용되는 지점에서 해석한다.</p> <h3 id="63-가장-많이-발화하는-지점이-가장-많은-정보를-주는-것은-아니다">6.3 가장 많이 발화하는 지점이 가장 많은 정보를 주는 것은 아니다</h3> <p>Gaussian tuning curve</p> \[f(s)=f_{\max}\exp[-(s-s_0)^2/(2\sigma^2)]\] <p>를 생각하자. 최고 발화율은 $s=s_0$에서 나타나지만</p> \[f'(s_0)=0 \quad\Longrightarrow\quad \boxed{I_F(s_0)=0}.\] <p>이상해 보이지만 <strong>자극을 아주 조금 바꿔도 rate가 일차적으로 변하지 않으므로 국소적 구분이 어렵다</strong>는 의미다.</p> <svg viewbox="0 0 680 235" style="max-width:100%;height:auto;" role="img" aria-label="Gaussian tuning curve: 중앙에서는 firing rate가 최대이지만 기울기가 0이라 Fisher information이 0인 예시"> <rect x="1" y="1" width="678" height="232" rx="12" fill="none" stroke="currentColor" stroke-opacity=".18"></rect> <path d="M50 190H633 M50 35V190" stroke="currentColor" stroke-opacity=".35" fill="none" stroke-width="1.5"></path> <path d="M55 190 C130 190 187 158 238 93 S321 37 340 35 S446 158 505 177 S576 190 625 190" stroke="#0d9488" stroke-width="3" fill="none"></path> <path d="M55 190 C131 177 178 74 236 81 S314 188 340 190 S422 84 444 81 S552 178 625 190" stroke="#8162d6" stroke-width="3" fill="none"></path> <circle cx="340" cy="35" r="5" fill="#0d9488"></circle> <circle cx="340" cy="190" r="5" fill="#8162d6"></circle> <path d="M340 30V198" stroke="currentColor" stroke-opacity=".3" stroke-dasharray="5 4"></path> <text x="340" y="217" font-size="13" text-anchor="middle" fill="currentColor">s₀ — preferred stimulus</text> <text x="55" y="25" font-size="13" fill="currentColor">Relative response</text> <path d="M445 30h24" stroke="#0d9488" stroke-width="3"></path> <text x="475" y="34" font-size="12" fill="currentColor">Firing rate</text> <path d="M445 49h24" stroke="#8162d6" stroke-width="3"></path> <text x="475" y="53" font-size="12" fill="currentColor">Fisher information</text> </svg> <p><em>위 SVG는 Gaussian tuning과 Fisher information의 <strong>정성적인 모양을 그린 개념도</strong>이며 원문의 측정값을 복제한 그림이 아니다.</em></p> <h3 id="64-cramérrao-bound">6.4 Cramér–Rao bound</h3> <p>적절한 regularity condition을 만족하는 <strong>unbiased estimator</strong>라면</p> \[\boxed{ \operatorname{Var}(\hat s\mid s)\ge\frac1{I_F(s)} } \tag{3.40}\] <p>이다. Fisher information이 클수록 가능한 추정 분산의 이론적 하한이 낮아진다.</p> <p>Estimator에 bias $b(s)=\mathbb E[\hat s\mid s]-s$가 있다면 일반화된 bound는</p> \[\operatorname{Var}(\hat s\mid s)\ge \frac{[1+b'(s)]^2}{I_F(s)}\] <p>의 형태다. <strong>모든 biased decoder의 MSE가 무조건 $1/I_F$보다 크다는 뜻은 아니다.</strong></p> <h3 id="65-tuning-폭과-stimulus-차원">6.5 Tuning 폭과 stimulus 차원</h3> <p>균일하고 조밀한 Gaussian tuning-curve population 등 특정 모델에서는 tuning 폭 $\sigma$에 대한 Fisher information이 대략</p> \[I_F\propto \sigma^{D-2}\] <p>로 스케일한다. $D$는 stimulus 공간의 차원이다.</p> <table> <thead> <tr> <th>Stimulus 차원</th> <th>폭 $\sigma$를 줄였을 때</th> </tr> </thead> <tbody> <tr> <td>$D=1$</td> <td>정보가 증가</td> </tr> <tr> <td>$D=2$</td> <td>폭에 대한 의존성이 거의 사라짐</td> </tr> <tr> <td>$D&gt;2$</td> <td>정보가 감소</td> </tr> </tbody> </table> <p>이것은 개별 뉴런의 높은 기울기와 충분히 많은 뉴런이 활성화되는 <strong>population coverage</strong> 사이의 절충을 보여 준다. 모든 신경회로에 보편적인 정리는 아니다.</p> <hr> <h2 id="7-spike-train-decoding-시간에-따라-변하는-자극을-복원하기-34">7. Spike-train decoding: 시간에 따라 변하는 자극을 복원하기 (3.4)</h2> <h3 id="71-spike-count만으로는-시간-구조를-복원하기-어렵다">7.1 Spike count만으로는 시간 구조를 복원하기 어렵다</h3> <p>위의 population decoding은 주로 정적 자극 $s$를 추정했다. 하지만 시각적 운동 속도 같은 자극은 계속 변한다.</p> \[s(t).\] <p>전체 spike 수 $N$만 사용하면 언제 반응이 일어났는지 정보를 잃는다. 따라서 Chapter 1의</p> \[\rho(t)=\sum_i\delta(t-t_i)\] <p>를 사용해 각 spike 발생 시각에 decoding kernel을 적용한다.</p> <h3 id="72-reconstruction-kernel-k">7.2 Reconstruction kernel $K$</h3> <p>평균이 0인 stimulus를 복원할 때, 다음과 같은 <strong>선형 decoder</strong>를 생각한다.</p> \[\boxed{ \hat s(t-\tau_0) =\int_{-\infty}^{\infty} K(\tau)[\rho(t-\tau)-\bar r]\,d\tau } \tag{3.51}\] <ul> <li>$K(\tau)$: spike train을 stimulus로 변환하는 decoding filter</li> <li>$\bar r$: 평균 firing rate</li> <li>$\tau_0$: <strong>decoding delay</strong>. 지금까지의 spike로 시각 $t-\tau_0$의 자극을 복원한다.</li> </ul> <p>Spike train을 대입하면 각 spike 위치에 kernel을 한 번씩 더하는 계산으로 볼 수 있다. 평균 firing-rate 보정항도 함께 적용된다.</p> <h3 id="73-optimal-decoder도-least-squares로-구한다">7.3 Optimal decoder도 least squares로 구한다</h3> <p>Chapter 2에서는 입력 stimulus로 <strong>rate</strong>를 예측하는 linear filter를 찾았다. 이번에는 입력 spike train으로 <strong>stimulus</strong>를 복원한다.</p> \[E[K]=\left\langle \left[s(t-\tau_0)-\hat s(t-\tau_0)\right]^2 \right\rangle_t.\] <p>필터 $K$를 조금 변경하는 변분 계산을 수행하면 다음의 <strong>Wiener–Hopf equation</strong>을 얻는다.</p> \[\boxed{ \int_{-\infty}^{\infty} Q_{\rho\rho}(\tau-\tau')K(\tau')\,d\tau' =Q_{rs}(\tau-\tau_0) } \tag{3.53}\] <p>왼쪽의 $Q_{\rho\rho}$는 <strong>중심화된 spike train의 autocorrelation</strong>, 오른쪽의 $Q_{rs}$는 rate–stimulus cross-correlation이다.</p> <p>이는 Chapter 2의 $Q_{ss}*D=Q_{rs}$와 구조적으로 같다. 다만 <strong>입력과 출력을 뒤바꾸었다</strong>는 점이 중요하다.</p> <h3 id="74-spike-train의-시간-상관이-없다고-가정하면">7.4 Spike train의 시간 상관이 없다고 가정하면</h3> <p>특별한 경우에</p> \[Q_{\rho\rho}(\tau)=\bar r\,\delta(\tau)\] <p>라면 Wiener–Hopf equation은 간단해지고</p> \[\boxed{ K(\tau) =\frac{Q_{rs}(\tau-\tau_0)}{\bar r} =C(\tau_0-\tau) } \tag{3.57}\] <p>가 된다. $C$는 Chapter 1의 spike-triggered average다.</p> <p>따라서 이 단순화된 모델에서는 <strong>spike 한 번마다 그 주변의 평균 stimulus 패턴을 더하는 방식</strong>으로 복원할 수 있다. 일반적인 spike train에는 autocorrelation이 있어서 이보다 복잡한 보정이 필요하다.</p> <h3 id="75-fourier-domain에서-wienerhopf-풀기">7.5 Fourier domain에서 Wiener–Hopf 풀기</h3> <p>Convolution을 Fourier transform하면 곱셈으로 바뀐다. 원문의 transform 부호 convention을 따르면</p> \[\boxed{ \widetilde K(\omega) = \frac{ \widetilde Q_{rs}(\omega)e^{i\omega\tau_0} }{ \widetilde Q_{\rho\rho}(\omega) } } \tag{3.59}\] <p>가 된다. 분모는 spike train의 autocorrelation을 보정한다. 실제로는 분모가 작아지는 주파수에서 계산이 불안정할 수 있으므로 regularization 등을 고려할 수 있다.</p> <p><strong>주의:</strong> 위 식은 <strong>인과성 제약이 없는 최적 선형 해</strong>다. 정말 시각 $t$ 이전의 spike만 사용하려면 $K(\tau)=0$ for $\tau&lt;0$인 <strong>causal filter</strong>를 구해야 하며, 단순히 acausal 해를 잘라내는 것이 항상 엄밀한 최적해는 아니다.</p> <h3 id="76-왜-decoding-delay가-필요한가">7.6 왜 decoding delay가 필요한가?</h3> <p>Spike는 원인 자극보다 늦게 발생한다. 따라서 <strong>시각 $t$까지의 spike만 사용해서 바로 그 시각 $t$의 변화하는 자극을 복원</strong>하려 하면 충분한 증거가 아직 도착하지 않았을 수 있다.</p> <p>그래서 과거의 자극 $s(t-\tau_0)$를 복원한다. 이때</p> \[\boxed{ \text{복원 정확도} \quad\longleftrightarrow\quad \text{복원 지연} }\] <p>의 trade-off가 생긴다. Real-time BCI와 neural decoding에서 매우 중요한 실용적 고려사항이다.</p> <hr> <h2 id="8-핵심-공식-한눈에-보기">8. 핵심 공식 한눈에 보기</h2> <table> <thead> <tr> <th>주제</th> <th>핵심 관계</th> <th>기억할 해석</th> </tr> </thead> <tbody> <tr> <td>Bayesian decoding</td> <td>$p(s\mid\boldsymbol r)\propto p(\boldsymbol r\mid s)p(s)$</td> <td>Likelihood와 prior를 함께 고려</td> </tr> <tr> <td>Discriminability</td> <td>$d’=(\mu_+-\mu_-)/\sigma_r$</td> <td>평균 차이 / noise</td> </tr> <tr> <td>ROC / 2AFC</td> <td>$\mathrm{AUC}=P(r_+&gt;r_-)$</td> <td>독립 연속 반응에서의 비교 성공률</td> </tr> <tr> <td>Population vector</td> <td>$\boldsymbol v=\sum_a w_ar_a\boldsymbol c_a$</td> <td>뉴런들의 방향별 가중 투표</td> </tr> <tr> <td>Poisson ML</td> <td>$\hat s=\arg\max_sP(\boldsymbol n\mid s)$</td> <td>관측한 count가 가장 그럴듯한 자극</td> </tr> <tr> <td>MAP</td> <td>$\hat s=\arg\max_sP(\boldsymbol n\mid s)p(s)$</td> <td>Prior까지 반영한 최대점</td> </tr> <tr> <td>Bayes squared error</td> <td>$\hat s=\mathbb E[s\mid\boldsymbol n]$</td> <td>Posterior mean</td> </tr> <tr> <td>Poisson Fisher</td> <td>$I_F=T\sum_a f_a’^2/f_a$</td> <td>Tuning curve의 <strong>기울기</strong>가 중요</td> </tr> <tr> <td>Cramér–Rao</td> <td>$\operatorname{Var}(\hat s)\ge 1/I_F$</td> <td>Unbiased 추정의 분산 하한</td> </tr> <tr> <td>Spike-train decoder</td> <td>$\hat s=K*(\rho-\bar r)$</td> <td>Spike 시각을 써서 시간 신호 복원</td> </tr> <tr> <td>Fourier decoder</td> <td>$\widetilde K=\widetilde Q_{rs}e^{i\omega\tau_0}/\widetilde Q_{\rho\rho}$</td> <td>Spike autocorrelation 보정</td> </tr> </tbody> </table> <hr> <h2 id="9-chapter-3-복습-질문--누르면-해설이-펼쳐짐">9. Chapter 3 복습 질문 — 누르면 해설이 펼쳐짐</h2> <details> <summary><strong>Q1. Encoding likelihood를 알고 있다면 posterior를 바로 알 수 있을까?</strong></summary> <p>일반적으로 <strong>아니다.</strong> Bayes’ theorem</p> \[p(s\mid\boldsymbol r) =\frac{p(\boldsymbol r\mid s)p(s)}{p(\boldsymbol r)}\] <p>에서 <strong>stimulus prior</strong> $p(s)$도 필요하다. Likelihood는 자극을 조건으로 한 response의 분포이고 posterior는 response를 조건으로 한 자극의 분포다.</p> </details> <details> <summary><strong>Q2. 두 반응 분포의 평균 차이가 같을 때 분산만 커지면 어떤 일이 일어날까?</strong></summary> \[d'=\frac{\mu_+-\mu_-}{\sigma_r}\] <p>이므로 $\sigma_r$가 커지면 $d’$가 감소한다. 반응 분포가 더 많이 겹쳐 ROC AUC도 0.5 쪽으로 가까워진다. <strong>Noise 크기</strong>를 제외한 평균 차이만으로 판별력을 판단하면 안 된다.</p> </details> <details> <summary><strong>Q3. MAP와 posterior mean은 항상 같은가?</strong></summary> <p>아니다. MAP는 posterior가 가장 높은 <strong>최빈값</strong>이고, posterior mean은 posterior expected squared error를 최소화한다. 대칭 Gaussian posterior에서는 일치하지만 비대칭 또는 다봉형 posterior에서는 달라질 수 있다.</p> </details> <details> <summary><strong>Q4. Gaussian tuning curve의 정점에서 Fisher information이 0인 이유는?</strong></summary> <p>정점에서 $f’(s)=0$이므로 작은 자극 변화가 firing rate에 일차 변화를 거의 주지 않는다. 독립 Poisson 모델에서는</p> \[I_F(s)=T\frac{[f'(s)]^2}{f(s)}\] <p>이므로 $f(s)&gt;0$인 정점에서 $I_F=0$이다. <strong>발화율이 가장 큰 곳이 언제나 가장 informative한 곳은 아니다.</strong></p> </details> <details> <summary><strong>Q5. Chapter 2와 Chapter 3의 Wiener–Hopf equation은 무엇이 다른가?</strong></summary> <p>두 문제 모두 <strong>최소제곱오차를 최소화하는 선형 필터</strong>를 구한다.</p> <ul> <li> <strong>Chapter 2:</strong> Stimulus $s$를 입력으로 firing rate $r$를 예측한다.</li> <li> <strong>Chapter 3:</strong> Spike train $\rho$를 입력으로 stimulus $s$를 복원한다.</li> </ul> <p>따라서 입력 신호의 autocorrelation이 Chapter 2에서는 $Q_{ss}$, Chapter 3에서는 $Q_{\rho\rho}$가 된다.</p> </details> <details> <summary><strong>Q6. Spike-train decoding에서 $\tau_0$가 필요한 이유는?</strong></summary> <p>뉴런의 spike는 자극보다 지연되어 발생한다. $\tau_0&gt;0$로 두면 현재까지의 spike 정보를 이용해 <strong>조금 과거의 자극</strong>을 재구성한다. 큰 delay는 더 많은 반응 정보를 사용할 여지를 주지만 복원 결과를 늦게 얻는다는 단점이 있다.</p> </details> <details> <summary><strong>Q7. Poisson population의 Fisher information을 계산할 때 '독립' 가정이 중요한 이유는?</strong></summary> <p>Score $\ell’(s)$는 뉴런별 항의 합이다. 뉴런들이 조건부 독립이면 서로 다른 뉴런의 score 항에 대한 공분산이 0이 되므로 Fisher information이 각 뉴런 기여도의 합</p> \[I_F(s)=T\sum_a\frac{[f_a'(s)]^2}{f_a(s)}\] <p>으로 단순화된다. Correlated population에서는 공분산 구조를 고려해야 한다.</p> </details> <hr> <h2 id="10-chapter-13의-연결과-다음-장">10. Chapter 1–3의 연결과 다음 장</h2> <p><strong>Chapter 1 — Spike statistics</strong></p> \[\rho(t)\longrightarrow \hat r(t),\;\mathrm{STA},\;\text{Poisson statistics}\] <p><strong>Chapter 2 — Neural encoding</strong></p> \[s(t)\longrightarrow r(t)\longrightarrow \rho(t)\] <p><strong>Chapter 3 — Neural decoding</strong></p> \[\boldsymbol r,\rho(t)\longrightarrow \hat s,\hat s(t)\] <p>이제 Chapter 4의 <strong>Information Theory</strong>에서는 특정 decoder의 정확도만 묻는 대신, neural response가 stimulus에 대해 <strong>평균적으로 얼마나 많은 정보를 담는가</strong>를 탐구한다.</p> <p>BCI 관점에서는 특히 Chapter 3의 <strong>Poisson likelihood, population decoding, Fisher information, causal spike-train reconstruction</strong>을 따로 구현해 보면 도움이 된다.</p> <hr> <h2 id="참고-자료">참고 자료</h2> <ul> <li>Peter Dayan and L. F. Abbott, <em>Theoretical Neuroscience: Computational and Mathematical Modeling of Neural Systems</em>, Chapter 3, <strong>Neural Decoding</strong>, pp. 87–122.</li> <li><a href="https://homepages.inf.ed.ac.uk/pseries/BA/book/decode.pdf" rel="external nofollow noopener" target="_blank">Chapter 3 원문 PDF (University of Edinburgh)</a></li> <li><a href="https://www.gatsby.ucl.ac.uk/~dayan/book/" rel="external nofollow noopener" target="_blank">Theoretical Neuroscience — 저자 공식 도서 페이지</a></li> <li><a href="/blog/2026/dayan-abbott-chapter-1/">Chapter 1 학습 노트</a></li> <li><a href="/blog/2026/dayan-abbott-chapter-2/">Chapter 2 학습 노트</a></li> </ul> </div> </article> <br> <hr> <br> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <ul class="list-disc pl-7 my-3 space-y-2 marker:text-[var(--global-theme-color)]"> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/linear-algebra-and-groups-chapter-2/">선형대수와 군 2장 - 벡터 공간 (Vector Spaces)</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/dayan-abbott-chapter-2/">Dayan &amp; Abbott Chapter 2 — Neural Encoding II: Reverse Correlation and Visual Receptive Fields</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/dayan-abbott-chapter-1/">Dayan &amp; Abbott Chapter 1 — Neural Encoding I: Firing Rates and Spike Statistics</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/equivalence-classes-and-partitions/">선형대수와 군 1장: 동치류와 분할</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-22029/">BOJ 22029 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/engineering-math-day-1-2/">공학수학 24일 학습 — Day 1–2: ODE의 구조와 풀이법 선택</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-18192/">BOJ 18192 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-16656/">BOJ 16656 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-26001/">BOJ 26001 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2025/marimo/">a post with marimo snippets</a> </li> </ul> </div> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2026 HyeonTaek Kang. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with the <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. </div> </footer> <script>
+  window.alFolio = {
+    compatBootstrap: false
+  };
+</script> <script src="/assets/js/nav-toggle.js?v=141bd79a73ebc0f0b6ea58e440ae79fc"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script> <script defer src="/assets/js/masonry.js?v=e49affc7bd2646f6acdad1dbe02c2359" type="text/javascript"></script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script> <script src="/assets/al_math/js/mathjax-setup.js"></script> <script src="/assets/js/tooltips-setup.js?v=fe487e99db6c43751e6e7bdb2d6a0611"></script> <script src="/assets/js/no_defer.js?v=53b1b1a645525975c963ce8bf8bfefcf"></script> <script defer src="/assets/js/common.js?v=87baac90f765f2f3362dcf6aaf312a8a"></script> <script defer src="/assets/js/copy_code.js?v=c8a01c11a92744d44b093fc3bda915df" type="text/javascript"></script> <script defer src="/assets/js/jupyter_new_tab.js?v=896d254890d9b47f0281f63bfccf0dee"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script> <script defer src="/assets/al_img_tools/js/zoom.js"></script> <script defer src="/assets/js/progress-bar.js?v=499464c5c63ced6cf7ad62509f1e2610" type="text/javascript"></script> <script src="https://cdn.jsdelivr.net/npm/vanilla-back-to-top@7.2.1/dist/vanilla-back-to-top.min.js" integrity="sha256-uMJJ3EoTyfRBoTbR+lrfu1uRQ87RZG8AR3cVNuQVeFg=" crossorigin="anonymous"></script> <script>
+    addBackToTop();
+  </script> <script type="module" src="/assets/al_search/js/search/ninja-keys.min.js"></script> <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys> <script src="/assets/al_search/js/search-setup.js"></script> <script>
+// get the ninja-keys element
+const ninja = document.querySelector('ninja-keys');
+
+// add the home and posts menu items
+ninja.data = [{
+    id: "nav-about",
+    title: "about",
+    section: "Navigation",
+    handler: () => {
+      window.location.href = "/";
+    },
+  },{id: "nav-blog",
+          title: "blog",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/blog/";
+          },
+        },{id: "nav-repositories",
+          title: "repositories",
+          description: "My GitHub profile and website source code.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/repositories/";
+          },
+        },{id: "nav-cv",
+          title: "CV",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/cv/";
+          },
+        },{id: "post-dayan-amp-abbott-chapter-3-neural-decoding",
+        
+          title: "Dayan &amp; Abbott Chapter 3 — Neural Decoding",
+        
+        description: "Neural encoding의 역문제: Bayesian decoding, signal detection(d′·ROC·AUC), population vector, Poisson MLE, Fisher information·Cramér–Rao bound, spike-train reconstruction을 수식과 직관으로 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/dayan-abbott-chapter-3/";
+          
+        },
+      },{id: "post-선형대수와-군-2장-벡터-공간-vector-spaces",
+        
+          title: "선형대수와 군 2장 - 벡터 공간 (Vector Spaces)",
+        
+        description: "벡터 공간의 공리, 부분공간, 다양한 벡터 공간의 예시와 동형사상",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/linear-algebra-and-groups-chapter-2/";
+          
+        },
+      },{id: "post-dayan-amp-abbott-chapter-2-neural-encoding-ii-reverse-correlation-and-visual-receptive-fields",
+        
+          title: "Dayan &amp; Abbott Chapter 2 — Neural Encoding II: Reverse Correlation and Visual...",
+        
+        description: "Optimal linear kernel과 STA의 관계, Wiener–Hopf equation, LNP 모델, V1의 Gabor receptive field, complex-cell energy model, retina·LGN의 DoG를 수식과 직관으로 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/dayan-abbott-chapter-2/";
+          
+        },
+      },{id: "post-dayan-amp-abbott-chapter-1-neural-encoding-i-firing-rates-and-spike-statistics",
+        
+          title: "Dayan &amp; Abbott Chapter 1 — Neural Encoding I: Firing Rates and Spike...",
+        
+        description: "스파이크열의 수학적 표현에서 firing rate, kernel smoothing, tuning curve, spike-triggered average, Poisson process와 neural coding까지 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/dayan-abbott-chapter-1/";
+          
+        },
+      },{id: "post-선형대수와-군-1장-동치류와-분할",
+        
+          title: "선형대수와 군 1장: 동치류와 분할",
+        
+        description: "동치관계가 집합을 분할하는 이유를 증명하고, 합동식과 선형사상의 핵, 군의 잉여류에 연결한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/equivalence-classes-and-partitions/";
+          
+        },
+      },{id: "post-boj-22029-풀이",
+        
+          title: "BOJ 22029 풀이",
+        
+        description: "철도",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-22029/";
+          
+        },
+      },{id: "post-공학수학-24일-학습-day-1-2-ode의-구조와-풀이법-선택",
+        
+          title: "공학수학 24일 학습 — Day 1–2: ODE의 구조와 풀이법 선택",
+        
+        description: "선형 ODE의 일반해와 특수해, 변수분리법, 적분인자법, 특성방정식, 미정계수법과 공진을 문제 풀이 중심으로 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/engineering-math-day-1-2/";
+          
+        },
+      },{id: "post-boj-18192-풀이",
+        
+          title: "BOJ 18192 풀이",
+        
+        description: "보고 정렬",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-18192/";
+          
+        },
+      },{id: "post-boj-16656-풀이",
+        
+          title: "BOJ 16656 풀이",
+        
+        description: "Interactive Array Guessing",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-16656/";
+          
+        },
+      },{id: "post-boj-26001-풀이",
+        
+          title: "BOJ 26001 풀이",
+        
+        description: "Jagged Skyline",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-26001/";
+          
+        },
+      },{id: "post-a-post-with-marimo-snippets",
+        
+          title: "a post with marimo snippets",
+        
+        description: "running Python in the browser with marimoa",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/marimo/";
+          
+        },
+      },{
+        id: 'social-email',
+        title: 'email',
+        section: 'Socials',
+        handler: () => {
+          window.open("mailto:%6B%61%6E%67%68%74%31%32%31%39@%70%75%73%61%6E.%61%63.%6B%72", "_blank");
+        },
+      },{
+        id: 'social-github',
+        title: 'GitHub',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://github.com/corntofu", "_blank");
+        },
+      },{
+        id: 'social-rss',
+        title: 'RSS Feed',
+        section: 'Socials',
+        handler: () => {
+          window.open("/feed.xml", "_blank");
+        },
+      },{
+      id: 'light-theme',
+      title: 'Change theme to light',
+      description: 'Change the theme of the site to Light',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("light");
+      },
+    },
+    {
+      id: 'dark-theme',
+      title: 'Change theme to dark',
+      description: 'Change the theme of the site to Dark',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("dark");
+      },
+    },
+    {
+      id: 'system-theme',
+      title: 'Use system default theme',
+      description: 'Change the theme of the site to System Default',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("system");
+      },
+    },];
+
+</script> <script src="/assets/al_search/js/shortcut-key.js"></script> </body> </html>
