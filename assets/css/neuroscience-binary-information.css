@@ -1,0 +1,25 @@
+.nc-ch4-demo { margin:1.4rem 0 1.9rem; padding:1.3rem; border:1px solid rgba(115,127,150,.28); border-radius:18px; background:linear-gradient(145deg,rgba(13,148,136,.065),rgba(124,95,210,.035)); }
+.nc-ch4-demo .nc-ch4-heading { margin:0 0 .3rem; font-size:1.1rem; font-weight:750; }
+.nc-ch4-demo .nc-ch4-subtitle { font-size:.92rem; opacity:.78; margin:0 0 1.2rem; }
+.nc-ch4-demo .nc-ch4-control { display:flex; justify-content:space-between; align-items:center; gap:1rem; margin-bottom:.6rem; font-weight:650; }
+.nc-ch4-demo .nc-ch4-control output { font-variant-numeric:tabular-nums; padding:.3rem .7rem; border-radius:9px; background:rgba(13,148,136,.12); }
+.nc-ch4-demo input[type=range] { display:block; width:100%; margin:.6rem 0; accent-color:#0d9488; cursor:pointer; }
+.nc-ch4-demo .nc-ch4-limit { display:flex; justify-content:space-between; font-size:.78rem; opacity:.65; margin:0 0 1rem; }
+.nc-ch4-demo .nc-ch4-metrics { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:.8rem; }
+.nc-ch4-demo .nc-ch4-metric { padding:.8rem; border:1px solid rgba(115,127,150,.17); border-radius:12px; background:rgba(115,127,150,.045); }
+.nc-ch4-demo .nc-ch4-metric span { display:block; font-size:.8rem; opacity:.75; }
+.nc-ch4-demo .nc-ch4-metric strong { display:block; font-size:1.35rem; font-variant-numeric:tabular-nums; }
+.nc-ch4-demo svg { width:100%; height:auto; display:block; margin-top:1rem; }
+.nc-ch4-demo .nc-ch4-curve { fill:none; stroke-width:3; stroke-linejoin:round; stroke-linecap:round; }
+.nc-ch4-demo .nc-ch4-noise { stroke:#8162d6; }
+.nc-ch4-demo .nc-ch4-info { stroke:#0d9488; }
+.nc-ch4-demo .nc-ch4-dot-noise { fill:#8162d6; stroke:currentColor; stroke-width:1.2; }
+.nc-ch4-demo .nc-ch4-dot-info { fill:#0d9488; stroke:currentColor; stroke-width:1.2; }
+.nc-ch4-demo .nc-ch4-grid { stroke:currentColor; stroke-opacity:.14; stroke-width:1; }
+.nc-ch4-demo .nc-ch4-guide { stroke:currentColor; stroke-opacity:.5; stroke-dasharray:4 5; }
+.nc-ch4-demo .nc-ch4-tick, .nc-ch4-demo .nc-ch4-axis { fill:currentColor; opacity:.75; font-size:13px; }
+.nc-ch4-demo .nc-ch4-legend { display:flex; justify-content:center; flex-wrap:wrap; gap:1.2rem; font-size:.85rem; }
+.nc-ch4-demo .nc-ch4-legend i { display:inline-block; width:18px; height:3px; vertical-align:middle; margin-right:.35rem; }
+.nc-ch4-demo .nc-ch4-insight { margin:.9rem 0 .3rem; padding:.6rem .8rem; border-left:3px solid #0d9488; background:rgba(13,148,136,.06); font-size:.93rem; line-height:1.7; }
+.nc-ch4-demo .nc-ch4-footnote { margin:.65rem 0 0; opacity:.7; font-size:.8rem; }
+@media (max-width:560px) { .nc-ch4-demo { padding:1rem; } .nc-ch4-demo .nc-ch4-metrics { gap:.5rem; } .nc-ch4-demo .nc-ch4-metric strong { font-size:1.13rem; } }
