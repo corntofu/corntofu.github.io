@@ -1,0 +1,279 @@
+<!DOCTYPE html> <html lang="en"> <head> <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> <meta charset="utf-8"> <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"> <meta http-equiv="X-UA-Compatible" content="IE=edge"> <title> 선형대수와 군 3장 - 기저와 차원 (Basis and Dimension) | HyeonTaek Kang </title> <meta name="author" content="HyeonTaek Kang"> <meta name="description" content="일차결합, 일차독립, 기저의 존재, 교환 보조정리, 차원과 RREF"> <meta name="keywords" content="HyeonTaek Kang, Pusan National University, computational neuroscience, reinforcement learning, graph algorithms, spiking neural networks, BCI, time series analysis"> <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https:; style-src 'self' 'unsafe-inline' https:; img-src 'self' data: https:; font-src 'self' data: https:; media-src 'self' https:; frame-src 'self' https:; connect-src 'self' https:;"> <style>
+  :root {
+    --max-content-width: 930px;
+  }
+</style> <link rel="stylesheet" href="/assets/css/tailwind.css?v=50c64c15cbb9fd1ce6056fdb8bcb4b62"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tocbot@4.36.4/dist/tocbot.css" integrity="sha256-zTN0r+0OKaIv2xqeNNIYxNk0pWJ6+IqPGc1iDgVzWF0=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@7.2.0/css/all.min.css" integrity="sha256-MVopmdyC2tYTiJ8wlktf0uh0v4NgT+vNdyVFepi7Q0c=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/academicons@1.9.5/css/academicons.min.css" integrity="sha256-SzrCOBJbGVFMahewkgjwnApaV2+av1DwMAA+/QGLyZw=" crossorigin="anonymous"> <link defer rel="stylesheet" href="https://cdn.jsdelivr.net/npm/scholar-icons@1.0.3/css/scholar-icons.css" integrity="sha256-VY3hHVj/hNX3fYG6wtbA6TcKJQl7+FthzGSyIB64klY=" crossorigin="anonymous"> <link defer rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:100,300,400,500,700|Material+Icons&amp;display=swap"> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-github.css?v=591dab5a4e56573bf4ef7fd332894c99" media="" id="highlight_theme_light"> <link rel="shortcut icon" href="data:image/svg+xml,&lt;svg%20xmlns=%22http://www.w3.org/2000/svg%22%20viewBox=%220%200%20100%20100%22&gt;&lt;text%20y=%22.9em%22%20font-size=%2290%22&gt;%F0%9F%8E%93&lt;/text&gt;&lt;/svg&gt;"> <link rel="stylesheet" href="/assets/css/main.css?v=3116ba77db9ee1581d05bb3e86fbf7f1"> <link rel="canonical" href="https://corntofu.github.io/blog/2026/linear-algebra-and-groups-chapter-3/"> <script src="/assets/js/theme.js?v=5286c3e4c334d0ecb8fc0c40ff4fa7ec"></script> <link defer rel="stylesheet" href="/assets/css/jekyll-pygments-themes-native.css?v=5847e5ed4a4568527aa6cfab446049ca" media="none" id="highlight_theme_dark"> <script>
+    initTheme();
+  </script> </head> <body class="fixed-top-nav "> <header> <nav id="navbar" class="navbar navbar-light navbar-expand-sm fixed-top" role="navigation"> <div class="container"> <a class="navbar-brand title font-weight-lighter" href="/"> <span class="font-weight-bold">HyeonTaek</span> Kang </a> <button class="navbar-toggler collapsed navbar-toggler-main" type="button" data-nav-toggle="navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation"> <span class="sr-only">Toggle navigation</span> <span class="icon-bar top-bar"></span> <span class="icon-bar middle-bar"></span> <span class="icon-bar bottom-bar"></span> </button> <div class="collapse navbar-collapse navbar-collapse-main" id="navbarNav"> <ul class="navbar-nav navbar-menu-list flex-nowrap"> <li class="nav-item "> <a class="nav-link" href="/">about </a> </li> <li class="nav-item active"> <a class="nav-link" href="/blog/">blog </a> </li> <li class="nav-item "> <a class="nav-link" href="/repositories/">repositories </a> </li> <li class="nav-item "> <a class="nav-link" href="/cv/">CV </a> </li> <li class="nav-item"> <button id="search-toggle" type="button" title="Search" aria-label="Open search"> <span class="nav-link">ctrl k <i class="fa-solid fa-magnifying-glass"></i></span> </button> </li> <li class="toggle-container"> <button id="light-toggle" type="button" title="Change theme" aria-label="Change color theme"> <i class="fa-half-sun-moon" id="light-toggle-system"></i> <i class="fa-solid fa-moon" id="light-toggle-dark"></i> <i class="fa-solid fa-sun" id="light-toggle-light"></i> </button> </li> </ul> </div> </div> </nav> <progress id="progress" value="0"> <div class="progress-container"> <span class="progress-bar"></span> </div> </progress> </header> <div class="container mt-5" role="main"> <div class="row"> <div class="col-sm-3"> <nav id="toc-sidebar" class="sticky-top toc toc-sidebar" aria-label="Table of contents" data-toc-collapse="expanded" data-toc-collapse-depth=""></nav> </div> <div class="col-sm-9"> <style type="text/css">
+    /* Make Markdown heading levels visually distinct throughout the blog. */
+.post .post-content #markdown-content h1,
+.post .post-content #markdown-content h2,
+.post .post-content #markdown-content h3 {
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.018em;
+}
+
+.post .post-content #markdown-content h1 {
+  font-size: 2.15rem;
+  margin-top: 2.6rem;
+  margin-bottom: 1.45rem;
+}
+
+.post .post-content #markdown-content h2 {
+  font-size: 1.75rem;
+  margin-top: 2.3rem;
+  margin-bottom: 1.3rem;
+}
+
+.post .post-content #markdown-content h3 {
+  font-size: 1.38rem;
+  margin-top: 1.9rem;
+  margin-bottom: 1.1rem;
+}
+
+/* Avoid an oversized gap when a post already places an HR before a title. */
+.post .post-content #markdown-content hr + h1,
+.post .post-content #markdown-content hr + h2,
+.post .post-content #markdown-content hr + h3 {
+  margin-top: 1.2rem;
+}
+
+@media (max-width: 600px) {
+  .post .post-content #markdown-content h1 { font-size: 1.9rem; }
+  .post .post-content #markdown-content h2 { font-size: 1.55rem; }
+  .post .post-content #markdown-content h3 { font-size: 1.25rem; }
+}
+
+  </style> <div class="post"> <header class="post-header"> <h1 class="post-title">선형대수와 군 3장 - 기저와 차원 (Basis and Dimension)</h1> <p class="post-meta"> Created on November 28, 2026 </p> <p class="post-tags"> <a href="/blog/2026"> <i class="fa-solid fa-calendar fa-sm"></i> 2026 </a>   ·   <a href="/blog/tag/math"> <i class="fa-solid fa-hashtag fa-sm"></i> math</a>   <a href="/blog/tag/linear-algebra"> <i class="fa-solid fa-hashtag fa-sm"></i> linear-algebra</a>   ·   <a href="/blog/category/mathematics"> <i class="fa-solid fa-tag fa-sm"></i> mathematics</a> </p> </header> <article class="post-content"> <div id="markdown-content"> <h1 id="3-기저와-차원-basis-and-dimension">3. 기저와 차원 (Basis and Dimension)</h1> <p>앞 장에서 벡터 공간을 원소의 형태가 아니라 덧셈과 스칼라 곱셈으로 정의하였다. 이제 다음 질문을 던져 보자.</p> <ul> <li>벡터 공간 전체를 표현하는 데 몇 개의 벡터가 필요한가?</li> <li>그 벡터들을 다르게 선택하더라도 필요한 개수는 동일한가?</li> <li>추상적인 벡터 공간을 좌표 공간과 동일시할 수 있는 근거는 무엇인가?</li> </ul> <p>기저(basis)는 공간을 기술하기 위한 충분하면서도 중복 없는 벡터들의 집합이고, 차원(dimension)은 그 기저의 크기이다. 그러나 기저마다 크기가 같다는 것은 정의가 아니라 증명해야 할 정리이다.</p> <p>이 글은 <a href="/blog/2026/linear-algebra-and-groups-chapter-2/">제2장 벡터 공간</a>에 이어 이인석 저 『선형대수와 군』 제3장의 공개 목차를 따라 구성한 독립적인 학습 노트이다. 교재 본문은 직접 대조하지 않았으며, 여러 공개 학습 자료를 참고하여 정의, 증명과 예제를 새롭게 구성하였다. 특히 3.6절은 해당 제목에 대한 독립적인 해설이다.</p> <p>이하 \(F\)는 체(field), \(V\)는 \(F\) 위의 벡터 공간을 나타낸다. 계산 예제에서는 주로 \(F=\mathbb R\)을 사용한다.</p> <hr> <h2 id="31-linear-combination-일차결합">3.1. Linear Combination (일차결합)</h2> <h3 id="311-definition">3.1.1. Definition</h3> <p>벡터 \(v_1,\ldots,v_m\in V\)와 스칼라 \(a_1,\ldots,a_m\in F\)에 대해</p> \[a_1v_1+\cdots+a_mv_m\] <p>을 벡터들의 일차결합(linear combination)이라 한다. 벡터 공간의 공리로 인해 결과는 항상 \(V\)에 속한다.</p> <p>부분집합 \(S\subseteq V\)에 대하여</p> \[\operatorname{span}_F S= \left\{\sum_{i=1}^{m}a_iv_i: m\ge 0,\ a_i\in F,\ v_i\in S\right\}\] <p>를 \(S\)가 생성하는 공간이라고 한다. 합은 항상 유한합이며, 빈 합을 영벡터로 약속하므로 \(\operatorname{span}\varnothing=\{0\}\)이다.</p> <p><strong>정리.</strong> \(\operatorname{span}S\)는 \(S\)를 포함하는 가장 작은 부분공간이다.</p> <p><strong>Proof.</strong> 두 유한 일차결합의 일차결합은 다시 유한 일차결합이므로 부분공간이다. 또한 \(S\)를 포함하는 임의의 부분공간 \(W\)는 일차결합에 닫혀 있으므로 \(\operatorname{span}S\subseteq W\)이다.</p> <p>따라서 다음과 같은 표현도 가능하다.</p> \[\operatorname{span} S =\bigcap_{\substack{W\le V\\S\subseteq W}}W.\] <h3 id="312-example">3.1.2. Example</h3> <p>\(u=(1,2),\ v=(2,4),\ w=(0,1)\)이라 하자.</p> \[\begin{aligned} \operatorname{span}\{u,v\}&amp;=\{(t,2t):t\in\mathbb R\},\\ \operatorname{span}\{u,w\}&amp;=\mathbb R^2. \end{aligned}\] <p>첫 번째 집합은 벡터가 두 개이지만 직선만 생성한다. 두 번째 집합에서는 \((x,y)=xu+(y-2x)w\)이므로 평면 전체를 생성한다.</p> <figure style="margin:1.5rem auto;max-width:640px;"> <svg viewbox="0 0 600 230" role="img" aria-label="종속인 두 벡터는 직선을, 독립인 두 벡터는 평면을 생성한다" style="width:100%;height:auto;"> <rect x="320" y="10" width="265" height="192" fill="#1686b8" fill-opacity=".09" rx="8"></rect> <g stroke="currentColor" opacity=".4" fill="none"><path d="M20 110H280 M145 15V205 M320 110H580 M445 15V205"></path></g> <path d="M98 204L192 16" stroke="#1686b8" stroke-width="2" opacity=".5"></path> <g fill="none" stroke-width="3"><path d="M145 110L180 40l-10 7m10-7l0 12" stroke="#1686b8"></path><path d="M145 110L162 76l-9 6m9-6l0 10" stroke="#d97706"></path><path d="M445 110L480 40l-10 7m10-7l0 12" stroke="#1686b8"></path><path d="M445 110V55l-6 9m6-9l6 9" stroke="#d97706"></path></g> <g fill="currentColor" font-size="14"><text x="184" y="38">v</text><text x="165" y="88">u</text><text x="484" y="38">u</text><text x="429" y="52">w</text></g> <g fill="currentColor" font-size="14" text-anchor="middle"><text x="150" y="224">span(u, v): line</text><text x="450" y="224">span(u, w): plane</text></g> </svg> <figcaption>벡터의 개수가 아니라 독립적인 방향의 개수가 생성공간을 결정한다.</figcaption> </figure> <hr> <h2 id="32-일차독립과-일차종속-linear-independence-and-dependence">3.2. 일차독립과 일차종속 (Linear Independence and Dependence)</h2> <h3 id="321-definition">3.2.1. Definition</h3> <p>벡터들의 유한 목록 \(v_1,\ldots,v_m\)이 일차독립(linearly independent)이라는 것은</p> \[\sum_{i=1}^{m}a_iv_i=0 \quad\Longrightarrow\quad a_1=\cdots=a_m=0\] <p>이라는 뜻이다. 이 조건을 만족하지 않으면 일차종속(linearly dependent)이다. 무한집합의 독립성은 모든 유한 부분집합이 독립이라는 의미로 정의한다.</p> <p><strong>정리.</strong> 유한 목록이 일차종속일 필요충분조건은 어떤 벡터가 나머지 벡터들의 일차결합으로 표현되는 것이다.</p> <p><strong>Proof.</strong> 자명하지 않은 관계 \(\sum_i a_iv_i=0\)에서 \(a_j\ne0\)인 항을 택하면</p> \[v_j=-\sum_{i\ne j}\frac{a_i}{a_j}v_i.\] <p>반대로 이러한 표현을 이항하면 \(v_j\)의 계수가 1인 자명하지 않은 관계를 얻는다.</p> <p>특히 영벡터를 포함한 목록, 같은 벡터를 두 번 포함한 목록은 종속이다. 그러나 모든 쌍이 독립이라고 전체가 독립인 것은 아니다. 예를 들어 \(e_1,e_2,e_1+e_2\)는 서로 평행하지 않지만 전체는 종속이다.</p> <h3 id="322-독립성의-확장">3.2.2. 독립성의 확장</h3> <p>\(v_1,\ldots,v_k\)가 독립이라고 하자. 다음은 동치이다.</p> \[\begin{aligned} &amp;w\notin\operatorname{span}\{v_1,\ldots,v_k\}\\ &amp;\quad\Longleftrightarrow\quad v_1,\ldots,v_k,w\text{ are linearly independent}. \end{aligned}\] <p><strong>Proof.</strong> \(\sum_i a_iv_i+bw=0\)에서 \(b\ne0\)이면 \(w\)가 기존 벡터들의 일차결합이 되어 모순이다. 따라서 \(b=0\)이고 기존 목록의 독립성에 의해 모든 \(a_i=0\)이다. 역방향은 \(w\)가 생성공간 안에 있다면 곧 종속 관계를 얻는다는 사실에서 따른다.</p> <p>이는 새로운 벡터를 추가할 때 독립성을 보존하는 정확한 조건이다.</p> <hr> <h2 id="33-vector-space의-basis-기저">3.3. Vector Space의 Basis (기저)</h2> <h3 id="331-definition">3.3.1. Definition</h3> <p>\(B\subseteq V\)가 다음 두 조건을 만족하면 \(V\)의 기저라 한다.</p> <ol> <li>\(\operatorname{span}B=V\) (spanning).</li> <li>\(B\)는 일차독립이다 (independence).</li> </ol> <p>생성은 표현의 존재를, 독립은 표현의 유일성을 보장한다.</p> <p><strong>정리.</strong> 유한 목록 \(B=(v_1,\ldots,v_n)\)이 기저일 필요충분조건은 모든 \(v\in V\)에 대해</p> \[v=a_1v_1+\cdots+a_nv_n\] <p>을 만족하는 계수 \(a_1,\ldots,a_n\)이 유일하게 존재하는 것이다.</p> <p><strong>Proof.</strong> 생성 조건으로 표현이 존재한다. 같은 벡터의 두 표현을 빼면 \(\sum_i(a_i-b_i)v_i=0\)이므로 독립성에 의해 \(a_i=b_i\)이다. 반대로 유일한 표현이 항상 존재하면 생성 조건이 성립하고, 영벡터의 유일한 표현은 모든 계수가 0인 표현이므로 독립이다.</p> <h3 id="332-coordinates">3.3.2. Coordinates</h3> <p>순서가 정해진 기저 \(B\)에 대해 좌표 벡터를</p> \[[v]_B=(a_1,\ldots,a_n)^T\] <p>로 정의한다. 예를 들어 \(B=((1,1),(1,-1))\)이고 \(v=(5,1)\)이면</p> \[v=3(1,1)+2(1,-1),\qquad [v]_B=(3,2)^T.\] <p>표준기저에서는 좌표가 \((5,1)^T\)이다. 벡터 자체는 같고, 그것을 기록하는 방식만 바뀐다.</p> <h3 id="333-basis의-동치-조건">3.3.3. Basis의 동치 조건</h3> <p>기저는 다음 두 관점에서도 이해할 수 있다.</p> <ul> <li>포함관계에 대해 최소인 생성집합: 하나라도 제거하면 더 이상 공간을 생성하지 못한다.</li> <li>포함관계에 대해 최대인 독립집합: 새로운 벡터를 하나라도 추가하면 종속이 된다.</li> </ul> <p>종속인 생성집합에서는 종속 관계에 나타나는 벡터 하나를 제거해도 생성공간이 그대로다. 생성하지 못하는 독립집합에는 그 span 밖의 벡터를 추가할 수 있다. 이 두 사실이 동치성을 증명한다.</p> <hr> <h2 id="34-basis의-존재-existence-of-a-basis">3.4. Basis의 존재 (Existence of a Basis)</h2> <h3 id="341-유한-생성집합에서-기저-추출">3.4.1. 유한 생성집합에서 기저 추출</h3> <p>\(V\)가 유한 개의 벡터로 생성된다고 가정하자. 생성 목록이 종속이면 하나를 나머지의 일차결합으로 표현하여 제거한다. 제거할 때마다 생성공간은 유지되고 목록의 길이는 감소한다. 유한 번 후에는 독립인 생성집합, 즉 기저를 얻는다.</p> <p>반대로 독립인 집합을 기저로 확장하려면 현재 span 밖의 벡터를 추가하면 된다. 이 과정이 유한 번에 종료되는 근거는 다음 정리이다.</p> <h3 id="342-steinitz-exchange-lemma-교환-보조정리">3.4.2. Steinitz Exchange Lemma (교환 보조정리)</h3> <p>\(u_1,\ldots,u_r\)가 일차독립이고 \(v_1,\ldots,v_s\)가 \(V\)를 생성한다면</p> \[\boxed{r\le s}\] <p>이며 생성 목록에서 적당한 \(r\)개의 벡터를 \(u_1,\ldots,u_r\)로 교체해도 여전히 \(V\)를 생성하도록 할 수 있다.</p> <p><strong>Proof.</strong> \(u_1\)을 \(v_j\)들의 일차결합으로 나타내자. \(u_1\ne0\)이므로 0이 아닌 계수가 하나 이상 존재한다. 그에 해당하는 \(v_j\)를 \(u_1\)과 나머지 벡터로 표현할 수 있으므로 \(v_j\) 대신 \(u_1\)을 넣어도 생성공간이 변하지 않는다.</p> <p>일반적으로 \(k\)번 교체한 뒤의 생성 목록을</p> \[u_1,\ldots,u_k,w_{k+1},\ldots,w_s\] <p>라고 하자. 다음 벡터를 이 목록으로 표현하면</p> \[u_{k+1}=\sum_{i=1}^{k}a_iu_i+ \sum_{j=k+1}^{s}b_jw_j.\] <p>모든 \(b_j\)가 0이라면 \(u_{k+1}\)이 앞의 \(u_i\)들에 종속이 되어 모순이다. 따라서 어떤 \(b_j\ne0\)이고, 해당 \(w_j\)를 제거하고 \(u_{k+1}\)을 넣을 수 있다.</p> <p>만약 \(r&gt;s\)라면 \(s\)번 교체한 뒤 \(u_1,\ldots,u_s\)가 이미 공간을 생성하여 \(u_{s+1}\)의 독립성과 모순이다. 따라서 \(r\le s\)이며 교체 과정도 성립한다.</p> <blockquote> <p><strong>핵심:</strong> 독립 벡터의 수에는 생성집합의 크기라는 상한이 존재한다. 이 부등식이 차원의 정의를 정당화한다.</p> </blockquote> <h3 id="343-basis-extension-theorem">3.4.3. Basis Extension Theorem</h3> <p>유한 생성 벡터 공간의 모든 독립집합은 기저로 확장할 수 있다.</p> <p><strong>Proof.</strong> 기존 독립집합에 span 밖의 벡터를 추가한다. 교환 보조정리에 의해 독립집합의 크기는 고정된 유한 생성집합의 크기를 넘을 수 없다. 따라서 과정은 반드시 종료되며, 종료 시점에는 공간 전체를 생성한다.</p> <h3 id="344-무한-차원에-대한-보충">3.4.4. 무한 차원에 대한 보충</h3> <p>유한 생성 가정을 제거하면 위의 유한 종료 논증을 사용할 수 없다. 일반적인 벡터 공간의 기저 존재는 선택공리와 동치인 Zorn’s lemma를 사용하여 보일 수 있다.</p> <p>독립집합들의 모임을 포함관계로 정렬한다. 임의의 사슬의 합집합은 독립이다. 유한한 종속 관계가 있다면 그 관계에 등장하는 모든 벡터가 사슬의 한 원소에 포함되어 모순이기 때문이다. 따라서 Zorn’s lemma에 의해 최대 독립집합이 존재하며, 최대성이 곧 생성성을 보장한다.</p> <hr> <h2 id="35-vector-space의-dimension-차원">3.5. Vector Space의 Dimension (차원)</h2> <h3 id="351-기저의-크기가-일정하다는-정리">3.5.1. 기저의 크기가 일정하다는 정리</h3> <p>\(B=(b_1,\ldots,b_n)\)과 \(C=(c_1,\ldots,c_m)\)이 유한 생성 공간 \(V\)의 기저라고 하자.</p> <ul> <li>\(B\)는 독립이고 \(C\)는 생성하므로 \(n\le m\).</li> <li>\(C\)는 독립이고 \(B\)는 생성하므로 \(m\le n\).</li> </ul> <p>따라서 \(n=m\)이다. 무한한 독립집합도 유한 생성집합의 크기보다 큰 유한 부분집합을 포함할 수 없으므로 이 공간의 모든 기저는 유한하다.</p> <p>이제 비로소 차원을 정의할 수 있다.</p> \[\boxed{\dim_F V=|B|}\] <p>기저의 선택과 무관한 값이므로 well-defined이다. 영공간의 기저는 공집합이고 \(\dim_F\{0\}=0\)이다.</p> <h3 id="352-dimension과-기저-판정">3.5.2. Dimension과 기저 판정</h3> <p>\(\dim_F V=n\)이라고 하자.</p> <table> <thead> <tr> <th style="text-align: left">벡터 목록의 길이</th> <th style="text-align: left">독립성</th> <th style="text-align: left">생성성</th> </tr> </thead> <tbody> <tr> <td style="text-align: left">\(m&lt;n\)</td> <td style="text-align: left">가능</td> <td style="text-align: left">불가능</td> </tr> <tr> <td style="text-align: left">\(m=n\)</td> <td style="text-align: left">독립이면 기저</td> <td style="text-align: left">생성하면 기저</td> </tr> <tr> <td style="text-align: left">\(m&gt;n\)</td> <td style="text-align: left">불가능</td> <td style="text-align: left">가능</td> </tr> </tbody> </table> <p>중간 행에서 독립이면 기저인 이유는 기저 확장 정리에 따라 더 추가할 벡터가 없어야 하기 때문이다. 생성하면 기저인 이유는 종속 벡터를 하나 제거하면 \(n-1\)개로 전체 공간을 생성하여 교환 보조정리에 모순되기 때문이다.</p> <h3 id="353-부분공간의-차원">3.5.3. 부분공간의 차원</h3> <p>\(W\le V\)이고 \(V\)가 유한 차원이라면</p> \[0\le\dim W\le\dim V.\] <p>실제로 \(W\)의 독립집합 크기는 \(\dim V\) 이하이므로 독립집합을 확장하는 과정으로 \(W\)의 유한 기저를 얻을 수 있다. 또한</p> \[W\le V,\quad \dim W=\dim V \quad\Longrightarrow\quad W=V.\] <p>같은 차원이라는 조건만으로 두 부분공간이 같다고 결론 내릴 수는 없다. 포함관계가 필요하다.</p> <hr> <h2 id="36-우리의-철학-the-algebraic-viewpoint">3.6. 우리의 철학 (The Algebraic Viewpoint)</h2> <h3 id="361-벡터-공간의-분류">3.6.1. 벡터 공간의 분류</h3> <p>제2장의 동형사상 개념으로 돌아가자. 유한 차원 벡터 공간 \(V\)의 순서 있는 기저 \(B=(b_1,\ldots,b_n)\)에 대하여</p> \[\begin{aligned} \Phi_B:F^n&amp;\longrightarrow V,\\ (a_1,\ldots,a_n)&amp;\longmapsto\sum_{i=1}^{n}a_ib_i \end{aligned}\] <p>를 정의한다.</p> <p>이 사상은 일차결합의 분배법칙에 의해 선형이며, 생성 조건으로 전사이고, 독립 조건으로 단사이다. 따라서</p> \[V\cong F^n.\] <p>한편 동형사상은 기저를 기저로 보내므로, 같은 체 위의 유한 차원 벡터 공간에 대해</p> \[\boxed{V\cong W\quad\Longleftrightarrow\quad \dim_F V=\dim_F W.}\] <p>즉 차원은 유한 차원 벡터 공간의 동형에 대한 완전 불변량(complete invariant)이다. 다항식, 행렬, 수열 등 원소의 모양이 달라도 차원이 같다면 벡터 공간으로서 동일한 구조를 가진다.</p> <h3 id="362-coordinate와-구조를-구분하기">3.6.2. Coordinate와 구조를 구분하기</h3> <p>기저가 바뀌면 동일한 벡터에 대한 좌표가 달라진다. 두 순서 있는 기저 \(B,C\)에 대해</p> \[[v]_B=P_{B\leftarrow C}[v]_C, \qquad P_{B\leftarrow C} =\begin{bmatrix}[c_1]_B&amp;\cdots&amp;[c_n]_B\end{bmatrix}.\] <p>좌표 표현은 선택에 의존하지만 차원은 그렇지 않다. 이 관점은 이후 선형사상과 행렬 표현을 이해하는 출발점이다. 단, 벡터 공간의 동형은 내적, 길이, 각도 등의 추가 구조까지 보존한다는 뜻은 아니다.</p> <hr> <h2 id="37-dimension의-보기-examples">3.7. Dimension의 보기 (Examples)</h2> <h3 id="371-기본적인-공간">3.7.1. 기본적인 공간</h3> <table> <thead> <tr> <th style="text-align: left">벡터 공간</th> <th style="text-align: left">기저</th> <th style="text-align: left">차원</th> </tr> </thead> <tbody> <tr> <td style="text-align: left">\(F^n\)</td> <td style="text-align: left">\(e_1,\ldots,e_n\)</td> <td style="text-align: left">\(n\)</td> </tr> <tr> <td style="text-align: left">\(P_n(F)\)</td> <td style="text-align: left">\(1,x,\ldots,x^n\)</td> <td style="text-align: left">\(n+1\)</td> </tr> <tr> <td style="text-align: left">\(M_{m\times n}(F)\)</td> <td style="text-align: left">\(E_{ij}\)</td> <td style="text-align: left">\(mn\)</td> </tr> <tr> <td style="text-align: left">대칭행렬 공간 \(S_n(F)\)</td> <td style="text-align: left">\(E_{ii},\ E_{ij}+E_{ji}\ (i&lt;j)\)</td> <td style="text-align: left">\(n(n+1)/2\)</td> </tr> </tbody> </table> <p>여기서 \(E_{ij}\)는 \((i,j)\) 성분만 1이고 나머지는 0인 행렬이다. 예를 들어 대칭행렬에서는 대각성분 \(n\)개와 대각선 위의 \(n(n-1)/2\)개 성분을 자유롭게 정할 수 있다.</p> <h3 id="372-스칼라-체에-따라-달라지는-차원">3.7.2. 스칼라 체에 따라 달라지는 차원</h3> <p>복소수 \(z=a+bi\)를 실수 벡터 공간의 원소로 보면 기저는 \(\{1,i\}\)이다. 그러나 복소수 벡터 공간으로 보면 \(\{1\}\)만으로 충분하다.</p> \[\dim_{\mathbb R}\mathbb C=2,\qquad \dim_{\mathbb C}\mathbb C=1.\] <p>마찬가지로 \(\dim_{\mathbb R}\mathbb C^n=2n\)이고 \(\dim_{\mathbb C}\mathbb C^n=n\)이다. 차원을 논할 때에는 스칼라 체를 고정해야 한다. 실수 벡터 공간으로서 \(\mathbb C^n\cong\mathbb R^{2n}\)이다.</p> <h3 id="373-부분공간의-합과-차원-공식">3.7.3. 부분공간의 합과 차원 공식</h3> <p>유한 차원 부분공간 \(U,W\le V\)에 대해</p> \[\boxed{\dim(U+W)=\dim U+\dim W-\dim(U\cap W).}\] <p><strong>Proof.</strong> \(U\cap W\)의 기저 \(a_1,\ldots,a_k\)를 각각</p> \[\begin{aligned} B_U&amp;=(a_1,\ldots,a_k,u_1,\ldots,u_p),\\ B_W&amp;=(a_1,\ldots,a_k,w_1,\ldots,w_q) \end{aligned}\] <p>로 확장한다. 두 기저를 합쳐 공통 원소를 한 번만 넣은 목록은 \(U+W\)를 생성한다.</p> <p>어떤 일차결합 \(\sum_i \alpha_i a_i+\sum_j\beta_j u_j+\sum_l\gamma_l w_l=0\)을 생각하자. 그러면 \(\sum_l\gamma_l w_l\in U\cap W\)이다. \(B_W\)의 독립성에 의해 모든 \(\gamma_l=0\)이고, 이어서 \(B_U\)의 독립성에 의해 나머지 계수도 0이다. 따라서 이 목록은 기저이며 \(k+p+q=(k+p)+(k+q)-k\)이다.</p> <p>특히 \(U\cap W=\{0\}\)이면 \(U+W=U\oplus W\)로 표기하며, 모든 원소가 \(u+w\)로 유일하게 분해된다.</p> <h3 id="374-무한-차원">3.7.4. 무한 차원</h3> <p>다항식 전체 \(F[x]\)의 기저는 \(\{1,x,x^2,\ldots\}\)이다. 모든 다항식은 유한 개의 단항식의 합이므로 생성되며 계수 비교로 독립성도 성립한다. 반면 실수 수열 전체의 공간 \(\mathbb R^{\mathbb N}\)에서 표준 단위수열들의 유한 일차결합은 유한 지지 수열만 생성하므로 전체 공간의 기저가 아니다.</p> <p>Fourier 급수처럼 무한합을 허용하는 표현은 위에서 정의한 대수적 기저(Hamel basis)와 구분해야 한다. 함수의 수렴이나 내적에 관한 추가 조건이 필요하다.</p> <h3 id="375-application-ode와-그래프">3.7.5. Application: ODE와 그래프</h3> <p>동차 미분방정식 \(y''+y=0\)의 실수 해공간은</p> \[V=\operatorname{span}_{\mathbb R}\{\cos t,\sin t\}\] <p>이다. \(a\cos t+b\sin t=0\)이 항등적으로 성립한다고 하면 \(t=0,\pi/2\)를 대입하여 \(a=b=0\)임을 얻는다. 따라서 차원은 2이다. 초기조건 두 개 \(y(0),y'(0)\)가 해를 유일하게 결정하는 것도 이 좌표 표현으로 이해할 수 있다.</p> <p>또한 무방향 그래프의 간선에 임의의 방향을 붙이고 각 간선을 \(e_u-e_v\in\mathbb R^n\)으로 표현하자. 사이클의 간선들은 방향을 고려해 더하면 0이 되므로 종속이고, 숲의 간선들은 잎 정점의 성분을 차례로 비교하면 독립임을 보일 수 있다. 연결 그래프의 spanning tree에 해당하는 \(n-1\)개 간선 벡터는 전체 간선 벡터의 생성공간에 대한 기저이다. 연결되지 않은 그래프라면 각 연결성분의 spanning tree를 합쳐 얻는 기저의 크기는 \(n-c\) (\(c\)는 연결성분 수)이다.</p> <p>이러한 독립성 구조를 일반화한 개념이 matroid이며, Kruskal 알고리즘과도 연결된다.</p> <hr> <h2 id="38-row-reduced-echelon-form-기약-행-사다리꼴">3.8. Row-reduced Echelon Form (기약 행 사다리꼴)</h2> <h3 id="381-definition">3.8.1. Definition</h3> <p>행렬 \(R\)이 다음을 만족하면 RREF라고 한다.</p> <ol> <li>영행은 모두 아래에 위치한다.</li> <li>각 비영행의 첫 비영성분은 1이다 (pivot).</li> <li>아래 행의 pivot은 위 행의 pivot보다 오른쪽에 위치한다.</li> <li>각 pivot이 위치한 열의 나머지 성분은 모두 0이다.</li> </ol> <p>Gauss-Jordan 소거법으로 모든 행렬을 RREF로 변환할 수 있다. 행 기본변환은 가역이므로 원래 행렬과 변환된 행렬의 동차방정식은 같은 해집합을 가진다.</p> <h3 id="382-column-space와-null-space">3.8.2. Column Space와 Null Space</h3> <p>열벡터가 \(v_1,\ldots,v_m\)인 행렬 \(A=[v_1\ \cdots\ v_m]\)에 대해</p> \[Ax=0\quad\Longleftrightarrow\quad \sum_{i=1}^{m}x_iv_i=0.\] <p>따라서 열벡터의 독립성은 동차방정식의 해가 영벡터뿐인지로 판정한다.</p> <p>예를 들어</p> \[A=\begin{bmatrix} 1&amp;2&amp;0&amp;1\\ 2&amp;4&amp;1&amp;3\\ 1&amp;2&amp;1&amp;2 \end{bmatrix} \quad\longrightarrow\quad R=\begin{bmatrix} 1&amp;2&amp;0&amp;1\\ 0&amp;0&amp;1&amp;1\\ 0&amp;0&amp;0&amp;0 \end{bmatrix}.\] <p>첫 번째, 세 번째 열이 pivot 열이다. \(R=EA\)인 가역행렬 \(E\)가 존재하므로 열벡터들 사이의 모든 일차관계가 보존된다.</p> <ul> <li>Column space의 기저: 원래 행렬 \(A\)의 첫 번째, 세 번째 열인 \((1,2,1)^T,\ (0,1,1)^T\).</li> <li>Row space의 기저: \(R\)의 두 비영행 \((1,2,0,1),\ (0,0,1,1)\).</li> <li>Null space의 기저: 아래 동차방정식의 자유변수에서 얻는다.</li> </ul> \[\begin{aligned} x_1+2x_2+x_4&amp;=0,\\ x_3+x_4&amp;=0. \end{aligned}\] <p>\(x_2=s,x_4=t\)라고 두면</p> \[x=s\begin{bmatrix}-2\\1\\0\\0\end{bmatrix} +t\begin{bmatrix}-1\\0\\-1\\1\end{bmatrix}.\] <p>따라서 \(\dim\operatorname{Col}A=2\), \(\dim\operatorname{Row}A=2\), \(\dim\operatorname{Null}A=2\)이다.</p> <blockquote> <p><strong>주의:</strong> 열공간의 기저는 RREF의 pivot 위치를 확인한 후 <strong>원래 행렬의 해당 열</strong>에서 선택해야 한다. 행 기본변환은 열공간 자체를 보존하지는 않는다.</p> </blockquote> <h3 id="383-rref의-유일성">3.8.3. RREF의 유일성</h3> <p>RREF의 비영행은 서로 독립이며 원래 행렬의 행공간을 생성한다. 행공간 \(W\subseteq F^n\)에 대하여 \(W_j=\{w\in W:w_1=\cdots=w_{j-1}=0\}\)라고 놓으면, RREF에서 \(W_j\)의 기저는 pivot 위치가 \(j\) 이상인 비영행들이다.</p> <p>따라서 \(j\)가 pivot 열인지 여부는</p> \[\dim W_j-\dim W_{j+1}=1\] <p>인지로 결정된다. 즉 pivot 위치는 행공간만으로 결정된다. 이제 같은 행공간을 생성하는 두 RREF의 같은 pivot에 대응하는 행을 빼면 모든 pivot 성분이 0인 \(W\)의 벡터가 된다. 그러나 RREF의 비영행으로 표현할 때 그 계수들은 바로 pivot 성분들이므로 차이는 영벡터이다.</p> <p>따라서 같은 크기의 행렬 중 같은 행공간을 갖는 두 RREF는 동일하다. 이는 행 기본변환의 순서와 관계없이 RREF가 유일하다는 것을 뜻한다.</p> <hr> <h2 id="summary">Summary</h2> <table> <thead> <tr> <th style="text-align: left">개념</th> <th style="text-align: left">핵심</th> </tr> </thead> <tbody> <tr> <td style="text-align: left">Linear combination / Span</td> <td style="text-align: left">유한 일차결합으로 생성되는 최소 부분공간</td> </tr> <tr> <td style="text-align: left">Independence</td> <td style="text-align: left">영벡터를 만드는 계수가 모두 0</td> </tr> <tr> <td style="text-align: left">Basis</td> <td style="text-align: left">생성성과 독립성을 동시에 만족하는 집합</td> </tr> <tr> <td style="text-align: left">Exchange lemma</td> <td style="text-align: left">독립집합의 크기는 유한 생성집합의 크기 이하</td> </tr> <tr> <td style="text-align: left">Dimension</td> <td style="text-align: left">기저의 선택과 무관한 크기</td> </tr> <tr> <td style="text-align: left">Isomorphism</td> <td style="text-align: left">같은 체 위의 유한 차원 공간은 차원으로 분류</td> </tr> <tr> <td style="text-align: left">RREF</td> <td style="text-align: left">pivot으로 기저와 자유변수의 개수를 계산</td> </tr> </tbody> </table> <p>논리적 흐름은 일차결합에서 출발하여 독립성과 생성성을 정의하고, 기저의 존재와 크기의 유일성을 증명한 뒤 추상 공간을 좌표 공간과 연결하는 것이다.</p> <hr> <h2 id="exercises">Exercises</h2> <details> <summary><strong>1. 기저의 판정과 좌표 계산</strong></summary> <p>\(B=((1,2),(3,1))\)가 \(\mathbb R^2\)의 기저인지 판별하고 \(v=(7,4)\)의 \(B\)-좌표를 구하라.</p> <p><strong>Solution.</strong> 열을 모아 만든 행렬의 행렬식은 \(1-6=-5\ne0\)이다. 따라서 기저이다. \(a+3b=7,\ 2a+b=4\)를 풀면 \(a=1,b=2\)이므로 \([v]_B=(1,2)^T\)이다.</p> </details> <details> <summary><strong>2. 다항식 부분공간의 차원</strong></summary> <p>\(W=\{p\in P_4(\mathbb R):p(1)=p(-1)=0\}\)의 기저와 차원을 구하라.</p> <p><strong>Solution.</strong> 인수정리에 의해 \(p=(x^2-1)q\)이고 \(q\in P_2(\mathbb R)\)이다. 따라서 \(\{x^2-1,x(x^2-1),x^2(x^2-1)\}\)가 기저이고 차원은 3이다.</p> </details> <details> <summary><strong>3. 부분공간의 차원 공식</strong></summary> <p>\(\dim V=7,\dim U=5,\dim W=4\)라 할 때 \(\dim(U\cap W)\)의 가능한 최솟값과 최댓값을 구하라.</p> <p><strong>Solution.</strong> \(\dim(U+W)\le7\)이므로 교집합의 차원은 적어도 2이다. 또한 교집합은 \(W\)의 부분공간이므로 최대 4이다. 표준기저 \(e_1,\ldots,e_7\)에 대해 \(U=\operatorname{span}(e_1,\ldots,e_5)\), \(W=\operatorname{span}(e_4,e_5,e_6,e_7)\)이면 최솟값, \(W=\operatorname{span}(e_1,\ldots,e_4)\)이면 최댓값을 얻는다.</p> </details> <details> <summary><strong>4. 체의 선택과 독립성</strong></summary> <p>\(1+i,1-i\in\mathbb C\)가 실수 위에서 독립인지, 복소수 위에서 독립인지 각각 판별하라.</p> <p><strong>Solution.</strong> 실수 \(a,b\)에 대해 \(a(1+i)+b(1-i)=0\)이면 \(a+b=0,\ a-b=0\)이므로 독립이다. 복소수 위에서는 \(1-i=-i(1+i)\)이므로 종속이다.</p> </details> <details> <summary><strong>5. RREF와 기저 추출</strong></summary> <p>\(A=\begin{bmatrix}1&amp;2&amp;3\\2&amp;4&amp;7\\0&amp;0&amp;1\end{bmatrix}\)의 열공간과 영공간의 기저를 구하라.</p> <p><strong>Solution.</strong> RREF는 \(\begin{bmatrix}1&amp;2&amp;0\\0&amp;0&amp;1\\0&amp;0&amp;0\end{bmatrix}\)이다. 열공간 기저는 \(\{(1,2,0)^T,(3,7,1)^T\}\)이고, 영공간 기저는 \(\{(-2,1,0)^T\}\)이다.</p> </details> <hr> <h2 id="reference">Reference</h2> <ul> <li>이인석, 『선형대수와 군』 (개정판), 서울대학교출판문화원, 제3장 기저와 차원. <a href="https://w.snupress.com/book/category?goodsidx=290&amp;md=view" rel="external nofollow noopener" target="_blank">출판사 공식 목차</a>.</li> <li>김도형, <a href="https://dohyeong-kim.github.io/abstract-linear-algebra/01-02-basis.html" rel="external nofollow noopener" target="_blank">기저의 존재성과 차원</a> — 독립성 및 기저 존재의 집합론적 관점 참고.</li> <li>Bodhi Dreamer, <a href="https://cryptonambi.tistory.com/97" rel="external nofollow noopener" target="_blank">기저와 차원 (Basis and Dimension)</a> — 교환 보조정리, 기저 확장과 유한 차원 공간의 성질 참고.</li> <li>Pensieve, <a href="https://nglee.github.io/2019/12/23/Benefits-of-Studying-LAAGT.html" rel="external nofollow noopener" target="_blank">이인석 &lt;선형대수와 군&gt;</a> — 스칼라 체에 따른 차원 차이 참고.</li> <li> <a href="https://dsm-iv.github.io/analysis/la/ch03.html" rel="external nofollow noopener" target="_blank">선형대수학 학습 가이드: 03. 기저와 차원</a> — 행렬공간과 유한 지지 수열 예시 참고.</li> </ul> <p>정의와 표준 정리를 제외한 설명, 증명 전개, 계산 예제, 그림 및 연습문제는 이 글의 목적에 맞게 독립적으로 구성하였다. 교재나 참고 블로그의 본문을 그대로 옮긴 것이 아니다.</p> </div> </article> <br> <hr> <br> <h2 class="text-3xl font-semibold mb-4 mt-12">Enjoy Reading This Article?</h2> <p class="mb-2">Here are some more articles you might like to read next:</p> <ul class="list-disc pl-7 my-3 space-y-2 marker:text-[var(--global-theme-color)]"> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/dayan-abbott-chapter-4/">Dayan &amp; Abbott Chapter 4 — Information Theory</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/dayan-abbott-chapter-3/">Dayan &amp; Abbott Chapter 3 — Neural Decoding</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/linear-algebra-and-groups-chapter-2/">선형대수와 군 2장 - 벡터 공간 (Vector Spaces)</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/dayan-abbott-chapter-2/">Dayan &amp; Abbott Chapter 2 — Neural Encoding II: Reverse Correlation and Visual Receptive Fields</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/dayan-abbott-chapter-1/">Dayan &amp; Abbott Chapter 1 — Neural Encoding I: Firing Rates and Spike Statistics</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/equivalence-classes-and-partitions/">선형대수와 군 1장: 동치류와 분할</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-22029/">BOJ 22029 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/engineering-math-day-1-2/">공학수학 24일 학습 — Day 1–2: ODE의 구조와 풀이법 선택</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-18192/">BOJ 18192 풀이</a> </li> <li class="leading-relaxed"> <a class="underline decoration-1 hover:text-[var(--global-hover-color)]" href="/blog/2026/boj-16656/">BOJ 16656 풀이</a> </li> </ul> </div> </div> </div> </div> <footer class="fixed-bottom" role="contentinfo"> <div class="container mt-0"> © Copyright 2026 HyeonTaek Kang. Powered by <a href="https://jekyllrb.com/" target="_blank" rel="external nofollow noopener">Jekyll</a> with the <a href="https://github.com/alshedivat/al-folio" rel="external nofollow noopener" target="_blank">al-folio</a> theme. Hosted by <a href="https://pages.github.com/" target="_blank" rel="external nofollow noopener">GitHub Pages</a>. </div> </footer> <script>
+  window.alFolio = {
+    compatBootstrap: false
+  };
+</script> <script src="/assets/js/nav-toggle.js?v=141bd79a73ebc0f0b6ea58e440ae79fc"></script> <script defer src="https://cdn.jsdelivr.net/npm/masonry-layout@4.2.2/dist/masonry.pkgd.min.js" integrity="sha256-Nn1q/fx0H7SNLZMQ5Hw5JLaTRZp0yILA/FRexe19VdI=" crossorigin="anonymous"></script> <script defer src="https://cdn.jsdelivr.net/npm/imagesloaded@5.0.0/imagesloaded.pkgd.min.js" integrity="sha256-htrLFfZJ6v5udOG+3kNLINIKh2gvoKqwEhHYfTTMICc=" crossorigin="anonymous"></script> <script defer src="/assets/js/masonry.js?v=e49affc7bd2646f6acdad1dbe02c2359" type="text/javascript"></script> <script defer type="text/javascript" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3.2.2/es5/tex-mml-chtml.js" integrity="sha256-MASABpB4tYktI2Oitl4t+78w/lyA+D7b/s9GEP0JOGI=" crossorigin="anonymous"></script> <script src="/assets/al_math/js/mathjax-setup.js"></script> <script src="/assets/js/tooltips-setup.js?v=fe487e99db6c43751e6e7bdb2d6a0611"></script> <script defer src="https://cdn.jsdelivr.net/npm/tocbot@4.36.4/dist/tocbot.min.js" integrity="sha256-lo/r+jQ81wWrxdIiiiEEd538z4+dTJTt+leOuAS7GCw=" crossorigin="anonymous"></script> <script src="/assets/js/no_defer.js?v=53b1b1a645525975c963ce8bf8bfefcf"></script> <script defer src="/assets/js/common.js?v=87baac90f765f2f3362dcf6aaf312a8a"></script> <script defer src="/assets/js/copy_code.js?v=c8a01c11a92744d44b093fc3bda915df" type="text/javascript"></script> <script defer src="/assets/js/jupyter_new_tab.js?v=896d254890d9b47f0281f63bfccf0dee"></script> <script async src="https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js"></script> <script async src="https://badge.dimensions.ai/badge.js"></script> <script defer src="https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js" integrity="sha256-ZgMyDAIYDYGxbcpJcfUnYwNevG/xi9OHKaR/8GK+jWc=" crossorigin="anonymous"></script> <script defer src="/assets/al_img_tools/js/zoom.js"></script> <script defer src="/assets/js/progress-bar.js?v=499464c5c63ced6cf7ad62509f1e2610" type="text/javascript"></script> <script src="https://cdn.jsdelivr.net/npm/vanilla-back-to-top@7.2.1/dist/vanilla-back-to-top.min.js" integrity="sha256-uMJJ3EoTyfRBoTbR+lrfu1uRQ87RZG8AR3cVNuQVeFg=" crossorigin="anonymous"></script> <script>
+    addBackToTop();
+  </script> <script type="module" src="/assets/al_search/js/search/ninja-keys.min.js"></script> <ninja-keys hidebreadcrumbs noautoloadmdicons placeholder="Type to start searching"></ninja-keys> <script src="/assets/al_search/js/search-setup.js"></script> <script>
+// get the ninja-keys element
+const ninja = document.querySelector('ninja-keys');
+
+// add the home and posts menu items
+ninja.data = [{
+    id: "nav-about",
+    title: "about",
+    section: "Navigation",
+    handler: () => {
+      window.location.href = "/";
+    },
+  },{id: "nav-blog",
+          title: "blog",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/blog/";
+          },
+        },{id: "nav-repositories",
+          title: "repositories",
+          description: "My GitHub profile and website source code.",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/repositories/";
+          },
+        },{id: "nav-cv",
+          title: "CV",
+          description: "",
+          section: "Navigation",
+          handler: () => {
+            window.location.href = "/cv/";
+          },
+        },{id: "post-선형대수와-군-3장-기저와-차원-basis-and-dimension",
+        
+          title: "선형대수와 군 3장 - 기저와 차원 (Basis and Dimension)",
+        
+        description: "일차결합, 일차독립, 기저의 존재, 교환 보조정리, 차원과 RREF",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/linear-algebra-and-groups-chapter-3/";
+          
+        },
+      },{id: "post-dayan-amp-abbott-chapter-4-information-theory",
+        
+          title: "Dayan &amp; Abbott Chapter 4 — Information Theory",
+        
+        description: "Shannon entropy, mutual information, KL divergence, histogram equalization, factorial coding, whitening과 Wiener filtering, spike-train direct method를 유도하고 인터랙티브 예제로 설명한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/dayan-abbott-chapter-4/";
+          
+        },
+      },{id: "post-dayan-amp-abbott-chapter-3-neural-decoding",
+        
+          title: "Dayan &amp; Abbott Chapter 3 — Neural Decoding",
+        
+        description: "Neural encoding의 역문제: Bayesian decoding, signal detection(d′·ROC·AUC), population vector, Poisson MLE, Fisher information·Cramér–Rao bound, spike-train reconstruction을 수식과 직관으로 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/dayan-abbott-chapter-3/";
+          
+        },
+      },{id: "post-선형대수와-군-2장-벡터-공간-vector-spaces",
+        
+          title: "선형대수와 군 2장 - 벡터 공간 (Vector Spaces)",
+        
+        description: "벡터 공간의 공리, 부분공간, 다양한 벡터 공간의 예시와 동형사상",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/linear-algebra-and-groups-chapter-2/";
+          
+        },
+      },{id: "post-dayan-amp-abbott-chapter-2-neural-encoding-ii-reverse-correlation-and-visual-receptive-fields",
+        
+          title: "Dayan &amp; Abbott Chapter 2 — Neural Encoding II: Reverse Correlation and Visual...",
+        
+        description: "Optimal linear kernel과 STA의 관계, Wiener–Hopf equation, LNP 모델, V1의 Gabor receptive field, complex-cell energy model, retina·LGN의 DoG를 수식과 직관으로 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/dayan-abbott-chapter-2/";
+          
+        },
+      },{id: "post-dayan-amp-abbott-chapter-1-neural-encoding-i-firing-rates-and-spike-statistics",
+        
+          title: "Dayan &amp; Abbott Chapter 1 — Neural Encoding I: Firing Rates and Spike...",
+        
+        description: "스파이크열의 수학적 표현에서 firing rate, kernel smoothing, tuning curve, spike-triggered average, Poisson process와 neural coding까지 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/dayan-abbott-chapter-1/";
+          
+        },
+      },{id: "post-선형대수와-군-1장-동치류와-분할",
+        
+          title: "선형대수와 군 1장: 동치류와 분할",
+        
+        description: "동치관계가 집합을 분할하는 이유를 증명하고, 합동식과 선형사상의 핵, 군의 잉여류에 연결한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/equivalence-classes-and-partitions/";
+          
+        },
+      },{id: "post-boj-22029-풀이",
+        
+          title: "BOJ 22029 풀이",
+        
+        description: "철도",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-22029/";
+          
+        },
+      },{id: "post-공학수학-24일-학습-day-1-2-ode의-구조와-풀이법-선택",
+        
+          title: "공학수학 24일 학습 — Day 1–2: ODE의 구조와 풀이법 선택",
+        
+        description: "선형 ODE의 일반해와 특수해, 변수분리법, 적분인자법, 특성방정식, 미정계수법과 공진을 문제 풀이 중심으로 정리한다.",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/engineering-math-day-1-2/";
+          
+        },
+      },{id: "post-boj-18192-풀이",
+        
+          title: "BOJ 18192 풀이",
+        
+        description: "보고 정렬",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-18192/";
+          
+        },
+      },{id: "post-boj-16656-풀이",
+        
+          title: "BOJ 16656 풀이",
+        
+        description: "Interactive Array Guessing",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-16656/";
+          
+        },
+      },{id: "post-boj-26001-풀이",
+        
+          title: "BOJ 26001 풀이",
+        
+        description: "Jagged Skyline",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2026/boj-26001/";
+          
+        },
+      },{id: "post-a-post-with-marimo-snippets",
+        
+          title: "a post with marimo snippets",
+        
+        description: "running Python in the browser with marimoa",
+        section: "Posts",
+        handler: () => {
+          
+            window.location.href = "/blog/2025/marimo/";
+          
+        },
+      },{
+        id: 'social-email',
+        title: 'email',
+        section: 'Socials',
+        handler: () => {
+          window.open("mailto:%6B%61%6E%67%68%74%31%32%31%39@%70%75%73%61%6E.%61%63.%6B%72", "_blank");
+        },
+      },{
+        id: 'social-github',
+        title: 'GitHub',
+        section: 'Socials',
+        handler: () => {
+          window.open("https://github.com/corntofu", "_blank");
+        },
+      },{
+        id: 'social-rss',
+        title: 'RSS Feed',
+        section: 'Socials',
+        handler: () => {
+          window.open("/feed.xml", "_blank");
+        },
+      },{
+      id: 'light-theme',
+      title: 'Change theme to light',
+      description: 'Change the theme of the site to Light',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("light");
+      },
+    },
+    {
+      id: 'dark-theme',
+      title: 'Change theme to dark',
+      description: 'Change the theme of the site to Dark',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("dark");
+      },
+    },
+    {
+      id: 'system-theme',
+      title: 'Use system default theme',
+      description: 'Change the theme of the site to System Default',
+      section: 'Theme',
+      handler: () => {
+        setThemeSetting("system");
+      },
+    },];
+
+</script> <script src="/assets/al_search/js/shortcut-key.js"></script> </body> </html>
